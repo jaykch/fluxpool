@@ -73,7 +73,7 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
   };
 
   return (
-    <Disclosure as="nav" className="bg-gray-800">
+    <Disclosure as="nav" className="">
       {({ open }) => (
         <>
           <div className="w-full px-4">

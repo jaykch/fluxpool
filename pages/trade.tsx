@@ -80,7 +80,7 @@ export default function DashboardPage() {
       navbarItems={[]}
       onTokenSelect={handleTokenSelect}
     >
-      <main className="flex flex-col min-h-screen bg-privy-light-blue">
+      <main className="flex flex-col min-h-screen">
         {ready && authenticated ? (
           <div className="flex flex-1">
             {/* Main Chart Area - 70% width */}
@@ -94,7 +94,7 @@ export default function DashboardPage() {
             </div>
             
             {/* Sidebar - 30% width */}
-            <div className="w-[30%] bg-gray-900 border-l border-gray-700 p-4">
+            <div className="w-[30%] border-l border-gray-700 p-4">
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white mb-4">Trading Panel</h3>
                 

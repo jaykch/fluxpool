@@ -75,13 +75,13 @@
   }
 }
 
-
-
 @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 30% 20%, #1e1b4b 0%, #0f0f23 50%, #000000 100%);
   }
 }
