@@ -46,19 +46,20 @@ export default function DashboardPage() {
     unlinkDiscord,
   } = usePrivy();
 
-  const [chartData, setChartData] = useState(generateSampleData());
+  // Update the state initialization
+  const [chartData, setChartData] = useState(generateSampleData('BTC', 730)); // 2 years of data
   // Add this state for the selected token
   const [selectedToken, setSelectedToken] = useState({ symbol: 'BTC/USDT', name: 'Bitcoin' });
 
-  // Add this function to handle token selection
+  // Update the token selection handler
   const handleTokenSelect = (token: any) => {
     setSelectedToken({
       symbol: `${token.symbol}/USDT`,
       name: token.name
     });
     
-    // Generate new sample data for the selected token
-    const newData = generateSampleData();
+    // Generate 2 years of historical data for the selected token
+    const newData = generateSampleData(token.symbol, 730);
     setChartData(newData);
   };
 
