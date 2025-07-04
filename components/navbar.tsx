@@ -1,6 +1,4 @@
-import Image from "next/image";
 import { useRouter } from "next/router";
-import { Fragment } from "react";
 import { Disclosure } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -20,9 +18,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, LogOut, Settings, User } from "lucide-react";
 
-function classNames(...classes: Array<string | boolean>): string {
-  return classes.filter(Boolean).join(" ");
-}
 
 /**
  * make sure you are passing router.pathname and not
@@ -45,7 +40,7 @@ type NavbarProps = {
   items: Array<NavbarItem>;
 };
 
-export default function Navbar({ items, accountId, appName }: NavbarProps) {
+export default function Navbar({ items }: NavbarProps) {
   const router = useRouter();
   const resourceId = router.query.id;
   const selected = extractTabFromPath(router.pathname);
