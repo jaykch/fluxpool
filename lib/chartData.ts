@@ -2,15 +2,14 @@ import { CandlestickData } from 'lightweight-charts';
 
 export function generateSampleData(days: number = 30): CandlestickData[] {
   const data: CandlestickData[] = [];
-  let basePrice = 50000; // Starting price for BTC
+  let basePrice = 50000;
   const now = new Date();
   
   for (let i = days; i >= 0; i--) {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
     
-    // Generate random price movement
-    const change = (Math.random() - 0.5) * 0.1; // ±5% change
+    const change = (Math.random() - 0.5) * 0.1;
     const open = basePrice;
     const close = basePrice * (1 + change);
     const high = Math.max(open, close) * (1 + Math.random() * 0.02);
