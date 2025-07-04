@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import { getAccessToken, usePrivy } from "@privy-io/react-auth";
 import Head from "next/head";
 import WalletList from "../components/WalletList";
+import Navbar from "@/components/navbar";
+import Layout from "@/components/layout";
+import TradingChart from '../components/TradingChart';
+import { generateSampleData } from '../lib/chartData';
 
 async function verifyToken() {
   const url = "/api/verify";
@@ -38,6 +42,8 @@ export default function DashboardPage() {
     unlinkDiscord,
   } = usePrivy();
 
+  const [chartData, setChartData] = useState(generateSampleData());
+
   useEffect(() => {
     if (ready && !authenticated) {
       router.push("/");
@@ -56,23 +62,21 @@ export default function DashboardPage() {
   const discordSubject = user?.discord?.subject || null;
 
   return (
-    <>
-      <Head>
-        <title>Trade Now</title>
-      </Head>
-
+    <Layout accountId={user?.id ?? ""} appName="Trade Now" navbarItems={[]}>
       <main className="flex flex-col min-h-screen px-4 sm:px-20 py-6 sm:py-10 bg-privy-light-blue">
         {ready && authenticated ? (
-          <>
-            <div className="flex flex-row justify-between">
-              <h1 className="text-2xl font-semibold">Trade now</h1>
-              <button
-                onClick={logout}
-                className="text-sm bg-violet-200 hover:text-violet-900 py-2 px-4 rounded-md text-violet-700"
-              >
-                Logout
-              </button>
+          <> 
+            {/* Add Chart Section */}
+            <div className="mb-8">
+              <TradingChart 
+                symbol="BTC/USDT" 
+                data={chartData}
+                height={400}
+                width={800}
+              />
             </div>
+
+            {/* Existing wallet management buttons */}
             <div className="mt-12 flex gap-4 flex-wrap">
               {googleSubject ? (
                 <button
@@ -223,6 +227,6 @@ export default function DashboardPage() {
           </>
         ) : null}
       </main>
-    </>
+    </Layout>
   );
 }

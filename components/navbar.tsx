@@ -9,6 +9,7 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Logo } from "./logo";
+import { usePrivy } from "@privy-io/react-auth";
 
 function classNames(...classes: Array<string | boolean>): string {
   return classes.filter(Boolean).join(" ");
@@ -39,6 +40,24 @@ export default function Navbar({ items, accountId, appName }: NavbarProps) {
   const router = useRouter();
   const resourceId = router.query.id;
   const selected = extractTabFromPath(router.pathname);
+  const {
+    ready,
+    authenticated,
+    user,
+    logout,
+    linkEmail,
+    linkWallet,
+    unlinkEmail,
+    linkPhone,
+    unlinkPhone,
+    unlinkWallet,
+    linkGoogle,
+    unlinkGoogle,
+    linkTwitter,
+    unlinkTwitter,
+    linkDiscord,
+    unlinkDiscord,
+  } = usePrivy();
 
   const selectedItemClass =
     "hover:cursor-pointer rounded-full bg-gray-900 px-3 py-2 text-lg font-medium text-white";
@@ -95,17 +114,15 @@ export default function Navbar({ items, accountId, appName }: NavbarProps) {
               </div>
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex items-center">
-                  <button
-                    type="button"
-                    className="rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white"
-                  >
-                    <InformationCircleIcon
-                      className="h-6 w-6"
-                      aria-hidden="true"
-                    />
-                  </button>
-                  <p className="text-white">{appName}</p>
 
+                  <div className="flex flex-row justify-between">
+                    <button
+                      onClick={logout}
+                      className="text-sm bg-violet-200 hover:text-violet-900 py-2 px-4 rounded-md text-violet-700"
+                    >
+                      Logout
+                    </button>
+                  </div>
                   {/* Profile dropdown */}
                   <Menu as="div" className="relative ml-3">
                     <div className="flex bg-gray-800 rounded-full items-center hover:ring-white hover:ring-2 hover:ring-offset-2 hover:ring-offset-gray-800 hover:outline-none hover:cursor-pointer">
