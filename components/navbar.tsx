@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, LogOut, Settings, User } from "lucide-react";
+import TokenSearch from './TokenSearch';
 
 
 /**
@@ -107,6 +108,15 @@ export default function Navbar({ items }: NavbarProps) {
                     )}
                   </div>
                 </div>
+              </div>
+              <div className="flex-1 flex justify-center px-4">
+                <TokenSearch 
+                  onTokenSelect={(token) => {
+                    console.log('Selected token:', token);
+                    // Here you can handle token selection
+                    // For example, update the chart symbol
+                  }}
+                />
               </div>
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex items-center space-x-4">
