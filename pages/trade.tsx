@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import TradingData from '../components/TradingData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrendingUp, Users, Wallet, BarChart3, Trophy } from "lucide-react";
+import TokenInfo from '../components/TokenInfo';
 
 async function verifyToken() {
   const url = "/api/verify";
@@ -101,28 +102,35 @@ export default function DashboardPage() {
             </div>
             
             {/* Sidebar - 30% width */}
-            <div className="w-[30%] border-l border-gray-700 p-4">
+            <div className="w-[30%] border-l border-gray-700 p-4 space-y-4">
+              {/* Trading Panel */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white mb-4">Trading Panel</h3>
                 
                 {/* Placeholder for future buttons */}
                 <div className="space-y-3">
-                  <div className="rounded-lg p-4">
+                  <div className="bg-gray-800 rounded-lg p-4">
                     <h4 className="text-sm font-medium text-gray-300 mb-2">Buy/Sell</h4>
                     <p className="text-xs text-gray-500">Trading buttons will go here</p>
                   </div>
                   
-                  <div className="rounded-lg p-4">
+                  <div className="bg-gray-800 rounded-lg p-4">
                     <h4 className="text-sm font-medium text-gray-300 mb-2">Order Book</h4>
                     <p className="text-xs text-gray-500">Order book will go here</p>
                   </div>
                   
-                  <div className="rounded-lg p-4">
+                  <div className="bg-gray-800 rounded-lg p-4">
                     <h4 className="text-sm font-medium text-gray-300 mb-2">Recent Trades</h4>
                     <p className="text-xs text-gray-500">Recent trades will go here</p>
                   </div>
                 </div>
               </div>
+
+              {/* Token Info Section */}
+              <TokenInfo 
+                symbol={selectedToken.symbol.split('/')[0]} 
+                name={selectedToken.name}
+              />
             </div>
           </div>
         ) : null}
