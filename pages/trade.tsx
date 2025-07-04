@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrendingUp, Users, Wallet, BarChart3, Trophy } from "lucide-react";
 import TokenInfo from '../components/TokenInfo';
 import TradingPanel from '../components/TradingPanel';
+import TotalEarnings from '../components/TotalEarnings';
 
 async function verifyToken() {
   const url = "/api/verify";
@@ -97,15 +98,16 @@ export default function DashboardPage() {
               />
               
               {/* Trading Data Tabs */}
-              <div className="p-4">
-                <TradingData />
-              </div>
+              <TradingData />
             </div>
             
             {/* Sidebar - 30% width */}
             <div className="w-[30%] border-l border-gray-700 p-4 space-y-4">
               {/* Trading Panel */}
               <TradingPanel />
+
+              {/* Total Earnings */}
+              <TotalEarnings />
 
               {/* Token Info Section */}
               <TokenInfo 

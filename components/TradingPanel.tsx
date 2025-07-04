@@ -29,6 +29,13 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
     }
   };
 
+  const handlePercentageClick = (percentage: number) => {
+    // Mock balance - you can make this dynamic
+    const balance = 2.45;
+    const calculatedAmount = (balance * percentage) / 100;
+    setAmount(calculatedAmount.toFixed(4));
+  };
+
   return (
     <Card className="border-gray-700">
       <CardContent className="p-4 space-y-4">
@@ -37,7 +44,7 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
           <h4 className="text-sm font-medium text-white">{getTitle()}</h4>
         </div>
 
-        {/* Liquidity Ratio Slider - Moved to top */}
+        {/* Liquidity Ratio Slider */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label className="text-gray-300 text-sm">Liquidity Ratio</Label>
@@ -68,6 +75,42 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
               onChange={(e) => setAmount(e.target.value)}
               className="bg-gray-800 border-gray-600 text-white"
             />
+            
+            {/* Percentage Buttons */}
+            <div className="flex mt-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex-1 text-xs bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white rounded-none border-r-0"
+                onClick={() => handlePercentageClick(10)}
+              >
+                10%
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex-1 text-xs bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white rounded-none border-r-0"
+                onClick={() => handlePercentageClick(33)}
+              >
+                33%
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex-1 text-xs bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white rounded-none border-r-0"
+                onClick={() => handlePercentageClick(50)}
+              >
+                50%
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex-1 text-xs bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white rounded-none"
+                onClick={() => handlePercentageClick(100)}
+              >
+                100%
+              </Button>
+            </div>
           </div>
 
           {type !== 'spot' && (
