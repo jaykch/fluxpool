@@ -1,5 +1,4 @@
-import { createChart, ColorType, IChartApi, ISeriesApi, CandlestickData } from 'lightweight-charts';
-import { useEffect, useRef, useState } from 'react';
+import { CandlestickData } from 'lightweight-charts';
 
 interface TradingChartProps {
   symbol?: string;
