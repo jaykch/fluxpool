@@ -1,11 +1,4 @@
-import { CandlestickData } from 'lightweight-charts';
 
-interface TradingChartProps {
-  symbol?: string;
-  data?: CandlestickData[];
-  height?: number;
-  width?: number;
-}
 
 interface ChartControlsProps {
   onTimeframeChange: (timeframe: string) => void;
