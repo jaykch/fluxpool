@@ -102,7 +102,7 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
           >
             <Bell className="h-5 w-5" />
             {/* Notification badge */}
-            <span className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full text-xs text-destructive-foreground flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full text-xs text-destructive-foreground flex items-center justify-center">
               3
             </span>
           </Button>

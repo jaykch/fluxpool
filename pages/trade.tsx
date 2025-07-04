@@ -6,6 +6,9 @@ import Layout from "@/components/layout";
 import TradingChart from '../components/TradingChart';
 import { generateSampleData } from '../lib/chartData';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import TradingData from '../components/TradingData';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TrendingUp, Users, Wallet, BarChart3, Trophy } from "lucide-react";
 
 async function verifyToken() {
   const url = "/api/verify";
@@ -80,17 +83,22 @@ export default function DashboardPage() {
       navbarItems={[]}
       onTokenSelect={handleTokenSelect}
     >
-      <main className="flex flex-col min-h-screen">
+      <main className="flex flex-col min-h-screen bg-privy-light-blue">
         {ready && authenticated ? (
           <div className="flex flex-1">
             {/* Main Chart Area - 70% width */}
-            <div className="w-[70%]">
+            <div className="w-[70%] flex flex-col">
               <TradingChart 
                 symbol={selectedToken.symbol}
                 data={chartData}
                 height={600}
                 width={800}
               />
+              
+              {/* Trading Data Tabs */}
+              <div className="p-4">
+                <TradingData />
+              </div>
             </div>
             
             {/* Sidebar - 30% width */}
@@ -100,17 +108,17 @@ export default function DashboardPage() {
                 
                 {/* Placeholder for future buttons */}
                 <div className="space-y-3">
-                  <div className="bg-gray-800 rounded-lg p-4">
+                  <div className="rounded-lg p-4">
                     <h4 className="text-sm font-medium text-gray-300 mb-2">Buy/Sell</h4>
                     <p className="text-xs text-gray-500">Trading buttons will go here</p>
                   </div>
                   
-                  <div className="bg-gray-800 rounded-lg p-4">
+                  <div className="rounded-lg p-4">
                     <h4 className="text-sm font-medium text-gray-300 mb-2">Order Book</h4>
                     <p className="text-xs text-gray-500">Order book will go here</p>
                   </div>
                   
-                  <div className="bg-gray-800 rounded-lg p-4">
+                  <div className="rounded-lg p-4">
                     <h4 className="text-sm font-medium text-gray-300 mb-2">Recent Trades</h4>
                     <p className="text-xs text-gray-500">Recent trades will go here</p>
                   </div>
