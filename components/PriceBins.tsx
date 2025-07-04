@@ -1,18 +1,31 @@
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import { useAssetPrice } from "@/lib/useAssetPrice";
 
 interface PriceBinsProps {
-  currentPrice: number;
+  symbol?: string;
 }
 
-export default function PriceBins({ currentPrice }: PriceBinsProps) {
+export default function PriceBins({ symbol = 'ETH' }: PriceBinsProps) {
   const [range, setRange] = useState([20, 80]); // Default range 20% to 80%
+  const { price: currentPrice, loading, error } = useAssetPrice(symbol);
 
   // Generate 100 thin bars with more varied stable values using useMemo
   const bars = useMemo(() => {
+    if (loading || error) {
+      return Array.from({ length: 100 }, (_, i) => ({
+        priceMultiplier: (i / 100) * 10,
+        price: 0,
+        liquidity: 0,
+        height: 4,
+        id: i
+      }));
+    }
+
     return Array.from({ length: 100 }, (_, i) => {
       const priceMultiplier = (i / 100) * 10; // 0 to 10x
+      const price = currentPrice * priceMultiplier; // Convert to actual price
       
       // Create more varied stable random values based on index
       const seed1 = i * 12345; // Primary seed
@@ -36,12 +49,13 @@ export default function PriceBins({ currentPrice }: PriceBinsProps) {
       
       return {
         priceMultiplier,
+        price,
         liquidity,
         height,
         id: i // Stable ID to prevent re-rendering
       };
     });
-  }, []); // Empty dependency array - bars never change
+  }, [currentPrice, loading, error]); // Add currentPrice as dependency
 
   // Calculate which bars are in range
   const barsInRange = bars.map(bar => ({
@@ -50,10 +64,40 @@ export default function PriceBins({ currentPrice }: PriceBinsProps) {
   }));
 
   // Calculate legend data
-  const minPrice = (range[0] / 10).toFixed(1);
-  const maxPrice = (range[1] / 10).toFixed(1);
+  const minPrice = (currentPrice * (range[0] / 10)).toFixed(2);
+  const maxPrice = (currentPrice * (range[1] / 10)).toFixed(2);
   const binsInRange = barsInRange.filter(bar => bar.isInRange).length;
   const totalBins = barsInRange.length;
+
+  if (loading) {
+    return (
+      <Card className="border-gray-700">
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-medium text-white">Price Range</h4>
+            <span className="text-xs text-gray-400">Loading...</span>
+          </div>
+          <div className="h-12 bg-gray-800 rounded animate-pulse"></div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="border-gray-700">
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-medium text-white">Price Range</h4>
+            <span className="text-xs text-red-400">Error loading price</span>
+          </div>
+          <div className="h-12 bg-gray-800 rounded flex items-center justify-center">
+            <span className="text-gray-400 text-sm">Failed to load price data</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border-gray-700">
@@ -61,7 +105,7 @@ export default function PriceBins({ currentPrice }: PriceBinsProps) {
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-medium text-white">Price Range</h4>
           <span className="text-xs text-gray-400">
-            {minPrice}x - {maxPrice}x
+            ${minPrice} - ${maxPrice}
           </span>
         </div>
         
@@ -93,11 +137,11 @@ export default function PriceBins({ currentPrice }: PriceBinsProps) {
             className="w-full"
           />
           <div className="flex justify-between text-xs text-gray-400">
-            <span>0x</span>
-            <span>2.5x</span>
-            <span>5x</span>
-            <span>7.5x</span>
-            <span>10x</span>
+            <span>${(currentPrice * 0).toFixed(2)}</span>
+            <span>${(currentPrice * 2.5).toFixed(2)}</span>
+            <span>${(currentPrice * 5).toFixed(2)}</span>
+            <span>${(currentPrice * 7.5).toFixed(2)}</span>
+            <span>${(currentPrice * 10).toFixed(2)}</span>
           </div>
         </div>
 
@@ -106,11 +150,11 @@ export default function PriceBins({ currentPrice }: PriceBinsProps) {
           <div className="grid grid-cols-3 gap-4 text-xs">
             <div className="text-center">
               <div className="text-gray-400">Min</div>
-              <div className="text-white font-medium">{minPrice}x</div>
+              <div className="text-white font-medium">${minPrice}</div>
             </div>
             <div className="text-center">
               <div className="text-gray-400">Max</div>
-              <div className="text-white font-medium">{maxPrice}x</div>
+              <div className="text-white font-medium">${maxPrice}</div>
             </div>
             <div className="text-center">
               <div className="text-gray-400">Bins</div>

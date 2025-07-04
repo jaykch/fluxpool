@@ -67,7 +67,7 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
         </div>
 
         {/* Price Bins */}
-        <PriceBins currentPrice={currentPrice} />
+        <PriceBins symbol="ETH" />
 
         <div className="space-y-3">
           <div>

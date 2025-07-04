@@ -26,7 +26,7 @@ export default function TradingChart({
     // Create chart
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: '#1a1a1a' },
+        background: { type: ColorType.Transparent },
         textColor: '#d1d5db',
       },
       grid: {
