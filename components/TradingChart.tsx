@@ -5,14 +5,12 @@ interface TradingChartProps {
   symbol?: string;
   data?: CandlestickData[];
   height?: number;
-  width?: number;
 }
 
 export default function TradingChart({ 
   symbol = 'BTC/USDT', 
   data = [], 
-  height = 400, 
-  width = 800 
+  height = 400
 }: TradingChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -21,6 +19,9 @@ export default function TradingChart({
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
+
+    // Get container width
+    const containerWidth = chartContainerRef.current.clientWidth;
 
     // Create chart
     const chart = createChart(chartContainerRef.current, {
@@ -32,7 +33,7 @@ export default function TradingChart({
         vertLines: { color: '#2d2d2d' },
         horzLines: { color: '#2d2d2d' },
       },
-      width: width,
+      width: containerWidth,
       height: height,
       crosshair: {
         mode: 1,
@@ -46,6 +47,7 @@ export default function TradingChart({
         secondsVisible: false,
       },
     });
+
     // Create candlestick series
     const candlestickSeries = chart.addCandlestickSeries({
       upColor: '#26a69a',
@@ -67,8 +69,9 @@ export default function TradingChart({
 
     // Handle resize
     const handleResize = () => {
-      if (chartRef.current) {
-        chartRef.current.applyOptions({ width: chartContainerRef.current?.clientWidth || width });
+      if (chartRef.current && chartContainerRef.current) {
+        const newWidth = chartContainerRef.current.clientWidth;
+        chartRef.current.applyOptions({ width: newWidth });
       }
     };
 
@@ -81,7 +84,7 @@ export default function TradingChart({
         chartRef.current.remove();
       }
     };
-  }, [width, height]);
+  }, [height]);
 
   // Update data when it changes
   useEffect(() => {
@@ -91,7 +94,7 @@ export default function TradingChart({
   }, [data]);
 
   return (
-    <div className="p-2">
+    <div className="bg-gray-900 rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white">{symbol}</h3>
         {isLoading && <div className="text-gray-400">Loading chart...</div>}

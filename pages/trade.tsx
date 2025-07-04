@@ -83,7 +83,7 @@ export default function DashboardPage() {
       navbarItems={[]}
       onTokenSelect={handleTokenSelect}
     >
-      <main className="flex flex-col min-h-screen bg-privy-light-blue">
+      <main className="flex flex-col min-h-screen">
         {ready && authenticated ? (
           <div className="flex flex-1">
             {/* Main Chart Area - 70% width */}
@@ -92,7 +92,6 @@ export default function DashboardPage() {
                 symbol={selectedToken.symbol}
                 data={chartData}
                 height={600}
-                width={800}
               />
               
               {/* Trading Data Tabs */}
