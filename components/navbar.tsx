@@ -1,15 +1,24 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { Fragment } from "react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Disclosure } from "@headlessui/react";
 import {
-  ChevronDownIcon,
   Bars3Icon,
   XMarkIcon,
-  InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Logo } from "./logo";
 import { usePrivy } from "@privy-io/react-auth";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, LogOut, Settings, User } from "lucide-react";
 
 function classNames(...classes: Array<string | boolean>): string {
   return classes.filter(Boolean).join(" ");
@@ -59,11 +68,6 @@ export default function Navbar({ items, accountId, appName }: NavbarProps) {
     unlinkDiscord,
   } = usePrivy();
 
-  const selectedItemClass =
-    "hover:cursor-pointer rounded-full bg-gray-900 px-3 py-2 text-lg font-medium text-white";
-  const unselectedItemClass =
-    "hover:cursor-pointer rounded-full px-3 py-2 text-lg font-medium text-gray-300 hover:bg-gray-700 hover:text-white";
-
   // Navigate to a resource sub-page:
   // /apps/:appId/settings
   // /accounts/:accountId/users
@@ -91,19 +95,16 @@ export default function Navbar({ items, accountId, appName }: NavbarProps) {
                     {items ? (
                       items.map((item) => {
                         return (
-                          <button
+                          <Button
                             key={item.id}
                             onClick={() => {
                               navigateTo(item);
                             }}
-                            className={
-                              selected === item.id
-                                ? selectedItemClass
-                                : unselectedItemClass
-                            }
+                            variant={selected === item.id ? "default" : "ghost"}
+                            className="text-lg"
                           >
                             {item.name}
-                          </button>
+                          </Button>
                         );
                       })
                     ) : (
@@ -113,88 +114,47 @@ export default function Navbar({ items, accountId, appName }: NavbarProps) {
                 </div>
               </div>
               <div className="hidden sm:ml-6 sm:block">
-                <div className="flex items-center">
-
-                  <div className="flex flex-row justify-between">
-                    <button
-                      onClick={logout}
-                      className="text-sm bg-violet-200 hover:text-violet-900 py-2 px-4 rounded-md text-violet-700"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                  {/* Profile dropdown */}
-                  <Menu as="div" className="relative ml-3">
-                    <div className="flex bg-gray-800 rounded-full items-center hover:ring-white hover:ring-2 hover:ring-offset-2 hover:ring-offset-gray-800 hover:outline-none hover:cursor-pointer">
-                      <Menu.Button className="flex rounded-full text-sm">
-                        <span className="sr-only">Open user menu</span>
-                        <div className="h-8 w-8 rounded-full">
-                          <Image
-                            className="h-8 w-8 rounded-full"
-                            src="/images/avatar.png"
-                            alt="avatar placeholder"
-                            height={32}
-                            width={32}
-                          />
-                        </div>
-                      </Menu.Button>
-                      <ChevronDownIcon
-                        className="ml-1 h-4 w-4 text-white"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <Transition
-                      as={Fragment}
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href={`/accounts/${accountId}`}
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              Your account
-                            </a>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              Settings
-                            </a>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              Sign out
-                            </a>
-                          )}
-                        </Menu.Item>
-                      </Menu.Items>
-                    </Transition>
-                  </Menu>
+                <div className="flex items-center space-x-4">
+                  <Button
+                    onClick={logout}
+                    variant="outline"
+                    size="sm"
+                    className="text-violet-700 border-violet-200 hover:bg-violet-100"
+                  >
+                    Logout
+                  </Button>
+                  
+                  {/* Profile dropdown with shadcn */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="flex items-center space-x-2 p-0 h-auto">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src="/images/avatar.png" />
+                          <AvatarFallback>
+                            {user?.email?.address?.[0] || user?.wallet?.address?.slice(-4) || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <ChevronDown className="ml-1 h-4 w-4 text-white" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <User className="mr-2 h-4 w-4" />
+                        Your account
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={logout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
               <div className="-mr-2 flex sm:hidden">
