@@ -6,12 +6,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { ArrowUpRight, ArrowDownLeft, BarChart3, Clock } from "lucide-react";
 import { useState } from "react";
+import PriceBins from './PriceBins';
 
 // Reusable Order Component
 function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
   const [amount, setAmount] = useState('');
   const [price, setPrice] = useState('');
   const [liquidityRatio, setLiquidityRatio] = useState([50]);
+  const currentPrice = 2450.50; // Mock current price - you can make this dynamic
 
   const getIcon = () => {
     switch (type) {
@@ -63,6 +65,9 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
             <span>100%</span>
           </div>
         </div>
+
+        {/* Price Bins */}
+        <PriceBins currentPrice={currentPrice} />
 
         <div className="space-y-3">
           <div>

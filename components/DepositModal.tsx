@@ -28,12 +28,17 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
     // Simulate deposit process
     await new Promise(resolve => setTimeout(resolve, 2000));
     setIsLoading(false);
-    onClose();
+    handleClose();
+  };
+
+  const handleClose = () => {
     setAmount('');
+    setIsLoading(false);
+    onClose();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
@@ -76,7 +81,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
         </div>
         
         <DialogFooter className="flex space-x-2">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
           <Button 
