@@ -1,15 +1,11 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getAccessToken, usePrivy } from "@privy-io/react-auth";
-import Head from "next/head";
 import WalletList from "../components/WalletList";
-import Navbar from "@/components/navbar";
 import Layout from "@/components/layout";
 import TradingChart from '../components/TradingChart';
 import { generateSampleData } from '../lib/chartData';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 
 async function verifyToken() {
   const url = "/api/verify";
@@ -30,7 +26,6 @@ export default function DashboardPage() {
     ready,
     authenticated,
     user,
-    logout,
     linkEmail,
     linkWallet,
     unlinkEmail,
@@ -45,7 +40,7 @@ export default function DashboardPage() {
     unlinkDiscord,
   } = usePrivy();
 
-  const [chartData, setChartData] = useState(generateSampleData());
+  const [chartData] = useState(generateSampleData());
 
   useEffect(() => {
     if (ready && !authenticated) {
