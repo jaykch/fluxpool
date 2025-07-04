@@ -54,6 +54,10 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
     router.push(`/${item.resource}/${resourceId}/${item.id}`);
   };
 
+  const navigateToPage = (page: string) => {
+    router.push(`/${page}`);
+  };
+
   return (
     <nav className="w-full px-4 border-b border-gray-700">
       <div className="flex h-16 items-center justify-between">
@@ -63,12 +67,65 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
           
           <NavigationMenu>
             <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Button
+                    variant={router.pathname === "/trade" ? "default" : "ghost"}
+                    size="sm"
+                    className="text-white hover:text-white hover:bg-gray-700"
+                    onClick={() => navigateToPage("trade")}
+                  >
+                    Trade
+                  </Button>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Button
+                    variant={router.pathname === "/discover" ? "default" : "ghost"}
+                    size="sm"
+                    className="text-white hover:text-white hover:bg-gray-700"
+                    onClick={() => navigateToPage("discover")}
+                  >
+                    Discover
+                  </Button>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Button
+                    variant={router.pathname === "/portfolio" ? "default" : "ghost"}
+                    size="sm"
+                    className="text-white hover:text-white hover:bg-gray-700"
+                    onClick={() => navigateToPage("portfolio")}
+                  >
+                    Portfolio
+                  </Button>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Button
+                    variant={router.pathname === "/track" ? "default" : "ghost"}
+                    size="sm"
+                    className="text-white hover:text-white hover:bg-gray-700"
+                    onClick={() => navigateToPage("track")}
+                  >
+                    Track
+                  </Button>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
               {items?.map((item) => (
                 <NavigationMenuItem key={item.id}>
                   <NavigationMenuLink asChild>
                     <Button
                       variant={selected === item.id ? "default" : "ghost"}
-                      className="text-lg"
+                      size="sm"
+                      className="text-white hover:text-white hover:bg-gray-700"
                       onClick={() => navigateTo(item)}
                     >
                       {item.name}
@@ -89,7 +146,7 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
           <Button
             variant="ghost"
             size="sm"
-            className="text-muted-foreground hover:text-foreground"
+            className="text-white hover:text-white hover:bg-gray-700"
           >
             <Star className="h-5 w-5" />
           </Button>
@@ -98,7 +155,7 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
           <Button
             variant="ghost"
             size="sm"
-            className="text-muted-foreground hover:text-foreground relative"
+            className="text-white hover:text-white hover:bg-gray-700 relative"
           >
             <Bell className="h-5 w-5" />
             {/* Notification badge */}
@@ -115,6 +172,7 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
             onClick={logout}
             variant="outline"
             size="sm"
+            className="border-gray-600 text-white hover:bg-gray-700"
           >
             Logout
           </Button>
@@ -122,7 +180,7 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center space-x-2 p-0 h-auto">
+              <Button variant="ghost" className="flex items-center space-x-2 p-0 h-auto text-white hover:text-white hover:bg-gray-700">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/images/avatar.png" />
                   <AvatarFallback>
