@@ -54,7 +54,7 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
   };
 
   return (
-    <nav className="bg-gray-800 w-full px-4">
+    <nav className="w-full px-4">
       <div className="flex h-16 items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
@@ -87,15 +87,6 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
 
         {/* User Menu */}
         <div className="flex items-center space-x-4">
-          <Button
-            onClick={logout}
-            variant="outline"
-            size="sm"
-            className="text-violet-700 border-violet-200 hover:bg-violet-100"
-          >
-            Logout
-          </Button>
-          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center space-x-2 p-0 h-auto">
