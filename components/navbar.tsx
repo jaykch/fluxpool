@@ -19,7 +19,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { ChevronDown, LogOut, Settings, User } from "lucide-react";
+import { ChevronDown, LogOut, Settings, User, Star, Bell } from "lucide-react";
 import TokenSearch from "./TokenSearch";
 
 const extractTabFromPath = (path: string) => {
@@ -56,37 +56,66 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
   return (
     <nav className="w-full px-4">
       <div className="flex h-16 items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center">
+        {/* Left side: Logo and Navigation */}
+        <div className="flex items-center space-x-6">
           <Logo />
+          
+          <NavigationMenu>
+            <NavigationMenuList>
+              {items?.map((item) => (
+                <NavigationMenuItem key={item.id}>
+                  <NavigationMenuLink asChild>
+                    <Button
+                      variant={selected === item.id ? "default" : "ghost"}
+                      className="text-lg"
+                      onClick={() => navigateTo(item)}
+                    >
+                      {item.name}
+                    </Button>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
 
-        {/* Navigation Menu */}
-        <NavigationMenu>
-          <NavigationMenuList>
-            {items?.map((item) => (
-              <NavigationMenuItem key={item.id}>
-                <NavigationMenuLink asChild>
-                  <Button
-                    variant={selected === item.id ? "default" : "ghost"}
-                    className="text-lg"
-                    onClick={() => navigateTo(item)}
-                  >
-                    {item.name}
-                  </Button>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
-
-        {/* Search Bar */}
-        <div className="flex-1 flex justify-center">
-          <TokenSearch onTokenSelect={onTokenSelect} />
-        </div>
-
-        {/* User Menu */}
+        {/* Right side: Search, Icons, and User Menu */}
         <div className="flex items-center space-x-4">
+          {/* Search Bar */}
+          <TokenSearch onTokenSelect={onTokenSelect} />
+          
+          {/* Favorite Icon */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <Star className="h-5 w-5" />
+          </Button>
+          
+          {/* Notifications Icon */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground relative"
+          >
+            <Bell className="h-5 w-5" />
+            {/* Notification badge */}
+            <span className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full text-xs text-destructive-foreground flex items-center justify-center">
+              3
+            </span>
+          </Button>
+
+          {/* Logout Button */}
+          <Button
+            onClick={logout}
+            variant="outline"
+            size="sm"
+          >
+            Logout
+          </Button>
+          
+          {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center space-x-2 p-0 h-auto">
@@ -96,7 +125,7 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
                     {user?.email?.address?.[0] || user?.wallet?.address?.slice(-4) || 'U'}
                   </AvatarFallback>
                 </Avatar>
-                <ChevronDown className="ml-1 h-4 w-4 text-white" />
+                <ChevronDown className="ml-1 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
