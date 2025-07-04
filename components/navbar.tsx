@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { ChevronDown, LogOut, Settings, User, Star, Bell } from "lucide-react";
 import TokenSearch from "./TokenSearch";
+import BalanceWidget from './BalanceWidget';
 
 const extractTabFromPath = (path: string) => {
   return path.split("/").pop() as string;
@@ -54,7 +55,7 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
   };
 
   return (
-    <nav className="w-full px-4">
+    <nav className="w-full px-4 border-b border-gray-700">
       <div className="flex h-16 items-center justify-between">
         {/* Left side: Logo and Navigation */}
         <div className="flex items-center space-x-6">
@@ -105,6 +106,9 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
               3
             </span>
           </Button>
+
+          {/* Balance Widget */}
+          <BalanceWidget />
 
           {/* Logout Button */}
           <Button
