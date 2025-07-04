@@ -1,11 +1,26 @@
 import { CandlestickData } from 'lightweight-charts';
 
-export function generateSampleData(days: number = 30): CandlestickData[] {
+export function generateSampleData(tokenSymbol: string = 'BTC'): CandlestickData[] {
   const data: CandlestickData[] = [];
-  let basePrice = 50000;
+  
+  // Different base prices for different tokens
+  const basePrices: { [key: string]: number } = {
+    'BTC': 50000,
+    'ETH': 3000,
+    'SOL': 100,
+    'ADA': 0.5,
+    'DOT': 7,
+    'LINK': 15,
+    'UNI': 8,
+    'AVAX': 35,
+    'MATIC': 0.8,
+    'ATOM': 9,
+  };
+  
+  let basePrice = basePrices[tokenSymbol] || 100;
   const now = new Date();
   
-  for (let i = days; i >= 0; i--) {
+  for (let i = 30; i >= 0; i--) {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
     

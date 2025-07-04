@@ -9,6 +9,7 @@ type Props = {
   accountId: string;
   appName: string;
   navbarItems: Array<NavbarItem>;
+  onTokenSelect?: (token: any) => void; // Add this
 };
 
 export default function Layout({
@@ -16,6 +17,7 @@ export default function Layout({
   accountId,
   appName,
   navbarItems,
+  onTokenSelect,
 }: Props) {
   const { ready, authenticated } = usePrivy();
   const router = useRouter();
@@ -28,7 +30,12 @@ export default function Layout({
 
   return (
     <>
-      <Navbar accountId={accountId} appName={appName} items={navbarItems} />
+      <Navbar 
+        accountId={accountId} 
+        appName={appName} 
+        items={navbarItems} 
+        onTokenSelect={onTokenSelect}
+      />
       <div className="w-full">{children}</div>
     </>
   );

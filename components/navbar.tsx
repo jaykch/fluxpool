@@ -39,9 +39,10 @@ type NavbarProps = {
   accountId: string;
   appName: string;
   items: Array<NavbarItem>;
+  onTokenSelect?: (token: any) => void; // Add this
 };
 
-export default function Navbar({ items }: NavbarProps) {
+export default function Navbar({ items, accountId, appName, onTokenSelect }: NavbarProps) {
   const router = useRouter();
   const resourceId = router.query.id;
   const selected = extractTabFromPath(router.pathname);
@@ -75,7 +76,7 @@ export default function Navbar({ items }: NavbarProps) {
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
         <>
-          <div className="w-full px-4 py-4">
+          <div className="w-full px-4">
             <div className="flex h-16 items-center justify-between">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
@@ -109,15 +110,12 @@ export default function Navbar({ items }: NavbarProps) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 flex justify-center px-4">
-                <TokenSearch 
-                  onTokenSelect={(token) => {
-                    console.log('Selected token:', token);
-                    // Here you can handle token selection
-                    // For example, update the chart symbol
-                  }}
-                />
+              
+              {/* Search bar */}
+              <div className="flex-1 flex justify-center">
+                <TokenSearch onTokenSelect={onTokenSelect} />
               </div>
+              
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex items-center space-x-4">
                   <Button
