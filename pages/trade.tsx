@@ -82,7 +82,7 @@ export default function DashboardPage() {
 
   return (
     <Layout 
-      accountId={user?.id ?? ""} 
+      accountId={user?.id ? String(user.id) : ""} 
       appName="Trade Now" 
       navbarItems={[]}
       onTokenSelect={handleTokenSelect}
@@ -119,6 +119,80 @@ export default function DashboardPage() {
           </div>
         ) : null}
       </main>
+      {/* Uniswap Pools Preview Section */}
+      <div className="w-full mt-8 flex justify-center">
+        <UniswapPoolsPreview />
+      </div>
     </Layout>
+  );
+}
+
+// --- UniswapPoolsPreview Component ---
+// Removed graphql-request; using fetch to our own API route
+
+type Pool = {
+  pool: string;
+  token0: { symbol: string; address: string; decimals: number };
+  token1: { symbol: string; address: string; decimals: number };
+  fee: number;
+  protocol: string;
+  network_id: string;
+};
+
+function UniswapPoolsPreview() {
+  const [pools, setPools] = useState<Pool[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [rawResponse, setRawResponse] = useState<any>(null);
+
+  const fetchPools = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/uniswap-pools');
+      const data = await response.json();
+      setRawResponse(data); // Save the raw response for debugging
+      if (Array.isArray(data.data)) {
+        setPools(data.data.slice(0, 5));
+      } else {
+        setPools([]);
+        setError(data); // Set the whole object as error
+      }
+      if (data.error) setError(data.error);
+    } catch (err: any) {
+      setError(err.message || 'Error fetching pools');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="bg-gray-900 rounded-lg shadow-lg p-6 w-full max-w-2xl">
+      <h2 className="text-lg font-semibold mb-4 text-white">Top Uniswap V3 Pools (Token API)</h2>
+      <button
+        onClick={fetchPools}
+        className="mb-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50"
+        disabled={loading}
+      >
+        {loading ? 'Fetching...' : 'Fetch Pools'}
+      </button>
+      {rawResponse && (
+        <pre className="bg-gray-800 text-gray-200 text-xs p-2 rounded mb-4 overflow-x-auto max-h-64">
+          {JSON.stringify(rawResponse, null, 2)}
+        </pre>
+      )}
+      {loading && <div className="text-gray-400">Loading...</div>}
+      {error && (
+        <div className="text-red-500">
+          {typeof error === 'string'
+            ? error
+            : JSON.stringify(error)}
+        </div>
+      )}
+      
+      {!loading && !error && pools.length === 0 && (
+        <div className="text-gray-400">No pools to display.</div>
+      )}
+    </div>
   );
 }
