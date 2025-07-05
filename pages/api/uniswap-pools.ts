@@ -10,7 +10,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const limit = typeof req.query.limit === 'string' ? req.query.limit : '5';
-  const url = `https://token-api.thegraph.com/pools/evm?network_id=mainnet&protocol=uniswap_v3&limit=${limit}`;
+  const network_id = typeof req.query.network_id === 'string' ? req.query.network_id : 'mainnet';
+  const url = `https://token-api.thegraph.com/pools/evm?network_id=${network_id}&protocol=uniswap_v3&limit=${limit}`;
 
   try {
     const response = await fetch(url, {
