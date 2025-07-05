@@ -276,6 +276,9 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
   const [mainTab, setMainTab] = useState<'broadcasts' | 'holdings'>('broadcasts');
   const fluxpoolEns = toFluxpoolENS(ens);
   const username = fluxpoolEns.replace('.fluxpool.eth', '');
+  // Winning trades progress bar state (fix hydration/navigation issues)
+  const [winRate] = useState(() => Math.floor(Math.random() * 41) + 60); // 60-100%
+  const [profitable] = useState(() => Math.random() > 0.4); // 60% chance profitable
   return (
     <Layout accountId={ens} appName="Profile" navbarItems={[]}>
       <Head>
@@ -410,25 +413,18 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
         <div className="w-full md:w-2/3 flex flex-col">
           {/* Winning Trades Progress Bar (above tabs, larger and more prominent) */}
           <div className="w-full max-w-4xl mt-2 mb-2">
-            {(() => {
-              // Randomize win rate and profitability for each user (memoized per profile)
-              const [winRate] = useState(() => Math.floor(Math.random() * 41) + 60); // 60-100%
-              const [profitable] = useState(() => Math.random() > 0.4); // 60% chance profitable
-              return (
-                <div className="flex flex-col items-center mb-6">
-                  <div className="w-full flex items-center justify-between mb-2">
-                    <span className="text-base font-semibold text-gray-200 tracking-wide">Winning Trades</span>
-                    <span className={`text-base font-bold ${profitable ? 'text-green-400' : 'text-crimson-500'}`}>{winRate}% {profitable ? 'Profitable' : 'Unprofitable'}</span>
-                  </div>
-                  <div className="w-full h-6 rounded-2xl bg-white/10 overflow-hidden shadow-lg border border-white/10">
-                    <div
-                      className={`h-full rounded-2xl transition-all duration-500 ${profitable ? 'bg-green-500' : 'bg-crimson-600'}`}
-                      style={{ width: `${winRate}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })()}
+            <div className="flex flex-col items-center mb-6">
+              <div className="w-full flex items-center justify-between mb-2">
+                <span className="text-base font-semibold text-gray-200 tracking-wide">Winning Trades</span>
+                <span className={`text-base font-bold ${profitable ? 'text-green-400' : 'text-crimson-500'}`}>{winRate}% {profitable ? 'Profitable' : 'Unprofitable'}</span>
+              </div>
+              <div className="w-full h-6 rounded-2xl bg-white/10 overflow-hidden shadow-lg border border-white/10">
+                <div
+                  className={`h-full rounded-2xl transition-all duration-500 ${profitable ? 'bg-green-500' : 'bg-crimson-600'}`}
+                  style={{ width: `${winRate}%` }}
+                />
+              </div>
+            </div>
           </div>
           {/* Tabs Section */}
           <div className="w-full max-w-4xl mt-0">

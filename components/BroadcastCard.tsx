@@ -1,4 +1,5 @@
 import MiniChart from "@/components/MiniChart";
+import Link from "next/link";
 
 export default function BroadcastCard({ pos, username, timeAgo }: {
   pos: any;
@@ -6,7 +7,7 @@ export default function BroadcastCard({ pos, username, timeAgo }: {
   timeAgo: string;
 }) {
   return (
-    <div className="flex flex-row items-stretch bg-white/5 border border-white/10 rounded-2xl p-0 overflow-hidden">
+    <div className="flex flex-row items-stretch bg-white/5 border border-white/10 rounded-2xl p-0 overflow-hidden shrink-0">
       {/* Left: Info box (50%) */}
       <div className="w-1/2 flex flex-col p-6 min-w-0">
         <div className="flex flex-row items-start gap-3">
@@ -20,7 +21,12 @@ export default function BroadcastCard({ pos, username, timeAgo }: {
           {/* Name, time, token badge, long/short badge */}
           <div className="flex flex-col flex-1 min-w-0">
             <div className="flex flex-row flex-wrap items-center gap-2">
-              <span className="font-semibold text-white text-base truncate max-w-[120px]">{username}</span>
+              <Link
+                href={`/profile/${username}`}
+                className="font-semibold text-white text-base truncate max-w-[120px] hover:underline focus:underline outline-none"
+              >
+                {username}
+              </Link>
               <span className="text-xs text-gray-400 whitespace-nowrap">{timeAgo}</span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-200 font-mono whitespace-nowrap">{pos.symbol}</span>
               <span className={`text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap ${pos.side === 'Long' ? 'bg-green-700/60 text-green-300' : 'bg-red-700/80 text-red-300'}`}>{pos.side}</span>
