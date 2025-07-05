@@ -11,10 +11,10 @@ import { ColumnDef } from '@tanstack/react-table';
 import { TrendingUp, UserPlus, MessageCircle, Wallet } from 'lucide-react';
 import { usePrivy } from '@privy-io/react-auth';
 
-const mockENS = 'myaccount.eth';
+const mockENS = 'myaccount.fluxpool.eth';
 const mockAddress = '0x0000...0000';
 const mockProfile = {
-  avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=myaccount.eth`,
+  avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=myaccount.fluxpool.eth`,
   twitter: '@myaccount',
   description: 'This is your FluxPool account profile. You can manage your smart wallet and see your ENS info here.',
   website: 'https://fluxpool.xyz',
@@ -37,10 +37,13 @@ interface Trade {
   timestamp: Date;
   marketCap: string;
   amount: string;
-  address: string;
+  txHash: string;
   ens?: string;
   type: 'buy' | 'sell';
   price: string;
+}
+function randomTxHash() {
+  return '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 }
 const tradeColumns: ColumnDef<Trade>[] = [
   { accessorKey: 'timestamp', header: () => 'Time', cell: ({ row }) => timeAgo(row.original.timestamp) },
@@ -48,7 +51,7 @@ const tradeColumns: ColumnDef<Trade>[] = [
   { accessorKey: 'amount', header: () => 'Amount (ETH)' },
   { accessorKey: 'price', header: () => 'Price (USD)', cell: ({ row }) => `$${row.original.price}` },
   { accessorKey: 'marketCap', header: () => 'Market Cap' },
-  { accessorKey: 'address', header: () => 'Address', cell: ({ row }) => <span className="font-mono text-xs text-blue-400">{row.original.address.slice(0, 6) + '...' + row.original.address.slice(-4)}</span> },
+  { accessorKey: 'txHash', header: () => 'Transaction Hash', cell: ({ row }) => <span className="font-mono text-xs text-blue-400">{row.original.txHash.slice(0, 8) + '...' + row.original.txHash.slice(-6)}</span> },
 ];
 function randomAmount() { return (Math.random() * 10).toFixed(3); }
 function randomType() { return Math.random() > 0.5 ? 'buy' : 'sell'; }
@@ -60,7 +63,7 @@ const mockTrades: Trade[] = Array.from({ length: 10 }, (_, i) => ({
   timestamp: new Date(Date.now() - Math.floor(Math.random() * 60 * 60 * 1000)),
   marketCap: randomMarketCap(),
   amount: randomAmount(),
-  address: randomAddress(),
+  txHash: randomTxHash(),
   type: randomType() as 'buy' | 'sell',
   price: randomPrice(),
 }));
@@ -152,7 +155,7 @@ export default function AccountPage() {
                       <AvatarImage src={`https://api.dicebear.com/7.x/identicon/svg?seed=fakefriend${i}`} />
                       <AvatarFallback>FF{i+1}</AvatarFallback>
                     </Avatar>
-                    <span className="text-xs mt-1 text-gray-200">friend{i+1}.eth</span>
+                    <span className="text-xs mt-1 text-gray-200">friend{i+1}.fluxpool.eth</span>
                   </div>
                 ))}
               </div>

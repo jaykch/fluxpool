@@ -26,10 +26,13 @@ interface Trade {
   timestamp: Date;
   marketCap: string;
   amount: string;
-  address: string;
+  txHash: string;
   ens?: string;
   type: 'buy' | 'sell';
   price: string;
+}
+function randomTxHash() {
+  return '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 }
 const tradeColumns: ColumnDef<Trade>[] = [
   { accessorKey: 'timestamp', header: () => 'Time', cell: ({ row }) => timeAgo(row.original.timestamp) },
@@ -37,7 +40,7 @@ const tradeColumns: ColumnDef<Trade>[] = [
   { accessorKey: 'amount', header: () => 'Amount (ETH)' },
   { accessorKey: 'price', header: () => 'Price (USD)', cell: ({ row }) => `$${row.original.price}` },
   { accessorKey: 'marketCap', header: () => 'Market Cap' },
-  { accessorKey: 'address', header: () => 'Address', cell: ({ row }) => <span className="font-mono text-xs text-blue-400">{row.original.address.slice(0, 6) + '...' + row.original.address.slice(-4)}</span> },
+  { accessorKey: 'txHash', header: () => 'Transaction Hash', cell: ({ row }) => <span className="font-mono text-xs text-blue-400">{row.original.txHash.slice(0, 8) + '...' + row.original.txHash.slice(-6)}</span> },
 ];
 function randomAmount() { return (Math.random() * 10).toFixed(3); }
 function randomType() { return Math.random() > 0.5 ? 'buy' : 'sell'; }
@@ -49,21 +52,28 @@ const mockTrades: Trade[] = Array.from({ length: 10 }, (_, i) => ({
   timestamp: new Date(Date.now() - Math.floor(Math.random() * 60 * 60 * 1000)),
   marketCap: randomMarketCap(),
   amount: randomAmount(),
-  address: randomAddress(),
+  txHash: randomTxHash(),
   type: randomType() as 'buy' | 'sell',
   price: randomPrice(),
 }));
 
-const mockTextRecords = (ens: string) => ({
-  avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(ens)}`,
-  twitter: `@${ens.replace('.eth', '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 12)}`,
-  description: `This is a mock profile for ${ens}. ${ens} is a legendary onchain trader, meme connoisseur, and DeFi degen.`,
-  website: `https://www.${ens.replace('.eth', '')}.xyz`,
-  email: `${ens.replace('.eth', '')}@notareal.email`,
-  location: 'Internet',
-  github: `https://github.com/${ens.replace('.eth', '')}`,
-  telegram: `t.me/${ens.replace('.eth', '')}`,
-});
+function toFluxpoolENS(name: string) {
+  // Remove .eth or any other suffix, then add .fluxpool.eth
+  return name.replace(/\..*$/, '') + '.fluxpool.eth';
+}
+const mockTextRecords = (ens: string) => {
+  const fluxpoolEns = toFluxpoolENS(ens);
+  return {
+    avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(fluxpoolEns)}`,
+    twitter: `@${fluxpoolEns.replace('.fluxpool.eth', '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 12)}`,
+    description: `This is a mock profile for ${fluxpoolEns}. ${fluxpoolEns} is a legendary onchain trader, meme connoisseur, and DeFi degen.`,
+    website: `https://www.${fluxpoolEns.replace('.fluxpool.eth', '')}.xyz`,
+    email: `${fluxpoolEns.replace('.fluxpool.eth', '')}@notareal.email`,
+    location: 'Internet',
+    github: `https://github.com/${fluxpoolEns.replace('.fluxpool.eth', '')}`,
+    telegram: `t.me/${fluxpoolEns.replace('.fluxpool.eth', '')}`,
+  };
+};
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const ens = ctx.params?.ens as string;
@@ -83,7 +93,7 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
   const [msgOpen, setMsgOpen] = useState(false);
   const [msg, setMsg] = useState('');
   const [msgSent, setMsgSent] = useState(false);
-  const isOwnProfile = ens === 'myaccount.eth'; // Demo: replace with real user check
+  const isOwnProfile = ens === 'myaccount.fluxpool.eth'; // Demo: replace with real user check
   return (
     <Layout accountId={ens} appName="Profile" navbarItems={[]}>
       <Head>
@@ -170,15 +180,18 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold mb-2 text-gray-200">Friends</h3>
               <div className="flex flex-wrap gap-3">
-                {Array.from({ length: 6 }, (_, i) => (
-                  <div key={i} className="flex flex-col items-center">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage src={`https://api.dicebear.com/7.x/identicon/svg?seed=fakefriend${i}`} />
-                      <AvatarFallback>FF{i+1}</AvatarFallback>
-                    </Avatar>
-                    <span className="text-xs mt-1 text-gray-200">friend{i+1}.eth</span>
-                  </div>
-                ))}
+                {Array.from({ length: 6 }, (_, i) => {
+                  const friendEns = `trader${i+1}.fluxpool.eth`;
+                  return (
+                    <div key={i} className="flex flex-col items-center">
+                      <Avatar className="w-10 h-10">
+                        <AvatarImage src={`https://api.dicebear.com/7.x/identicon/svg?seed=${friendEns}`} />
+                        <AvatarFallback>FF{i+1}</AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs mt-1 text-gray-200">{friendEns}</span>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>

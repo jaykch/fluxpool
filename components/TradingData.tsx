@@ -16,9 +16,9 @@ function timeAgo(date: Date): string {
   return `${Math.floor(diff / 3600)}h ago`;
 }
 
-// Generate a random Ethereum address
-function randomAddress() {
-  return "0x" + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+// Generate a random Ethereum transaction hash
+function randomTxHash() {
+  return "0x" + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
 }
 
 // Generate a random market cap
@@ -48,7 +48,7 @@ interface Trade {
   timestamp: Date;
   marketCap: string;
   amount: string;
-  address: string;
+  txHash: string;
   ens?: string;
   type: "buy" | "sell";
   price: string;
@@ -85,25 +85,20 @@ const tradeColumns: ColumnDef<Trade>[] = [
     cell: ({ row }) => row.original.marketCap,
   },
   {
-    accessorKey: "address",
-    header: () => "Address",
+    accessorKey: "txHash",
+    header: () => "Transaction Hash",
     cell: ({ row }) => {
-      const ens = row.original.ens;
-      const address = row.original.address;
-      return ens ? (
-        <Link href={`/profile/${ens}`} className="text-blue-400 underline underline-offset-2 hover:text-blue-300 transition-colors">
-          {ens}
-        </Link>
-      ) : (
-        <span className="font-mono text-xs text-blue-400">{address.slice(0, 6) + "..." + address.slice(-4)}</span>
+      const txHash = row.original.txHash;
+      return (
+        <span className="font-mono text-xs text-blue-400">{txHash.slice(0, 8) + "..." + txHash.slice(-6)}</span>
       );
     },
   },
 ];
 
-// List of ridiculous and humorous fake ENS names
+// List of ridiculous and humorous fake ENS names (now .fluxpool.eth)
 const fakeENSNames = [
-  "rugpullmaster.eth", "rektwizard.eth", "notyourkeys.eth", "vitalikbuterinbutnot.eth", "sushiswapfan.eth", "defi_dj.eth", "gwei_boi.eth", "hodlmybeer.eth", "ape4life.eth", "fomo.soon.eth", "paperhands.eth", "diamondhandz.eth", "gasguzzler.eth", "ponziplay.eth", "exitliquidity.eth", "safemoonbag.eth", "yolotrader.eth", "gmgn.eth", "to_the_moon.eth", "rektagain.eth", "whalealert.eth"
+  "rugpullmaster.fluxpool.eth", "rektwizard.fluxpool.eth", "notyourkeys.fluxpool.eth", "vitalikbuterinbutnot.fluxpool.eth", "sushiswapfan.fluxpool.eth", "defi_dj.fluxpool.eth", "gwei_boi.fluxpool.eth", "hodlmybeer.fluxpool.eth", "ape4life.fluxpool.eth", "fomo.soon.fluxpool.eth", "paperhands.fluxpool.eth", "diamondhandz.fluxpool.eth", "gasguzzler.fluxpool.eth", "ponziplay.fluxpool.eth", "exitliquidity.fluxpool.eth", "safemoonbag.fluxpool.eth", "yolotrader.fluxpool.eth", "gmgn.fluxpool.eth", "to_the_moon.fluxpool.eth", "rektagain.fluxpool.eth", "whalealert.fluxpool.eth"
 ];
 
 // --- Spot, Curve, Limit Positions Columns ---
@@ -212,7 +207,7 @@ const mockCurvePositions = mockSpotPositions.map((p, i) => ({ ...p, type: "Curve
 const mockHolders: Holder[] = Array.from({ length: 10 }, (_, i) => {
   const sold = Math.floor(Math.random() * 100);
   const holding = 100 - sold;
-  const ens = fakeENSNames[Math.floor(Math.random() * fakeENSNames.length)] || `holder${i}.eth`;
+  const ens = fakeENSNames[Math.floor(Math.random() * fakeENSNames.length)] || `trader${i}.fluxpool.eth`;
   // Alternate positive/negative PnL for realism
   const isNegative = i % 3 === 0;
   return {
@@ -247,7 +242,7 @@ export default function TradingData() {
 
   // Helper to create a fake trade
   function createFakeTrade(id: number): Trade {
-    const address = randomAddress();
+    const txHash = randomTxHash();
     const type = randomType() as "buy" | "sell";
     let ens: string | undefined = undefined;
     if (Math.random() < 0.17) {
@@ -258,7 +253,7 @@ export default function TradingData() {
       timestamp: new Date(Date.now() - Math.floor(Math.random() * 60 * 1000)), // up to 1 min ago
       marketCap: randomMarketCap(),
       amount: randomAmount(),
-      address,
+      txHash,
       type,
       price: randomPrice(),
       ens,

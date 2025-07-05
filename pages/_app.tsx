@@ -2,6 +2,28 @@ import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { PrivyProvider } from "@privy-io/react-auth";
+import { useRouter } from "next/router";
+import { usePrivy } from "@privy-io/react-auth";
+import { useEffect } from "react";
+import React from "react";
+
+function AuthRedirector() {
+  const { ready, authenticated } = usePrivy();
+  const router = useRouter();
+  // Track previous authentication state
+  const [wasAuthenticated, setWasAuthenticated] = React.useState(false);
+  useEffect(() => {
+    // Only redirect to /home if coming from the landing page or a public route
+    if (ready && authenticated && (router.pathname === "/")) {
+      router.replace("/home");
+    }
+    if (ready && !authenticated && wasAuthenticated) {
+      router.replace("/");
+    }
+    setWasAuthenticated(authenticated);
+  }, [ready, authenticated, router]);
+  return null;
+}
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -48,6 +70,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           },
         }}
       >
+        <AuthRedirector />
         <Component {...pageProps} />
       </PrivyProvider>
     </>
