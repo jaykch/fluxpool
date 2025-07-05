@@ -92,7 +92,7 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
       <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl mx-auto min-h-screen py-12">
         {/* Left: Profile Info */}
         <div className="w-full md:w-1/3 flex flex-col items-center md:items-start space-y-6">
-          <Card className="w-full shadow-md">
+          <Card className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl rounded-2xl border-0">
             <CardContent className="flex flex-col items-center md:items-start space-y-4 p-6">
               <Avatar className="w-28 h-28 mb-2">
                 <AvatarImage src={records.avatar} alt={ens} />
@@ -157,7 +157,7 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
         </div>
         {/* Right: Activity Feed */}
         <div className="w-full md:w-2/3 flex flex-col space-y-6">
-          <Card className="w-full shadow-md">
+          <Card className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl rounded-2xl">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="h-5 w-5 text-blue-400" />
@@ -166,7 +166,7 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
               <DataTable columns={tradeColumns} data={mockTrades} />
             </CardContent>
           </Card>
-          <Card className="w-full shadow-md">
+          <Card className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl rounded-2xl">
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold mb-2 text-gray-200">Friends</h3>
               <div className="flex flex-wrap gap-3">

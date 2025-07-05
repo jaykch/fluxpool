@@ -42,9 +42,9 @@ export function DataTable<TData, TValue>({ columns, data, caption }: DataTablePr
 
   return (
     <div className="space-y-2">
-      <div className="overflow-x-auto rounded-lg border border-gray-700 flex-1 min-h-0">
+      <div className="overflow-x-auto rounded-2xl bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl flex-1 min-h-0">
         <div className="overflow-y-auto flex-1 min-h-0">
-          <Table>
+          <Table className="[&_tr]:border-b [&_tr]:border-white/10 [&_thead_tr]:border-b [&_thead_tr]:border-white/10">
             {caption && <TableCaption>{caption}</TableCaption>}
             <TableHeader className="sticky top-0 bg-gray-900 z-10">
               {table.getHeaderGroups().map((headerGroup) => (

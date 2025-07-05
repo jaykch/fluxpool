@@ -100,7 +100,7 @@ export default function PriceBins({ symbol = 'ETH' }: PriceBinsProps) {
   }
 
   return (
-    <Card className="border-gray-700">
+    <Card className="bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl">
       <CardContent className="p-4 space-y-3">
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-medium text-white">Price Range</h4>
@@ -116,7 +116,7 @@ export default function PriceBins({ symbol = 'ETH' }: PriceBinsProps) {
               key={bar.id} 
               className={`flex-1 rounded-sm transition-colors ${
                 bar.isInRange 
-                  ? 'bg-green-500' 
+                  ? 'bg-violet-500/70' 
                   : 'bg-gray-600'
               }`}
               style={{ 
@@ -135,6 +135,9 @@ export default function PriceBins({ symbol = 'ETH' }: PriceBinsProps) {
             max={100}
             step={1}
             className="w-full"
+            trackClassName="bg-white/20"
+            rangeClassName="bg-violet-500/70"
+            thumbClassName="border-violet-500"
           />
           <div className="flex justify-between text-xs text-gray-400">
             <span>${(currentPrice * 0).toFixed(2)}</span>

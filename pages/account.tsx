@@ -9,9 +9,10 @@ import Head from 'next/head';
 import { DataTable } from '@/components/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { TrendingUp, UserPlus, MessageCircle, Wallet } from 'lucide-react';
+import { usePrivy } from '@privy-io/react-auth';
 
 const mockENS = 'myaccount.eth';
-const mockAddress = '0x1234...abcd';
+const mockAddress = '0x0000...0000';
 const mockProfile = {
   avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=myaccount.eth`,
   twitter: '@myaccount',
@@ -67,10 +68,12 @@ const mockTrades: Trade[] = Array.from({ length: 10 }, (_, i) => ({
 export default function AccountPage() {
   const [wallet, setWallet] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { user, ready, authenticated } = usePrivy();
   // Mock PnL and stats
   const pnl = Math.random() > 0.5 ? `+$${(Math.random() * 10000).toFixed(2)}` : `-$${(Math.random() * 10000).toFixed(2)}`;
   const followers = Math.floor(Math.random() * 1000);
   const following = Math.floor(Math.random() * 500);
+  const userAddress = user?.wallet?.address || mockAddress;
   const handleGenerateWallet = () => {
     setLoading(true);
     setTimeout(() => {
@@ -89,14 +92,14 @@ export default function AccountPage() {
       <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl mx-auto min-h-screen py-12">
         {/* Left: Profile Info */}
         <div className="w-full md:w-1/3 flex flex-col items-center md:items-start space-y-6">
-          <Card className="w-full shadow-md">
+          <Card className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl rounded-2xl border-0">
             <CardContent className="flex flex-col items-center md:items-start space-y-4 p-6">
               <Avatar className="w-28 h-28 mb-2">
                 <AvatarImage src={mockProfile.avatar} alt={mockENS} />
                 <AvatarFallback>{mockENS.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <span className="text-2xl font-bold text-gray-200">{mockENS}</span>
-              <Badge variant="default" className="text-xs text-gray-400">{mockAddress}</Badge>
+              <Badge variant="default" className="text-xs text-gray-400">{userAddress}</Badge>
               <span className="text-xs text-gray-400">{mockProfile.email}</span>
               <Button onClick={handleGenerateWallet} disabled={loading || !!wallet} className="w-full mt-2 flex items-center gap-2">
                 <Wallet className="h-4 w-4" />
@@ -130,7 +133,7 @@ export default function AccountPage() {
         </div>
         {/* Right: Activity Feed */}
         <div className="w-full md:w-2/3 flex flex-col space-y-6">
-          <Card className="w-full shadow-md">
+          <Card className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl rounded-2xl border-0">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="h-5 w-5 text-blue-400" />
@@ -139,7 +142,7 @@ export default function AccountPage() {
               <DataTable columns={tradeColumns} data={mockTrades} />
             </CardContent>
           </Card>
-          <Card className="w-full shadow-md">
+          <Card className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl rounded-2xl border-0">
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold mb-2 text-gray-200">Friends</h3>
               <div className="flex flex-wrap gap-3">

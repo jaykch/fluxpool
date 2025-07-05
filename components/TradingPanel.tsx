@@ -35,7 +35,7 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' }) {
   };
 
   return (
-    <Card className="border-gray-700">
+    <Card className="bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl">
       <CardContent className="p-4 space-y-4">
         <div className="flex items-center space-x-2 mb-4">
           {getIcon()}
@@ -53,6 +53,9 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' }) {
             max={100}
             step={1}
             className="w-full"
+            trackClassName="bg-white/20"
+            rangeClassName="bg-violet-500/70"
+            thumbClassName="border-violet-500"
           />
           <div className="flex justify-between text-xs text-gray-400">
             <span>0%</span>
@@ -71,14 +74,14 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' }) {
               placeholder="0.00"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="bg-gray-800 border-gray-600 text-white"
+              className="bg-violet-500/30 border-violet-500/20 text-white backdrop-blur-md shadow-inner"
             />
             {/* Percentage Buttons */}
             <div className="flex mt-2">
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="flex-1 text-xs bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white rounded-none border-r-0"
+                className="flex-1 text-xs bg-violet-500/30 border-violet-500/20 text-white hover:bg-violet-500/40 hover:text-white rounded-none border-r-0 backdrop-blur-md shadow"
                 onClick={() => handlePercentageClick(10)}
               >
                 10%
@@ -86,7 +89,7 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' }) {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="flex-1 text-xs bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white rounded-none border-r-0"
+                className="flex-1 text-xs bg-violet-500/30 border-violet-500/20 text-white hover:bg-violet-500/40 hover:text-white rounded-none border-r-0 backdrop-blur-md shadow"
                 onClick={() => handlePercentageClick(33)}
               >
                 33%
@@ -94,7 +97,7 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' }) {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="flex-1 text-xs bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white rounded-none border-r-0"
+                className="flex-1 text-xs bg-violet-500/30 border-violet-500/20 text-white hover:bg-violet-500/40 hover:text-white rounded-none border-r-0 backdrop-blur-md shadow"
                 onClick={() => handlePercentageClick(50)}
               >
                 50%
@@ -102,7 +105,7 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' }) {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="flex-1 text-xs bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white rounded-none"
+                className="flex-1 text-xs bg-violet-500/30 border-violet-500/20 text-white hover:bg-violet-500/40 hover:text-white rounded-none backdrop-blur-md shadow"
                 onClick={() => handlePercentageClick(100)}
               >
                 100%
@@ -138,7 +141,7 @@ export default function TradingPanel() {
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-white mb-4">Trading Panel</h3>
       <Tabs value={tab} onValueChange={v => setTab(v as 'spot' | 'curve')} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-2 bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl">
           <TabsTrigger value="spot">Spot</TabsTrigger>
           <TabsTrigger value="curve">Curve</TabsTrigger>
         </TabsList>

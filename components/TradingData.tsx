@@ -148,15 +148,14 @@ interface Holder {
 // Helper for colored progress bar
 function ColoredProgress({ value, positive }: { value: number; positive: boolean }) {
   return (
-    <Progress
-      value={value}
-      className={`flex-1 h-2 ${positive ? 'bg-green-900' : 'bg-red-900'}`}
-      // @ts-ignore
-      indicatorClassName={undefined}
-      // Custom color for indicator
-      style={{}}
-      children={<div className={`h-full w-full flex-1 ${positive ? 'bg-green-500' : 'bg-red-500'} transition-all`} style={{ transform: `translateX(-${100 - (value || 0)}%)` }} />}
-    />
+    <div className="flex-1">
+      <Progress
+        value={value}
+        className={`h-3 bg-white/20 border border-white/20 shadow-inner rounded-full`}
+        style={{}}
+        children={<div className={`h-full w-full flex-1 rounded-full ${positive ? 'bg-green-400' : 'bg-red-400'} bg-opacity-80 shadow-md transition-all`} style={{ transform: `translateX(-${100 - (value || 0)}%)` }} />}
+      />
+    </div>
   );
 }
 const holdersColumns: ColumnDef<Holder>[] = [

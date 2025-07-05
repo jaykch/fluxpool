@@ -11,7 +11,7 @@ export default function TotalEarnings() {
   };
 
   return (
-    <Card className="border-gray-700">
+    <Card className="bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl">
       <CardHeader className="pb-3">
         <CardTitle className="text-white text-lg flex items-center space-x-2">
           <DollarSign className="h-5 w-5 text-green-400" />

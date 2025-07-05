@@ -18,7 +18,7 @@ export default function TokenInfo({ symbol, name }: TokenInfoProps) {
   };
 
   return (
-    <Card className="border-gray-700">
+    <Card className="bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl">
       <CardHeader className="pb-3">
         <CardTitle className="text-white text-lg">Token Info</CardTitle>
       </CardHeader>
