@@ -4,6 +4,7 @@ import { Card, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Plus, Eye, Trash2, Bell, TrendingUp, X, CheckCircle2, User, MessageCircle } from 'lucide-react';
+import Link from 'next/link';
 
 // Mock data helpers
 const mockTrackedTrades = [
@@ -72,8 +73,10 @@ export default function TrackPage() {
               {trackedTraders.length === 0 && <div className="text-gray-400 text-sm">No traders being tracked.</div>}
               {trackedTraders.map(trader => (
                 <div key={trader.id} className="flex items-center gap-3 bg-white/10 backdrop-blur-lg rounded-xl px-4 py-2">
-                  <img src={trader.avatar} alt={trader.ens} className="w-8 h-8 rounded-full border-2 border-white/10" />
-                  <span className="text-white font-mono text-xs w-32 truncate">{trader.ens}</span>
+                  <Link href={`/profile/${trader.ens}`} className="flex items-center gap-2 group flex-shrink-0">
+                    <img src={trader.avatar} alt={trader.ens} className="w-8 h-8 rounded-full border-2 border-white/10 group-hover:border-violet-400 transition" />
+                    <span className="text-white font-mono text-xs w-32 truncate group-hover:underline">{trader.ens}</span>
+                  </Link>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${trader.status === 'Active' ? 'bg-green-700/60 text-green-300' : trader.status === 'Trading' ? 'bg-blue-700/60 text-blue-300' : 'bg-gray-700/60 text-gray-300'}`}>{trader.status}</span>
                   <Button size="icon" variant="ghost" className="ml-auto text-violet-400 hover:bg-violet-500/10" title="Message" onClick={() => setMsgOpen(trader.ens)}><MessageCircle className="h-4 w-4" /></Button>
                   <Button size="icon" variant="ghost" className="text-red-400 hover:bg-red-500/10" title="Untrack" onClick={() => handleUntrackTrader(trader.id)}><Trash2 className="h-4 w-4" /></Button>

@@ -25,7 +25,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
     return {
       props: {},
-      redirect: { destination: "/trade", permanent: false },
     };
   } catch (error) {
     return { props: {} };
@@ -35,12 +34,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 export default function HomePage() {
   const { login, ready, authenticated } = usePrivy();
   const router = useRouter();
-
-  // If user is authenticated, redirect to trade page
-  if (ready && authenticated) {
-    router.push("/trade");
-    return null;
-  }
 
   return (
     <>

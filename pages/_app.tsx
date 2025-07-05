@@ -17,9 +17,6 @@ function AuthRedirector() {
     if (ready && authenticated && (router.pathname === "/")) {
       router.replace("/home");
     }
-    if (ready && !authenticated && wasAuthenticated) {
-      router.replace("/");
-    }
     setWasAuthenticated(authenticated);
   }, [ready, authenticated, router]);
   return null;
