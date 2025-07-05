@@ -13,7 +13,8 @@ import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Trophy, Share2, Pencil, CheckCircle2 } from 'lucide-react';
+import { Trophy, Share2, CheckCircle2 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
 // --- Mock Data and Columns (reuse from TradingData) ---
 function timeAgo(date: Date): string {
@@ -89,6 +90,169 @@ const mockHoldings = [
   { symbol: 'W', name: 'W', avatar: '/logos/w.png', percent: 3.36 },
 ];
 
+// Lightweight chart for broadcasts (dynamically import to avoid SSR issues)
+const MiniChart = dynamic(() => import('@/components/MiniChart'), { ssr: false });
+
+// Mock positions for the user (only tokens with a position can be broadcasted)
+type Position = {
+  symbol: string;
+  name: string;
+  avatar: string | (() => JSX.Element);
+  side: 'Long' | 'Short';
+  entry: number;
+  current: number;
+  pnl: () => string;
+  pnlPercent: () => string;
+  time: Date;
+};
+// Custom Ethereum SVG logo component
+function EthereumLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#23292F" />
+      <g>
+        <polygon points="16,5 16,22.5 25,16.5" fill="#8C8C8C" />
+        <polygon points="16,5 7,16.5 16,22.5" fill="#343434" />
+        <polygon points="16,24 16,27 25,18" fill="#8C8C8C" />
+        <polygon points="16,27 16,24 7,18" fill="#343434" />
+        <polygon points="16,22.5 25,16.5 16,19.5" fill="#3C3C3B" />
+        <polygon points="16,19.5 7,16.5 16,22.5" fill="#8C8C8C" />
+      </g>
+    </svg>
+  );
+}
+// Custom Solana SVG logo component
+function SolanaLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="16" fill="#131313" />
+      <linearGradient id="solana-gradient-1" x1="6" y1="8" x2="26" y2="24" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <linearGradient id="solana-gradient-2" x1="6" y1="14" x2="26" y2="30" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <linearGradient id="solana-gradient-3" x1="6" y1="20" x2="26" y2="36" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <g>
+        <rect x="8" y="9" width="16" height="3" rx="1.5" fill="url(#solana-gradient-1)" />
+        <rect x="8" y="15" width="16" height="3" rx="1.5" fill="url(#solana-gradient-2)" />
+        <rect x="8" y="21" width="16" height="3" rx="1.5" fill="url(#solana-gradient-3)" />
+      </g>
+    </svg>
+  );
+}
+// Custom Bitcoin SVG logo component
+function BitcoinLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#F7931A" />
+      <g>
+        <path d="M16 7v18" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+        <path d="M12 11h7a3 3 0 0 1 0 6h-7m0 0h7a3 3 0 0 1 0 6h-7" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+      </g>
+    </svg>
+  );
+}
+
+// Custom Uniswap SVG logo component
+function UniswapLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#FF007A" />
+      <g>
+        <path d="M10 22c2-2 10-2 12-8" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+        <ellipse cx="20" cy="13" rx="1.5" ry="2.5" fill="#fff" />
+        <ellipse cx="12" cy="19" rx="1.5" ry="2.5" fill="#fff" />
+      </g>
+    </svg>
+  );
+}
+const tokenLogos: Record<string, string | (() => JSX.Element)> = {
+  ETH: () => <EthereumLogoSVG className="w-6 h-6" />, // Use SVG for ETH
+  SOL: () => <SolanaLogoSVG className="w-6 h-6" />, // Use SVG for SOL
+  BTC: () => <BitcoinLogoSVG className="w-6 h-6" />, // Use SVG for BTC
+  UNI: () => <UniswapLogoSVG className="w-6 h-6" />, // Use SVG for UNI
+  LINK: 'https://cryptologos.cc/logos/chainlink-link-logo.png',
+  AVAX: 'https://cryptologos.cc/logos/avalanche-avax-logo.png',
+  MATIC: 'https://cryptologos.cc/logos/polygon-matic-logo.png',
+  ADA: 'https://cryptologos.cc/logos/cardano-ada-logo.png',
+};
+const mockPositions: Position[] = [
+  {
+    symbol: 'ETH',
+    name: 'Ethereum',
+    avatar: tokenLogos.ETH ?? 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    side: Math.random() > 0.5 ? 'Long' : 'Short',
+    entry: 2400 + Math.random() * 100,
+    current: 2400 + Math.random() * 100,
+    pnl: function (): string {
+      const diff = (this.current - this.entry) * (this.side === 'Long' ? 1 : -1);
+      return diff > 0 ? `+$${diff.toFixed(2)}` : `-$${Math.abs(diff).toFixed(2)}`;
+    },
+    pnlPercent: function (): string {
+      const diff = (this.current - this.entry) * (this.side === 'Long' ? 1 : -1);
+      return ((diff / this.entry) * 100).toFixed(2) + '%';
+    },
+    time: new Date(Date.now() - 1000 * 60 * 5),
+  },
+  {
+    symbol: 'SOL',
+    name: 'Solana',
+    avatar: tokenLogos.SOL ?? 'https://cryptologos.cc/logos/solana-sol-logo.png',
+    side: Math.random() > 0.5 ? 'Long' : 'Short',
+    entry: 100 + Math.random() * 10,
+    current: 100 + Math.random() * 10,
+    pnl: function (): string {
+      const diff = (this.current - this.entry) * (this.side === 'Long' ? 1 : -1);
+      return diff > 0 ? `+$${diff.toFixed(2)}` : `-$${Math.abs(diff).toFixed(2)}`;
+    },
+    pnlPercent: function (): string {
+      const diff = (this.current - this.entry) * (this.side === 'Long' ? 1 : -1);
+      return ((diff / this.entry) * 100).toFixed(2) + '%';
+    },
+    time: new Date(Date.now() - 1000 * 60 * 60 * 2),
+  },
+  {
+    symbol: 'BTC',
+    name: 'Bitcoin',
+    avatar: tokenLogos.BTC,
+    side: Math.random() > 0.5 ? 'Long' : 'Short',
+    entry: 60000 + Math.random() * 2000,
+    current: 60000 + Math.random() * 2000,
+    pnl: function (): string {
+      const diff = (this.current - this.entry) * (this.side === 'Long' ? 1 : -1);
+      return diff > 0 ? `+$${diff.toFixed(2)}` : `-$${Math.abs(diff).toFixed(2)}`;
+    },
+    pnlPercent: function (): string {
+      const diff = (this.current - this.entry) * (this.side === 'Long' ? 1 : -1);
+      return ((diff / this.entry) * 100).toFixed(2) + '%';
+    },
+    time: new Date(Date.now() - 1000 * 60 * 60 * 4),
+  },
+  {
+    symbol: 'UNI',
+    name: 'Uniswap',
+    avatar: tokenLogos.UNI,
+    side: Math.random() > 0.5 ? 'Long' : 'Short',
+    entry: 10 + Math.random() * 2,
+    current: 10 + Math.random() * 2,
+    pnl: function (): string {
+      const diff = (this.current - this.entry) * (this.side === 'Long' ? 1 : -1);
+      return diff > 0 ? `+$${diff.toFixed(2)}` : `-$${Math.abs(diff).toFixed(2)}`;
+    },
+    pnlPercent: function (): string {
+      const diff = (this.current - this.entry) * (this.side === 'Long' ? 1 : -1);
+      return ((diff / this.entry) * 100).toFixed(2) + '%';
+    },
+    time: new Date(Date.now() - 1000 * 60 * 60 * 8),
+  },
+];
+
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const ens = ctx.params?.ens as string;
   return {
@@ -109,7 +273,7 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
   const [msgSent, setMsgSent] = useState(false);
   const isOwnProfile = ens === 'myaccount.fluxpool.eth'; // Demo: replace with real user check
   const [statsTab, setStatsTab] = useState<'today' | 'week'>('today');
-  const [mainTab, setMainTab] = useState<'broadcasts' | 'holdings'>('holdings');
+  const [mainTab, setMainTab] = useState<'broadcasts' | 'holdings'>('broadcasts');
   const fluxpoolEns = toFluxpoolENS(ens);
   const username = fluxpoolEns.replace('.fluxpool.eth', '');
   return (
@@ -117,15 +281,14 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
       <Head>
         <title>{fluxpoolEns} | FluxPool Profile</title>
       </Head>
-      <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl mx-auto min-h-screen py-12">
+      <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl mx-auto min-h-screen py-10 px-4 md:px-8 xl:px-0">
         {/* Left: Profile Info */}
         <div className="w-full md:w-1/3 flex flex-col items-center md:items-start space-y-6">
           {/* Profile Header */}
           <div className="w-full flex flex-col items-center md:items-start relative">
-            {/* Edit/Share icons */}
+            {/* Share icon only */}
             <div className="absolute right-0 top-0 flex gap-2">
               <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"><Share2 className="h-5 w-5" /></button>
-              <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"><Pencil className="h-5 w-5" /></button>
             </div>
             <Avatar className="w-24 h-24 mb-2 border-4 border-white/10 shadow-lg">
               <AvatarImage src={records.avatar} alt={fluxpoolEns} />
@@ -243,17 +406,81 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
             </div>
           </div>
         </div>
-        {/* Right: Stats, Tabs, and Transaction History */}
-        <div className="w-full md:w-2/3 flex flex-col space-y-6">
+        {/* Right: Stats, Tabs */}
+        <div className="w-full md:w-2/3 flex flex-col">
+          {/* Winning Trades Progress Bar (above tabs, larger and more prominent) */}
+          <div className="w-full max-w-4xl mt-2 mb-2">
+            {(() => {
+              // Randomize win rate and profitability for each user (memoized per profile)
+              const [winRate] = useState(() => Math.floor(Math.random() * 41) + 60); // 60-100%
+              const [profitable] = useState(() => Math.random() > 0.4); // 60% chance profitable
+              return (
+                <div className="flex flex-col items-center mb-6">
+                  <div className="w-full flex items-center justify-between mb-2">
+                    <span className="text-base font-semibold text-gray-200 tracking-wide">Winning Trades</span>
+                    <span className={`text-base font-bold ${profitable ? 'text-green-400' : 'text-crimson-500'}`}>{winRate}% {profitable ? 'Profitable' : 'Unprofitable'}</span>
+                  </div>
+                  <div className="w-full h-6 rounded-2xl bg-white/10 overflow-hidden shadow-lg border border-white/10">
+                    <div
+                      className={`h-full rounded-2xl transition-all duration-500 ${profitable ? 'bg-green-500' : 'bg-crimson-600'}`}
+                      style={{ width: `${winRate}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
           {/* Tabs Section */}
-          <div className="w-full max-w-xl mx-auto mt-2">
-            <Tabs value={mainTab} onValueChange={v => setMainTab(v as 'broadcasts' | 'holdings')} className="w-full">
-              <TabsList className="w-full flex bg-white/10 rounded-xl mb-2">
-                <TabsTrigger value="broadcasts" className="flex-1 text-white">Broadcasts</TabsTrigger>
-                <TabsTrigger value="holdings" className="flex-1 text-white">Holdings</TabsTrigger>
+          <div className="w-full max-w-4xl mt-0">
+            <Tabs value={mainTab} onValueChange={v => setMainTab(v as 'broadcasts' | 'holdings')} className="w-full" defaultValue="broadcasts">
+              <TabsList className="w-full flex bg-white/10 rounded-xl mb-2 h-8">
+                <TabsTrigger value="broadcasts" className="flex-1 text-white text-xs py-1">Broadcasts</TabsTrigger>
+                <TabsTrigger value="holdings" className="flex-1 text-white text-xs py-1">Holdings</TabsTrigger>
               </TabsList>
               <TabsContent value="broadcasts">
-                <div className="text-center text-gray-400 py-8">No broadcasts yet.</div>
+                <div className="flex flex-col gap-4 py-4">
+                  {mockPositions.map((pos: Position, i: number) => (
+                    <div key={pos.symbol} className="flex flex-row items-stretch bg-white/5 border border-white/10 rounded-2xl p-0 overflow-hidden">
+                      {/* Left: Info box (50%) */}
+                      <div className="w-1/2 flex flex-col p-6 min-w-0">
+                        <div className="flex flex-row items-start gap-3">
+                          {/* Token logo top left */}
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center">
+                            {typeof pos.avatar === 'function'
+                              ? pos.avatar()
+                              : <img src={pos.avatar} alt={pos.symbol} className="w-6 h-6 object-contain" />
+                            }
+                          </div>
+                          {/* Name, time, token badge, long/short badge */}
+                          <div className="flex flex-col flex-1 min-w-0">
+                            <div className="flex flex-row flex-wrap items-center gap-2">
+                              <span className="font-semibold text-white text-base truncate max-w-[120px]">{username}</span>
+                              <span className="text-xs text-gray-400 whitespace-nowrap">{timeAgo(pos.time)}</span>
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-200 font-mono whitespace-nowrap">{pos.symbol}</span>
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap ${pos.side === 'Long' ? 'bg-green-700/60 text-green-300' : 'bg-red-700/80 text-red-300'}`}>{pos.side}</span>
+                            </div>
+                            {/* Entry, current, pnl, broadcast text below */}
+                            <div className="flex flex-row flex-wrap gap-6 mt-2">
+                              <div className="flex flex-col gap-0.5 min-w-[90px]">
+                                <span className="text-xs text-gray-400">Entry: <span className="text-gray-200 font-mono">${pos.entry.toFixed(2)}</span></span>
+                                <span className="text-xs text-gray-400">Current: <span className="text-gray-200 font-mono">${pos.current.toFixed(2)}</span></span>
+                              </div>
+                              <div className="flex flex-col gap-0.5 min-w-[90px]">
+                                <span className={`text-xs font-bold ${pos.pnl().startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>PnL: {pos.pnl()}</span>
+                                <span className={`text-xs font-bold ${pos.pnl().startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>({pos.pnlPercent()})</span>
+                              </div>
+                            </div>
+                            <div className="text-gray-200 text-sm mt-2 break-words">{pos.side === 'Long' ? `Longed ${pos.symbol} for a breakout. 🚀` : `Shorted ${pos.symbol} for a quick scalp. 🔻`}</div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Right: Chart (50%) */}
+                      <div className="w-1/2 flex items-center justify-center h-44 bg-white/10 min-w-0">
+                        <MiniChart symbol={pos.symbol as string} side={pos.side as 'Long' | 'Short'} entry={pos.entry as number} current={pos.current as number} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </TabsContent>
               <TabsContent value="holdings">
                 <div className="divide-y divide-white/10">
@@ -271,17 +498,19 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
               </TabsContent>
             </Tabs>
           </div>
-          {/* Transaction History Table */}
-          <Card className="w-full rounded-2xl mt-6">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="h-5 w-5 text-blue-400" />
-                <h3 className="text-lg font-semibold text-gray-200">Trading Activity</h3>
-              </div>
-              <DataTable columns={tradeColumns} data={mockTrades} />
-            </CardContent>
-          </Card>
         </div>
+      </div>
+      {/* Trading Activity Section (full width, bottom) */}
+      <div className="w-full max-w-[96vw] xl:max-w-[1400px] mx-auto mt-12 px-2 md:px-6 xl:px-0">
+        <Card className="w-full rounded-2xl">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp className="h-5 w-5 text-blue-400" />
+              <h3 className="text-lg font-semibold text-gray-200">Trading Activity</h3>
+            </div>
+            <DataTable columns={tradeColumns} data={mockTrades} />
+          </CardContent>
+        </Card>
       </div>
     </Layout>
   );
