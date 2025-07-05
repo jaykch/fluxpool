@@ -22,6 +22,164 @@ interface TokenSearchProps {
   onTokenSelect?: (token: any) => void;
 }
 
+// Token SVG icons (copied from home.tsx)
+function EthereumLogoSVG({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#23292F" />
+      <g>
+        <polygon points="16,5 16,22.5 25,16.5" fill="#8C8C8C" />
+        <polygon points="16,5 7,16.5 16,22.5" fill="#343434" />
+        <polygon points="16,24 16,27 25,18" fill="#8C8C8C" />
+        <polygon points="16,27 16,24 7,18" fill="#343434" />
+        <polygon points="16,22.5 25,16.5 16,19.5" fill="#3C3C3B" />
+        <polygon points="16,19.5 7,16.5 16,22.5" fill="#8C8C8C" />
+      </g>
+    </svg>
+  );
+}
+function SolanaLogoSVG({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="16" fill="#131313" />
+      <linearGradient id="solana-gradient-1" x1="6" y1="8" x2="26" y2="24" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <linearGradient id="solana-gradient-2" x1="6" y1="14" x2="26" y2="30" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <linearGradient id="solana-gradient-3" x1="6" y1="20" x2="26" y2="36" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <g>
+        <rect x="8" y="9" width="16" height="3" rx="1.5" fill="url(#solana-gradient-1)" />
+        <rect x="8" y="15" width="16" height="3" rx="1.5" fill="url(#solana-gradient-2)" />
+        <rect x="8" y="21" width="16" height="3" rx="1.5" fill="url(#solana-gradient-3)" />
+      </g>
+    </svg>
+  );
+}
+function BitcoinLogoSVG({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#F7931A" />
+      <g>
+        <path d="M16 7v18" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+        <path d="M12 11h7a3 3 0 0 1 0 6h-7m0 0h7a3 3 0 0 1 0 6h-7" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+      </g>
+    </svg>
+  );
+}
+function UniswapLogoSVG({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#FF007A" />
+      <g>
+        <path d="M10 22c2-2 10-2 12-8" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+        <ellipse cx="20" cy="13" rx="1.5" ry="2.5" fill="#fff" />
+        <ellipse cx="12" cy="19" rx="1.5" ry="2.5" fill="#fff" />
+      </g>
+    </svg>
+  );
+}
+function AdaLogoSVG({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#0033AD" />
+      <g fill="#fff">
+        <circle cx="16" cy="16" r="4" />
+        <circle cx="16" cy="8" r="1.2" />
+        <circle cx="16" cy="24" r="1.2" />
+        <circle cx="8" cy="16" r="1.2" />
+        <circle cx="24" cy="16" r="1.2" />
+        <circle cx="11" cy="11" r="0.8" />
+        <circle cx="21" cy="11" r="0.8" />
+        <circle cx="11" cy="21" r="0.8" />
+        <circle cx="21" cy="21" r="0.8" />
+      </g>
+    </svg>
+  );
+}
+function AvaxLogoSVG({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#E84142" />
+      <g>
+        <path d="M13.5 21.5L16 17l2.5 4.5c.5.9-.1 2-1.1 2h-2.8c-1 0-1.6-1.1-1.1-2z" fill="#fff" />
+        <path d="M16 7l5.5 9.5c.5.9-.1 2-1.1 2h-8.8c-1 0-1.6-1.1-1.1-2L16 7z" fill="#fff" />
+      </g>
+    </svg>
+  );
+}
+function LinkLogoSVG({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#375BD2" />
+      <g>
+        <rect x="10" y="10" width="12" height="12" rx="3" fill="#fff" />
+        <rect x="13" y="13" width="6" height="6" rx="1.5" fill="#375BD2" />
+      </g>
+    </svg>
+  );
+}
+function MaticLogoSVG({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#8247E5" />
+      <g>
+        <rect x="10" y="14" width="4" height="4" rx="1" fill="#fff" />
+        <rect x="18" y="14" width="4" height="4" rx="1" fill="#fff" />
+        <rect x="14" y="10" width="4" height="4" rx="1" fill="#fff" />
+        <rect x="14" y="18" width="4" height="4" rx="1" fill="#fff" />
+      </g>
+    </svg>
+  );
+}
+function DotLogoSVG({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#E6007A" />
+      <g>
+        <circle cx="16" cy="16" r="6" fill="#fff" />
+        <circle cx="16" cy="16" r="2" fill="#E6007A" />
+      </g>
+    </svg>
+  );
+}
+function AtomLogoSVG({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#2E3148" />
+      <g>
+        <ellipse cx="16" cy="16" rx="7" ry="2.5" fill="#fff" fillOpacity=".7" />
+        <ellipse cx="16" cy="16" rx="2.5" ry="7" fill="#fff" fillOpacity=".7" transform="rotate(60 16 16)" />
+        <ellipse cx="16" cy="16" rx="2.5" ry="7" fill="#fff" fillOpacity=".7" transform="rotate(120 16 16)" />
+        <circle cx="16" cy="16" r="1.5" fill="#2E3148" />
+      </g>
+    </svg>
+  );
+}
+
+const tokenIcons: Record<string, (props: { className?: string }) => JSX.Element> = {
+  ETH: (props) => <EthereumLogoSVG {...props} />, // Use SVG for ETH
+  SOL: (props) => <SolanaLogoSVG {...props} />, // Use SVG for SOL
+  BTC: (props) => <BitcoinLogoSVG {...props} />, // Use SVG for BTC
+  UNI: (props) => <UniswapLogoSVG {...props} />, // Use SVG for UNI
+  ADA: (props) => <AdaLogoSVG {...props} />, // Cardano
+  AVAX: (props) => <AvaxLogoSVG {...props} />, // Avalanche
+  LINK: (props) => <LinkLogoSVG {...props} />, // Chainlink
+  MATIC: (props) => <MaticLogoSVG {...props} />, // Polygon
+  DOT: (props) => <DotLogoSVG {...props} />, // Polkadot
+  ATOM: (props) => <AtomLogoSVG {...props} />, // Cosmos
+};
+
+function DefaultTokenIcon({ className = "w-5 h-5" }: { className?: string }) {
+  return <div className={className + " bg-gray-700 rounded-full flex items-center justify-center"}><span className="text-white text-xs font-bold">?</span></div>;
+}
+
 export default function TokenSearch({ onTokenSelect }: TokenSearchProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -100,8 +258,11 @@ export default function TokenSearch({ onTokenSelect }: TokenSearchProps) {
                 className="flex items-center justify-between px-3 py-2 hover:bg-violet-600/20 cursor-pointer border-b border-white/10 last:border-b-0 transition-colors text-sm"
               >
                 <div className="flex items-center space-x-2">
-                  <div className="w-6 h-6 bg-violet-600 rounded-full flex items-center justify-center shadow">
-                    <span className="text-white text-xs font-bold">{token.symbol[0]}</span>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center shadow bg-white/10">
+                    {(() => {
+                      const Icon = tokenIcons[token.symbol];
+                      return Icon ? <Icon className="w-5 h-5" /> : <DefaultTokenIcon className="w-5 h-5" />;
+                    })()}
                   </div>
                   <div>
                     <div className="text-white font-medium text-sm">{token.symbol}</div>

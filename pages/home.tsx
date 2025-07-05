@@ -84,12 +84,124 @@ function UniswapLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
     </svg>
   );
 }
+function AdaLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#0033AD" />
+      <g fill="#fff">
+        <circle cx="16" cy="16" r="4" />
+        <circle cx="16" cy="8" r="1.2" />
+        <circle cx="16" cy="24" r="1.2" />
+        <circle cx="8" cy="16" r="1.2" />
+        <circle cx="24" cy="16" r="1.2" />
+        <circle cx="11" cy="11" r="0.8" />
+        <circle cx="21" cy="11" r="0.8" />
+        <circle cx="11" cy="21" r="0.8" />
+        <circle cx="21" cy="21" r="0.8" />
+      </g>
+    </svg>
+  );
+}
+function AvaxLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#E84142" />
+      <g>
+        <path d="M13.5 21.5L16 17l2.5 4.5c.5.9-.1 2-1.1 2h-2.8c-1 0-1.6-1.1-1.1-2z" fill="#fff" />
+        <path d="M16 7l5.5 9.5c.5.9-.1 2-1.1 2h-8.8c-1 0-1.6-1.1-1.1-2L16 7z" fill="#fff" />
+      </g>
+    </svg>
+  );
+}
+function LinkLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#375BD2" />
+      <g>
+        <rect x="10" y="10" width="12" height="12" rx="3" fill="#fff" />
+        <rect x="13" y="13" width="6" height="6" rx="1.5" fill="#375BD2" />
+      </g>
+    </svg>
+  );
+}
+function MaticLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#8247E5" />
+      <g>
+        <rect x="10" y="14" width="4" height="4" rx="1" fill="#fff" />
+        <rect x="18" y="14" width="4" height="4" rx="1" fill="#fff" />
+        <rect x="14" y="10" width="4" height="4" rx="1" fill="#fff" />
+        <rect x="14" y="18" width="4" height="4" rx="1" fill="#fff" />
+      </g>
+    </svg>
+  );
+}
+function DotLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#E6007A" />
+      <g>
+        <circle cx="16" cy="16" r="6" fill="#fff" />
+        <circle cx="16" cy="16" r="2" fill="#E6007A" />
+      </g>
+    </svg>
+  );
+}
+function AtomLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#2E3148" />
+      <g>
+        <ellipse cx="16" cy="16" rx="7" ry="2.5" fill="#fff" fillOpacity=".7" />
+        <ellipse cx="16" cy="16" rx="2.5" ry="7" fill="#fff" fillOpacity=".7" transform="rotate(60 16 16)" />
+        <ellipse cx="16" cy="16" rx="2.5" ry="7" fill="#fff" fillOpacity=".7" transform="rotate(120 16 16)" />
+        <circle cx="16" cy="16" r="1.5" fill="#2E3148" />
+      </g>
+    </svg>
+  );
+}
+function XrpLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#23292F" />
+      <g>
+        <path d="M10 12c2 2 4 2 6 0m0 0c2-2 4-2 6 0" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+        <path d="M10 20c2-2 4-2 6 0m0 0c2 2 4 2 6 0" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+      </g>
+    </svg>
+  );
+}
+function DogeLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#C2A633" />
+      <g>
+        <ellipse cx="16" cy="16" rx="7" ry="8" fill="#fff" />
+        <ellipse cx="16" cy="16" rx="4" ry="5" fill="#C2A633" />
+        <ellipse cx="14.5" cy="15.5" rx="1" ry="1.5" fill="#fff" />
+        <ellipse cx="17.5" cy="15.5" rx="1" ry="1.5" fill="#fff" />
+        <ellipse cx="14.5" cy="15.5" rx="0.3" ry="0.5" fill="#23292F" />
+        <ellipse cx="17.5" cy="15.5" rx="0.3" ry="0.5" fill="#23292F" />
+        <ellipse cx="16" cy="18.5" rx="1.2" ry="0.5" fill="#23292F" />
+      </g>
+    </svg>
+  );
+}
 
 const tokenLogos: Record<string, (props: { className?: string }) => JSX.Element> = {
   ETH: (props) => <EthereumLogoSVG {...props} />, // Use SVG for ETH
   SOL: (props) => <SolanaLogoSVG {...props} />, // Use SVG for SOL
   BTC: (props) => <BitcoinLogoSVG {...props} />, // Use SVG for BTC
   UNI: (props) => <UniswapLogoSVG {...props} />, // Use SVG for UNI
+  ADA: (props) => <AdaLogoSVG {...props} />, // Cardano
+  AVAX: (props) => <AvaxLogoSVG {...props} />, // Avalanche
+  LINK: (props) => <LinkLogoSVG {...props} />, // Chainlink
+  MATIC: (props) => <MaticLogoSVG {...props} />, // Polygon
+  DOT: (props) => <DotLogoSVG {...props} />, // Polkadot
+  ATOM: (props) => <AtomLogoSVG {...props} />, // Cosmos
+  XRP: (props) => <XrpLogoSVG {...props} />, // XRP
+  DOGE: (props) => <DogeLogoSVG {...props} />, // Dogecoin
 };
 
 export default function HomePage() {
@@ -238,7 +350,7 @@ export default function HomePage() {
         <div className="flex-1 flex flex-col h-full min-w-0">
           <Card className="border-0 shadow-none mb-2">
             <CardHeader>
-              <CardTitle className="text-white text-lg">Your Watchlist</CardTitle>
+              <CardTitle className="text-white text-lg flex items-center gap-2"><Eye className="h-5 w-5 text-blue-400" /> Your Watchlist</CardTitle>
             </CardHeader>
             <CardContent className="p-0 pb-3">
               <div className="flex flex-row gap-2 overflow-x-auto pb-1">
@@ -270,7 +382,7 @@ export default function HomePage() {
           </Card>
           <Card className="border-0 shadow-none mb-2">
             <CardHeader>
-              <CardTitle className="text-white text-lg">Trending Tokens</CardTitle>
+              <CardTitle className="text-white text-lg flex items-center gap-2"><TrendingUp className="h-5 w-5 text-fuchsia-400" /> Trending Tokens</CardTitle>
             </CardHeader>
             <CardContent className="p-0 pb-3">
               <div className="flex flex-row gap-2 overflow-x-auto">
@@ -307,18 +419,41 @@ export default function HomePage() {
             </CardHeader>
             <CardContent className="p-2">
               <div className="divide-y divide-white/10 max-h-64 overflow-y-auto">
-                {recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-center gap-2 py-2">
-                    <div className="w-6 h-6 flex items-center justify-center rounded-full bg-violet-500/20">
-                      <span className="text-white text-xs font-bold">{activity.user[2]}</span>
+                {recentActivity.map((activity) => {
+                  // Visual icon for activity type
+                  let icon = null;
+                  let iconColor = '';
+                  if (activity.type === 'trade') {
+                    if (activity.action.toLowerCase().includes('bought')) {
+                      icon = <ArrowUpRight className="h-4 w-4" />;
+                      iconColor = 'bg-green-500/20 text-green-400';
+                    } else if (activity.action.toLowerCase().includes('sold')) {
+                      icon = <ArrowDownLeft className="h-4 w-4" />;
+                      iconColor = 'bg-red-500/20 text-red-400';
+                    } else {
+                      icon = <BarChart3 className="h-4 w-4" />;
+                      iconColor = 'bg-violet-500/20 text-violet-400';
+                    }
+                  } else if (activity.type === 'liquidity') {
+                    icon = <Users className="h-4 w-4" />;
+                    iconColor = 'bg-blue-500/20 text-blue-400';
+                  } else {
+                    icon = <Activity className="h-4 w-4" />;
+                    iconColor = 'bg-gray-500/20 text-gray-400';
+                  }
+                  return (
+                    <div key={activity.id} className="flex items-center gap-2 py-2">
+                      <div className={`w-7 h-7 flex items-center justify-center rounded-full ${iconColor}`}>
+                        {icon}
+                      </div>
+                      <span className="text-white font-medium text-xs w-20 truncate">{activity.user}</span>
+                      <span className={`text-[10px] px-1 py-0.5 rounded font-bold whitespace-nowrap ${activity.type === 'trade' ? 'bg-green-700/60 text-green-300' : 'bg-blue-700/60 text-blue-300'}`}>{activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}</span>
+                      <span className="text-white font-normal flex-1 text-xs truncate">{activity.action}</span>
+                      <span className="text-[10px] text-gray-400 whitespace-nowrap">{activity.time}</span>
+                      <span className="text-white font-semibold text-xs">{activity.amount}</span>
                     </div>
-                    <span className="text-white font-medium text-xs w-20 truncate">{activity.user}</span>
-                    <span className={`text-[10px] px-1 py-0.5 rounded font-bold whitespace-nowrap ${activity.type === 'trade' ? 'bg-green-700/60 text-green-300' : 'bg-blue-700/60 text-blue-300'}`}>{activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}</span>
-                    <span className="text-white font-normal flex-1 text-xs truncate">{activity.action}</span>
-                    <span className="text-[10px] text-gray-400 whitespace-nowrap">{activity.time}</span>
-                    <span className="text-white font-semibold text-xs">{activity.amount}</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>

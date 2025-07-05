@@ -11,6 +11,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { TrendingUp, UserPlus, MessageCircle, Wallet } from 'lucide-react';
 import { usePrivy } from '@privy-io/react-auth';
 
+import { Pencil, X, Check } from 'lucide-react';
+
 const mockENS = 'myaccount.fluxpool.eth';
 const mockAddress = '0x0000...0000';
 const mockProfile = {
@@ -92,9 +94,9 @@ export default function AccountPage() {
       <div className="flex flex-col items-center w-full">
         
       </div>
-      <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl mx-auto min-h-screen py-12">
+      <div className="flex flex-col md:flex-row gap-8 w-full mx-auto min-h-screen py-12 px-4 md:px-12">
         {/* Left: Profile Info */}
-        <div className="w-full md:w-1/3 flex flex-col items-center md:items-start space-y-6">
+        <div className="w-full md:w-[35%] flex flex-col items-center md:items-start space-y-6">
           <Card className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl rounded-2xl border-0">
             <CardContent className="flex flex-col items-center md:items-start space-y-4 p-6">
               <Avatar className="w-28 h-28 mb-2">
@@ -116,12 +118,12 @@ export default function AccountPage() {
               )}
               <Separator className="my-2 bg-muted" />
               <div className="w-full space-y-1">
-                <ProfileField label="Description" value={mockProfile.description} />
-                <ProfileField label="Twitter" value={mockProfile.twitter} />
-                <ProfileField label="Website" value={mockProfile.website} />
-                <ProfileField label="Location" value={mockProfile.location} />
-                <ProfileField label="GitHub" value={mockProfile.github} />
-                <ProfileField label="Telegram" value={mockProfile.telegram} />
+                <EditableProfileField label="Description" value={mockProfile.description} />
+                <EditableProfileField label="Twitter" value={mockProfile.twitter} />
+                <EditableProfileField label="Website" value={mockProfile.website} />
+                <EditableProfileField label="Location" value={mockProfile.location} />
+                <EditableProfileField label="GitHub" value={mockProfile.github} />
+                <EditableProfileField label="Telegram" value={mockProfile.telegram} />
               </div>
               <Separator className="my-2 bg-muted" />
               <div className="flex gap-4 text-xs text-gray-400">
@@ -135,7 +137,7 @@ export default function AccountPage() {
           </Card>
         </div>
         {/* Right: Activity Feed */}
-        <div className="w-full md:w-2/3 flex flex-col space-y-6">
+        <div className="flex flex-col space-y-6 w-full md:w-[65%]">
           <Card className="w-full rounded-2xl">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
@@ -167,11 +169,42 @@ export default function AccountPage() {
   );
 }
 
-function ProfileField({ label, value }: { label: string; value: string }) {
+function EditableProfileField({ label, value }: { label: string; value: string }) {
+  const [editing, setEditing] = useState(false);
+  const [val, setVal] = useState(value);
+  const [savedVal, setSavedVal] = useState(value);
+  const handleSave = () => {
+    setSavedVal(val);
+    setEditing(false);
+  };
+  const handleCancel = () => {
+    setVal(savedVal);
+    setEditing(false);
+  };
   return (
-    <div className="flex items-center justify-between w-full">
-      <span className="text-muted-foreground text-sm text-gray-400">{label}</span>
-      <span className="text-sm font-medium text-right truncate max-w-[60%] text-gray-200">{value}</span>
+    <div className="flex items-center justify-between w-full gap-1">
+      <span className="text-muted-foreground text-sm text-gray-400 min-w-[80px] flex-shrink-0">{label}</span>
+      {editing ? (
+        <div className="flex items-center gap-1 flex-1">
+          <input
+            className="rounded bg-white/10 border border-white/20 px-2 py-1 text-white text-sm flex-1 min-w-0"
+            value={val}
+            onChange={e => setVal(e.target.value)}
+            autoFocus
+          />
+          <button onClick={handleSave} className="text-green-400 hover:text-green-300"><Check className="h-4 w-4" /></button>
+          <button onClick={handleCancel} className="text-red-400 hover:text-red-300"><X className="h-4 w-4" /></button>
+        </div>
+      ) : (
+        <div className="flex flex-row-reverse items-center gap-1 flex-1">
+          <button onClick={() => setEditing(true)} className="text-gray-400 hover:text-violet-400"><Pencil className="h-4 w-4" /></button>
+          {label === 'Description' ? (
+            <span className="text-sm font-medium text-right whitespace-pre-line break-words max-w-[60%] text-gray-200 flex-1">{savedVal}</span>
+          ) : (
+            <span className="text-sm font-medium text-right truncate max-w-[60%] text-gray-200 flex-1">{savedVal}</span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -19,7 +19,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { ChevronDown, LogOut, Settings, User, Star, Bell, MessageCircle } from "lucide-react";
+import { ChevronDown, LogOut, Settings, User, Star, Bell, MessageCircle, UserPlus, ArrowUpRight, BarChart3 } from "lucide-react";
 import TokenSearch from "./TokenSearch";
 import BalanceWidget from './BalanceWidget';
 
@@ -216,10 +216,19 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
             <DropdownMenuContent align="end" className="w-64 bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl text-white">
               <DropdownMenuLabel>Notifications</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-white/10 dark:bg-black/30" />
-              {/* Mock notifications */}
-              <DropdownMenuItem>New follower: trader123</DropdownMenuItem>
-              <DropdownMenuItem>Trade executed: +2.5 ETH</DropdownMenuItem>
-              <DropdownMenuItem>PnL update: +$1,200</DropdownMenuItem>
+              {/* Mock notifications - more visual */}
+              <DropdownMenuItem className="flex items-center gap-3 py-1 rounded-xl hover:bg-violet-500/10 transition">
+                <span className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500/20 text-blue-400"><UserPlus className="h-5 w-5" /></span>
+                <span className="flex-1 text-sm">New follower: <span className="font-semibold text-white">trader123</span></span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="flex items-center gap-3 py-1 rounded-xl hover:bg-green-500/10 transition">
+                <span className="w-8 h-8 flex items-center justify-center rounded-full bg-green-500/20 text-green-400"><ArrowUpRight className="h-5 w-5" /></span>
+                <span className="flex-1 text-sm">Trade executed: <span className="font-semibold text-white">+2.5 ETH</span></span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="flex items-center gap-3 py-1 rounded-xl hover:bg-fuchsia-500/10 transition">
+                <span className="w-8 h-8 flex items-center justify-center rounded-full bg-fuchsia-500/20 text-fuchsia-400"><BarChart3 className="h-5 w-5" /></span>
+                <span className="flex-1 text-sm">PnL update: <span className="font-semibold text-white">+$1,200</span></span>
+              </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-white/10 dark:bg-black/30" />
               <DropdownMenuItem className="text-center text-xs text-gray-400">View all notifications</DropdownMenuItem>
             </DropdownMenuContent>
