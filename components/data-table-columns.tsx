@@ -1,6 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { DataTableColumnHeader } from "./data-table-column-header";
+import Link from "next/link";
 
 export type Pool = {
   pool: string;
@@ -33,10 +34,13 @@ export const poolColumns: ColumnDef<Pool>[] = [
     header: () => "Token Pair",
     cell: ({ row }) => {
       const pool = row.original;
+      const href = `/trade?pool=${pool.pool}&token0=${pool.token0.symbol}&token1=${pool.token1.symbol}`;
       return (
-        <span className="text-white font-medium">
-          {pool.token0.symbol} / {pool.token1.symbol}
-        </span>
+        <Link href={href} legacyBehavior>
+          <a className="text-blue-400 font-medium underline underline-offset-2 hover:text-blue-300 transition-colors">
+            {pool.token0.symbol} / {pool.token1.symbol}
+          </a>
+        </Link>
       );
     },
     enableSorting: false,

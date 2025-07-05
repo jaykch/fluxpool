@@ -7,7 +7,7 @@ import { Search, X } from "lucide-react";
 const mockTokens = [
   { symbol: 'BTC', name: 'Bitcoin', price: 43250.50, change: 2.34 },
   { symbol: 'ETH', name: 'Ethereum', price: 2650.75, change: -1.23 },
-  { symbol: 'SOL', name: 'Solana', price: 98.45, change: 5.67 },
+  // { symbol: 'SOL', name: 'Solana', price: 98.45, change: 5.67 },
   { symbol: 'ADA', name: 'Cardano', price: 0.52, change: -0.89 },
   { symbol: 'DOT', name: 'Polkadot', price: 7.23, change: 3.45 },
   { symbol: 'LINK', name: 'Chainlink', price: 15.67, change: -2.12 },

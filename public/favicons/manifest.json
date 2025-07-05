@@ -1,7 +1,8 @@
 {
-  "name": "Privy Auth Demo",
+  "name": "FluxPool",
   "icons": [
     {"src": "/favicons/android-chrome-192x192.png", "type": "image/png", "sizes": "192x192"},
-    {"src": "/favicons/android-chrome-512x512.png", "type": "image/png", "sizes": "512x512"}
+    {"src": "/favicons/android-chrome-512x512.png", "type": "image/png", "sizes": "512x512"},
+    {"src": "/favicons/icon.svg", "type": "image/svg+xml", "sizes": "any"}
   ]
 }

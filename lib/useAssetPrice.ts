@@ -27,7 +27,6 @@ export function useAssetPrice(symbol: string = 'ETH'): AssetPrice {
         const mockPrices: { [key: string]: { price: number; change: number } } = {
           'ETH': { price: 2450.50 + (Math.random() - 0.5) * 100, change: 2.34 + (Math.random() - 0.5) * 4 },
           'BTC': { price: 45000 + (Math.random() - 0.5) * 2000, change: 1.25 + (Math.random() - 0.5) * 3 },
-          'SOL': { price: 102.30 + (Math.random() - 0.5) * 10, change: -1.25 + (Math.random() - 0.5) * 4 },
           'UNI': { price: 7.85 + (Math.random() - 0.5) * 1, change: 5.67 + (Math.random() - 0.5) * 3 },
           'LINK': { price: 14.20 + (Math.random() - 0.5) * 2, change: -0.89 + (Math.random() - 0.5) * 2 },
         };

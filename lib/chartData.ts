@@ -7,7 +7,7 @@ export function generateSampleData(tokenSymbol: string = 'BTC', days: number = 7
   const tokenConfigs: { [key: string]: { basePrice: number; volatility: number; trend: number } } = {
     'BTC': { basePrice: 45000, volatility: 0.03, trend: 0.0001 },
     'ETH': { basePrice: 2800, volatility: 0.04, trend: 0.0002 },
-    'SOL': { basePrice: 95, volatility: 0.06, trend: 0.0003 },
+    // 'SOL': { basePrice: 95, volatility: 0.06, trend: 0.0003 },
     'ADA': { basePrice: 0.45, volatility: 0.05, trend: -0.0001 },
     'DOT': { basePrice: 6.5, volatility: 0.05, trend: 0.0001 },
     'LINK': { basePrice: 14, volatility: 0.06, trend: 0.0002 },

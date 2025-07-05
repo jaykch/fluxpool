@@ -45,18 +45,6 @@ export default function PortfolioPage() {
       allocation: 48.2
     },
     {
-      id: 2,
-      symbol: "SOL",
-      name: "Solana",
-      amount: 25.0,
-      avgPrice: 95.00,
-      currentPrice: 102.30,
-      currentValue: 2557.50,
-      pnl: 182.50,
-      pnlPercent: 7.68,
-      allocation: 20.5
-    },
-    {
       id: 3,
       symbol: "UNI",
       name: "Uniswap",

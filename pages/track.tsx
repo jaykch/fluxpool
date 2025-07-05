@@ -37,16 +37,6 @@ export default function TrackPage() {
       alert: "price_above_2500"
     },
     {
-      id: 2,
-      symbol: "SOL",
-      name: "Solana",
-      price: 102.30,
-      change24h: -1.25,
-      marketCap: "1.23B",
-      volume24h: "89.4M",
-      alert: "volume_spike"
-    },
-    {
       id: 3,
       symbol: "UNI",
       name: "Uniswap",
@@ -68,15 +58,6 @@ export default function TrackPage() {
       triggered: true,
       time: "2 min ago",
       value: 2450.50
-    },
-    {
-      id: 2,
-      type: "volume_spike",
-      symbol: "SOL",
-      condition: "Volume spike > 100M",
-      triggered: true,
-      time: "15 min ago",
-      value: 89.4
     },
     {
       id: 3,
