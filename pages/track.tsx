@@ -1,154 +1,82 @@
-import { usePrivy } from "@privy-io/react-auth";
-import Layout from "@/components/layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Search,
-  TrendingUp, 
-  TrendingDown, 
-  DollarSign, 
-  BarChart3,
-  ArrowUpRight,
-  ArrowDownLeft,
-  Plus,
-  Eye,
-  Bell,
-  Users,
-  Activity,
-  Target
-} from "lucide-react";
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import Layout from '@/components/layout';
+import { Card, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { useState } from 'react';
+import { Plus, Eye, Trash2, Bell, TrendingUp, X, CheckCircle2, User, MessageCircle } from 'lucide-react';
+
+// Mock data helpers
+const mockTrackedTrades = [
+  { id: 1, token: 'ETH', side: 'Long', entry: 2450, current: 2510, pnl: '+$60', status: 'Open' },
+  { id: 2, token: 'SOL', side: 'Short', entry: 98, current: 95, pnl: '+$3', status: 'Open' },
+  { id: 3, token: 'BTC', side: 'Long', entry: 60000, current: 59800, pnl: '-$200', status: 'Closed' },
+];
+const mockWatchlist = [
+  { symbol: 'ETH', name: 'Ethereum', price: 2510, change: '+2.1%' },
+  { symbol: 'SOL', name: 'Solana', price: 95, change: '-1.3%' },
+  { symbol: 'UNI', name: 'Uniswap', price: 7.85, change: '+0.5%' },
+];
+const mockAlerts = [
+  { id: 1, token: 'ETH', condition: '>', value: 3000, status: 'Active' },
+  { id: 2, token: 'BTC', condition: '<', value: 59000, status: 'Triggered' },
+];
+const mockTrackedTraders = [
+  { id: 1, ens: 'diamondhandz.eth', avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=diamondhandz', status: 'Active' },
+  { id: 2, ens: 'ape4life.eth', avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=ape4life', status: 'Idle' },
+  { id: 3, ens: 'rektwizard.eth', avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=rektwizard', status: 'Trading' },
+];
 
 export default function TrackPage() {
-  const { user, ready, authenticated } = usePrivy();
-
-  // Mock tracked traders
-  const trackedTraders = [
-    { ens: 'diamondhandz.eth', address: '0x1234...abcd', status: 'Active' },
-    { ens: 'ape4life.eth', address: '0x5678...efgh', status: 'Idle' },
-    { ens: 'rektwizard.eth', address: '0x9abc...def0', status: 'Trading' },
-  ];
+  // State for tracked trades
+  const [trackedTrades, setTrackedTrades] = useState<any[]>([]);
+  const [watchlist, setWatchlist] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [trackedTraders, setTrackedTraders] = useState<any[]>([]);
+  // Modal states
+  const [addTradeOpen, setAddTradeOpen] = useState(false);
+  const [addWatchOpen, setAddWatchOpen] = useState(false);
+  const [addAlertOpen, setAddAlertOpen] = useState(false);
   const [msgOpen, setMsgOpen] = useState<string | null>(null);
   const [msg, setMsg] = useState('');
   const [msgSent, setMsgSent] = useState(false);
 
-  // Mock watchlist data
-  const watchlist = [
-    {
-      id: 1,
-      symbol: "ETH",
-      name: "Ethereum",
-      price: 2450.50,
-      change24h: 2.34,
-      marketCap: "2.45B",
-      volume24h: "156.7M",
-      alert: "price_above_2500"
-    },
-    {
-      id: 3,
-      symbol: "UNI",
-      name: "Uniswap",
-      price: 7.85,
-      change24h: 5.67,
-      marketCap: "890M",
-      volume24h: "45.2M",
-      alert: null
-    }
-  ];
+  // Load from localStorage or use mock
+  useEffect(() => {
+    setTrackedTrades(JSON.parse(localStorage.getItem('tracked-trades') || 'null') || mockTrackedTrades);
+    setWatchlist(JSON.parse(localStorage.getItem('track-watchlist') || 'null') || mockWatchlist);
+    setAlerts(JSON.parse(localStorage.getItem('track-alerts') || 'null') || mockAlerts);
+    setTrackedTraders(JSON.parse(localStorage.getItem('track-traders') || 'null') || mockTrackedTraders);
+  }, []);
+  // Save to localStorage
+  useEffect(() => { localStorage.setItem('tracked-trades', JSON.stringify(trackedTrades)); }, [trackedTrades]);
+  useEffect(() => { localStorage.setItem('track-watchlist', JSON.stringify(watchlist)); }, [watchlist]);
+  useEffect(() => { localStorage.setItem('track-alerts', JSON.stringify(alerts)); }, [alerts]);
+  useEffect(() => { localStorage.setItem('track-traders', JSON.stringify(trackedTraders)); }, [trackedTraders]);
 
-  // Mock alerts
-  const alerts = [
-    {
-      id: 1,
-      type: "price_above",
-      symbol: "ETH",
-      condition: "Price above $2,500",
-      triggered: true,
-      time: "2 min ago",
-      value: 2450.50
-    },
-    {
-      id: 3,
-      type: "price_drop",
-      symbol: "LINK",
-      condition: "Price drops below $14",
-      triggered: false,
-      time: "1 hour ago",
-      value: 14.20
-    }
-  ];
-
-  // Mock market movers
-  const marketMovers = [
-    {
-      id: 1,
-      symbol: "AVAX",
-      name: "Avalanche",
-      price: 32.45,
-      change24h: 12.34,
-      volume24h: "234.5M",
-      reason: "Partnership announcement"
-    },
-    {
-      id: 2,
-      symbol: "MATIC",
-      name: "Polygon",
-      price: 0.85,
-      change24h: -8.76,
-      volume24h: "156.7M",
-      reason: "Network upgrade"
-    },
-    {
-      id: 3,
-      symbol: "ATOM",
-      name: "Cosmos",
-      price: 8.95,
-      change24h: 6.54,
-      volume24h: "89.2M",
-      reason: "New validator set"
-    }
-  ];
+  // Add/Remove handlers (mocked)
+  const handleUntrackTrade = (id: number) => setTrackedTrades(trackedTrades.filter(t => t.id !== id));
+  const handleRemoveWatch = (symbol: string) => setWatchlist(watchlist.filter(w => w.symbol !== symbol));
+  const handleDeleteAlert = (id: number) => setAlerts(alerts.filter(a => a.id !== id));
+  const handleUntrackTrader = (id: number) => setTrackedTraders(trackedTraders.filter(t => t.id !== id));
 
   return (
-    <Layout 
-      accountId={user?.id ?? ""} 
-      appName="Track" 
-      navbarItems={[]}
-    >
-      <main className="flex-1 p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-white">Track</h1>
-            <p className="text-gray-400 mt-2">Monitor markets and set alerts</p>
-          </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Alert
-          </Button>
-        </div>
-
-        {/* Tracked Traders Section */}
-        <Card className="border-gray-700 mb-6">
-          <CardHeader>
-            <CardTitle className="text-white">Traders You're Tracking</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-4">
-              {trackedTraders.map((trader) => (
-                <div key={trader.ens} className="flex items-center gap-4">
-                  <Link href={`/profile/${trader.ens}`} className="text-blue-400 underline underline-offset-2 hover:text-blue-300 transition-colors text-lg font-semibold">
-                    {trader.ens}
-                  </Link>
-                  <Badge variant="secondary" className="text-xs">{trader.status}</Badge>
-                  <Button size="sm" variant="outline" onClick={() => setMsgOpen(trader.ens)}>
-                    Message
-                  </Button>
+    <Layout accountId="" appName="Track" navbarItems={[]}> 
+      <main className="flex flex-col gap-8 px-4 py-8 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Tracked Traders (top left) */}
+          <Card className="bg-transparent shadow-2xl border-0 rounded-2xl p-6 flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <CardTitle className="text-white text-xl flex items-center gap-2"><User className="h-5 w-5 text-yellow-400" /> Tracked Traders</CardTitle>
+            </div>
+            <div className="flex flex-col gap-3">
+              {trackedTraders.length === 0 && <div className="text-gray-400 text-sm">No traders being tracked.</div>}
+              {trackedTraders.map(trader => (
+                <div key={trader.id} className="flex items-center gap-3 bg-white/10 backdrop-blur-lg rounded-xl px-4 py-2">
+                  <img src={trader.avatar} alt={trader.ens} className="w-8 h-8 rounded-full border-2 border-white/10" />
+                  <span className="text-white font-mono text-xs w-32 truncate">{trader.ens}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${trader.status === 'Active' ? 'bg-green-700/60 text-green-300' : trader.status === 'Trading' ? 'bg-blue-700/60 text-blue-300' : 'bg-gray-700/60 text-gray-300'}`}>{trader.status}</span>
+                  <Button size="icon" variant="ghost" className="ml-auto text-violet-400 hover:bg-violet-500/10" title="Message" onClick={() => setMsgOpen(trader.ens)}><MessageCircle className="h-4 w-4" /></Button>
+                  <Button size="icon" variant="ghost" className="text-red-400 hover:bg-red-500/10" title="Untrack" onClick={() => handleUntrackTrader(trader.id)}><Trash2 className="h-4 w-4" /></Button>
                   {/* Message Dialog */}
                   <Dialog open={msgOpen === trader.ens} onOpenChange={open => setMsgOpen(open ? trader.ens : null)}>
                     <DialogContent>
@@ -160,7 +88,7 @@ export default function TrackPage() {
                       ) : (
                         <>
                           <textarea
-                            className="w-full min-h-[80px] rounded border border-gray-700 bg-gray-900 p-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            className="w-full min-h-[80px] rounded border border-gray-700 bg-gray-900 p-2 text-white"
                             placeholder={`Write a message to ${trader.ens}...`}
                             value={msg}
                             onChange={e => setMsg(e.target.value)}
@@ -181,230 +109,131 @@ export default function TrackPage() {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            placeholder="Search tokens, addresses, or watchlists..."
-            className="pl-10 bg-gray-800 border-gray-600 text-white"
-          />
-        </div>
-
-        {/* Market Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Active Alerts</p>
-                  <p className="text-white text-2xl font-bold">{alerts.filter(a => a.triggered).length}</p>
-                </div>
-                <Bell className="h-8 w-8 text-red-400" />
-              </div>
-              <p className="text-gray-400 text-sm mt-2">Triggered today</p>
-            </CardContent>
           </Card>
-
-          <Card className="border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Watchlist</p>
-                  <p className="text-white text-2xl font-bold">{watchlist.length}</p>
+          {/* Tracked Trades (top right) */}
+          <Card className="bg-transparent shadow-2xl border-0 rounded-2xl p-6 flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <CardTitle className="text-white text-xl flex items-center gap-2"><TrendingUp className="h-5 w-5 text-violet-400" /> Tracked Trades</CardTitle>
+              <Button size="icon" variant="ghost" className="text-violet-400 hover:bg-violet-500/10" onClick={() => setAddTradeOpen(true)}><Plus className="h-5 w-5" /></Button>
+            </div>
+            <div className="flex flex-col gap-3">
+              {trackedTrades.length === 0 && <div className="text-gray-400 text-sm">No trades being tracked.</div>}
+              {trackedTrades.map(trade => (
+                <div key={trade.id} className="flex items-center gap-3 bg-white/10 backdrop-blur-lg rounded-xl px-4 py-2">
+                  <span className="text-white font-mono text-xs w-12">{trade.token}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${trade.side === 'Long' ? 'bg-green-700/60 text-green-300' : 'bg-red-700/80 text-red-300'}`}>{trade.side}</span>
+                  <span className="text-xs text-gray-400">Entry: <span className="text-white font-mono">${trade.entry}</span></span>
+                  <span className="text-xs text-gray-400">Current: <span className="text-white font-mono">${trade.current}</span></span>
+                  <span className={`text-xs font-bold ${trade.pnl.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>PnL: {trade.pnl}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${trade.status === 'Open' ? 'bg-blue-700/60 text-blue-300' : 'bg-gray-700/60 text-gray-300'}`}>{trade.status}</span>
+                  <Button size="icon" variant="ghost" className="ml-auto text-violet-400 hover:bg-violet-500/10" title="View"><Eye className="h-4 w-4" /></Button>
+                  <Button size="icon" variant="ghost" className="text-red-400 hover:bg-red-500/10" title="Untrack" onClick={() => handleUntrackTrade(trade.id)}><Trash2 className="h-4 w-4" /></Button>
                 </div>
-                <Eye className="h-8 w-8 text-blue-400" />
-              </div>
-              <p className="text-gray-400 text-sm mt-2">Tokens tracked</p>
-            </CardContent>
+              ))}
+            </div>
           </Card>
-
-          <Card className="border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Top Gainer</p>
-                  <p className="text-white text-2xl font-bold">AVAX</p>
+          {/* Watchlist (bottom left) */}
+          <Card className="bg-transparent shadow-2xl border-0 rounded-2xl p-6 flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <CardTitle className="text-white text-xl flex items-center gap-2"><Eye className="h-5 w-5 text-blue-400" /> Watchlist</CardTitle>
+              <Button size="icon" variant="ghost" className="text-blue-400 hover:bg-blue-500/10" onClick={() => setAddWatchOpen(true)}><Plus className="h-5 w-5" /></Button>
+            </div>
+            <div className="flex flex-col gap-3">
+              {watchlist.length === 0 && <div className="text-gray-400 text-sm">No tokens in watchlist.</div>}
+              {watchlist.map(w => (
+                <div key={w.symbol} className="flex items-center gap-3 bg-white/10 backdrop-blur-lg rounded-xl px-4 py-2">
+                  <span className="text-white font-mono text-xs w-12">{w.symbol}</span>
+                  <span className="text-gray-300 text-xs w-24 truncate">{w.name}</span>
+                  <span className="text-white font-mono text-xs">${w.price}</span>
+                  <span className={`text-xs font-bold ${w.change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>{w.change}</span>
+                  <Button size="sm" variant="outline" className="ml-auto text-blue-400 border-blue-400/40" onClick={() => {}} title="Go to Trade">Trade</Button>
+                  <Button size="icon" variant="ghost" className="text-red-400 hover:bg-red-500/10" title="Remove" onClick={() => handleRemoveWatch(w.symbol)}><X className="h-4 w-4" /></Button>
                 </div>
-                <TrendingUp className="h-8 w-8 text-green-400" />
-              </div>
-              <p className="text-green-400 text-sm mt-2">+12.34%</p>
-            </CardContent>
+              ))}
+            </div>
           </Card>
-
-          <Card className="border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Top Loser</p>
-                  <p className="text-white text-2xl font-bold">MATIC</p>
+          {/* Alerts (bottom right) */}
+          <Card className="bg-transparent shadow-2xl border-0 rounded-2xl p-6 flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <CardTitle className="text-white text-xl flex items-center gap-2"><Bell className="h-5 w-5 text-fuchsia-400" /> Alerts</CardTitle>
+              <Button size="icon" variant="ghost" className="text-fuchsia-400 hover:bg-fuchsia-500/10" onClick={() => setAddAlertOpen(true)}><Plus className="h-5 w-5" /></Button>
+            </div>
+            <div className="flex flex-col gap-3">
+              {alerts.length === 0 && <div className="text-gray-400 text-sm">No alerts set.</div>}
+              {alerts.map(a => (
+                <div key={a.id} className="flex items-center gap-3 bg-white/10 backdrop-blur-lg rounded-xl px-4 py-2">
+                  <span className="text-white font-mono text-xs w-12">{a.token}</span>
+                  <span className="text-gray-300 text-xs">{a.condition} ${a.value}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${a.status === 'Active' ? 'bg-fuchsia-700/60 text-fuchsia-200' : 'bg-gray-700/60 text-gray-300'}`}>{a.status}</span>
+                  {a.status === 'Triggered' && <CheckCircle2 className="h-4 w-4 text-green-400 ml-1" />}
+                  <Button size="icon" variant="ghost" className="ml-auto text-red-400 hover:bg-red-500/10" title="Delete" onClick={() => handleDeleteAlert(a.id)}><Trash2 className="h-4 w-4" /></Button>
                 </div>
-                <TrendingDown className="h-8 w-8 text-red-400" />
-              </div>
-              <p className="text-red-400 text-sm mt-2">-8.76%</p>
-            </CardContent>
+              ))}
+            </div>
           </Card>
         </div>
-
-        {/* Main Content Tabs */}
-        <Tabs defaultValue="watchlist" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="watchlist">Watchlist</TabsTrigger>
-            <TabsTrigger value="alerts">Alerts</TabsTrigger>
-            <TabsTrigger value="movers">Market Movers</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="watchlist" className="space-y-4">
-            <Card className="border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">Your Watchlist</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {watchlist.map((token) => (
-                    <div key={token.id} className="flex items-center justify-between p-4 border border-gray-700 rounded-lg">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                          <span className="text-white font-bold">{token.symbol[0]}</span>
-                        </div>
-                        <div>
-                          <h3 className="text-white font-medium">{token.symbol}</h3>
-                          <p className="text-gray-400 text-sm">{token.name}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="text-center">
-                        <p className="text-white font-medium">${token.price.toLocaleString()}</p>
-                        <div className={`flex items-center justify-center ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {token.change24h >= 0 ? (
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
-                          ) : (
-                            <ArrowDownLeft className="h-3 w-3 mr-1" />
-                          )}
-                          <span className="text-sm font-medium">{Math.abs(token.change24h)}%</span>
-                        </div>
-                      </div>
-                      
-                      <div className="text-right">
-                        <p className="text-white text-sm">${token.marketCap}</p>
-                        <p className="text-gray-400 text-sm">${token.volume24h}</p>
-                      </div>
-                      
-                      <div className="flex space-x-2">
-                        {token.alert && (
-                          <Badge variant="destructive" className="text-xs">
-                            Alert
-                          </Badge>
-                        )}
-                        <Button size="sm" variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                          <Eye className="h-3 w-3" />
-                        </Button>
-                        <Button size="sm" variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                          <Bell className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="alerts" className="space-y-4">
-            <Card className="border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">Price Alerts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {alerts.map((alert) => (
-                    <div key={alert.id} className={`flex items-center justify-between p-3 border rounded-lg ${
-                      alert.triggered ? 'border-red-500 bg-red-500/10' : 'border-gray-700'
-                    }`}>
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          alert.triggered ? 'bg-red-500' : 'bg-gray-600'
-                        }`}>
-                          <Bell className="h-4 w-4 text-white" />
-                        </div>
-                        <div>
-                          <p className="text-white font-medium">{alert.symbol} - {alert.condition}</p>
-                          <p className="text-gray-400 text-sm">{alert.time}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="text-right">
-                        <p className="text-white font-medium">${alert.value}</p>
-                        <Badge variant={alert.triggered ? "destructive" : "secondary"} className="text-xs">
-                          {alert.triggered ? "Triggered" : "Active"}
-                        </Badge>
-                      </div>
-                      
-                      <Button size="sm" variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                        Edit
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="movers" className="space-y-4">
-            <Card className="border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">Market Movers</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {marketMovers.map((mover) => (
-                    <div key={mover.id} className="flex items-center justify-between p-4 border border-gray-700 rounded-lg">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
-                          <span className="text-white font-bold">{mover.symbol[0]}</span>
-                        </div>
-                        <div>
-                          <h3 className="text-white font-medium">{mover.symbol}</h3>
-                          <p className="text-gray-400 text-sm">{mover.name}</p>
-                          <p className="text-gray-400 text-xs">{mover.reason}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="text-center">
-                        <p className="text-white font-medium">${mover.price}</p>
-                        <div className={`flex items-center justify-center ${mover.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {mover.change24h >= 0 ? (
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
-                          ) : (
-                            <ArrowDownLeft className="h-3 w-3 mr-1" />
-                          )}
-                          <span className="text-sm font-medium">{Math.abs(mover.change24h)}%</span>
-                        </div>
-                      </div>
-                      
-                      <div className="text-right">
-                        <p className="text-white text-sm">${mover.volume24h}</p>
-                        <p className="text-gray-400 text-sm">Volume</p>
-                      </div>
-                      
-                      <div className="flex space-x-2">
-                        <Button size="sm" variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                          <Plus className="h-3 w-3 mr-1" />
-                          Add
-                        </Button>
-                        <Button size="sm" variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                          <Target className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {/* Add Tracked Trade Modal */}
+        <Dialog open={addTradeOpen} onOpenChange={setAddTradeOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Tracked Trade</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-3">
+              {/* Simple mock form, not functional */}
+              <input className="rounded bg-white/10 border border-white/20 px-3 py-2 text-white" placeholder="Token (e.g. ETH)" />
+              <select className="rounded bg-white/10 border border-white/20 px-3 py-2 text-white">
+                <option>Long</option>
+                <option>Short</option>
+              </select>
+              <input className="rounded bg-white/10 border border-white/20 px-3 py-2 text-white" placeholder="Entry Price" type="number" />
+            </div>
+            <DialogFooter>
+              <Button onClick={() => setAddTradeOpen(false)}>Add</Button>
+              <DialogClose asChild>
+                <Button variant="ghost">Cancel</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        {/* Add Watchlist Modal */}
+        <Dialog open={addWatchOpen} onOpenChange={setAddWatchOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add to Watchlist</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-3">
+              <input className="rounded bg-white/10 border border-white/20 px-3 py-2 text-white" placeholder="Token Symbol (e.g. ETH)" />
+            </div>
+            <DialogFooter>
+              <Button onClick={() => setAddWatchOpen(false)}>Add</Button>
+              <DialogClose asChild>
+                <Button variant="ghost">Cancel</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        {/* Add Alert Modal */}
+        <Dialog open={addAlertOpen} onOpenChange={setAddAlertOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Alert</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-3">
+              <input className="rounded bg-white/10 border border-white/20 px-3 py-2 text-white" placeholder="Token (e.g. ETH)" />
+              <select className="rounded bg-white/10 border border-white/20 px-3 py-2 text-white">
+                <option>&gt;</option>
+                <option>&lt;</option>
+              </select>
+              <input className="rounded bg-white/10 border border-white/20 px-3 py-2 text-white" placeholder="Value (e.g. 3000)" type="number" />
+            </div>
+            <DialogFooter>
+              <Button onClick={() => setAddAlertOpen(false)}>Add</Button>
+              <DialogClose asChild>
+                <Button variant="ghost">Cancel</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
     </Layout>
   );
