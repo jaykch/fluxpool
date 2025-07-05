@@ -243,7 +243,8 @@ const mockHolders: Holder[] = Array.from({ length: 10 }, (_, i) => {
 
 const mockTopTraders: TopTrader[] = Array.from({ length: 20 }, (_, i) => {
   const rank = i + 1;
-  const wallet = Math.random().toString(36).substring(2, 9).toUpperCase() + '...' + Math.random().toString(36).substring(2, 6).toUpperCase();
+  // Use a random fake ENS name or fallback
+  const wallet = fakeENSNames[i % fakeENSNames.length] || `trader${i}.fluxpool.eth`;
   const balance = (Math.random() * 500).toFixed(2);
   const bought = `$${(Math.random() * 10000).toFixed(2)}K (${(Math.random() * 1000).toFixed(1)}M / ${Math.floor(Math.random() * 10) + 1})`;
   const sold = `$${(Math.random() * 20000).toFixed(2)}K (${(Math.random() * 1000).toFixed(1)}M / ${Math.floor(Math.random() * 100) + 1})`;

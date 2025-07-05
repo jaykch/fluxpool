@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
+import { useRouter } from 'next/router';
 
 // Mock token data
 const mockTokens = [
@@ -26,6 +27,7 @@ export default function TokenSearch({ onTokenSelect }: TokenSearchProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredTokens, setFilteredTokens] = useState(mockTokens);
   const searchRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -52,12 +54,14 @@ export default function TokenSearch({ onTokenSelect }: TokenSearchProps) {
     if (onTokenSelect) {
       onTokenSelect(token);
     }
+    // Route to /trade?token=SYMBOL
+    router.push(`/trade?token=${encodeURIComponent(token.symbol)}`);
   };
 
   return (
     <div className="relative" ref={searchRef}>
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           type="text"
           placeholder="Search tokens..."
@@ -67,7 +71,7 @@ export default function TokenSearch({ onTokenSelect }: TokenSearchProps) {
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          className="pl-10 pr-10 w-64 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-violet-500"
+          className="pl-10 pr-10 w-64 bg-white/10 backdrop-blur border border-white/20 text-white placeholder:text-muted-foreground focus:border-violet-500 focus:ring-2 focus:ring-violet-500/40 focus:bg-white/20 transition-all duration-200 rounded-xl shadow-md"
         />
         {searchTerm && (
           <Button
@@ -77,7 +81,8 @@ export default function TokenSearch({ onTokenSelect }: TokenSearchProps) {
               setSearchTerm('');
               setIsOpen(false);
             }}
-            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-gray-400 hover:text-white"
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-white"
+            tabIndex={-1}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -86,16 +91,16 @@ export default function TokenSearch({ onTokenSelect }: TokenSearchProps) {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-2 z-50 max-h-60 overflow-y-auto rounded-xl border border-white/20 bg-black/80 backdrop-blur shadow-2xl">
           {filteredTokens.length > 0 ? (
             filteredTokens.map((token) => (
               <div
                 key={token.symbol}
                 onClick={() => handleTokenSelect(token)}
-                className="flex items-center justify-between px-4 py-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700 last:border-b-0"
+                className="flex items-center justify-between px-4 py-3 hover:bg-violet-600/30 cursor-pointer border-b border-white/10 last:border-b-0 transition-colors"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-violet-600 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-violet-600 rounded-full flex items-center justify-center shadow">
                     <span className="text-white text-xs font-bold">{token.symbol[0]}</span>
                   </div>
                   <div>

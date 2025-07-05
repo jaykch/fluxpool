@@ -322,15 +322,15 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
   const [mainTab, setMainTab] = useState<'broadcasts' | 'holdings'>('broadcasts');
   const fluxpoolEns = toFluxpoolENS(ens);
   const username = fluxpoolEns.replace('.fluxpool.eth', '');
-  // Winning trades progress bar state (fix hydration/navigation issues)
-  const [winRate] = useState(() => Math.floor(Math.random() * 41) + 60); // 60-100%
-  const [profitable] = useState(() => Math.random() > 0.4); // 60% chance profitable
+  // Winning trades progress bar: hardcoded to +12% (profitable)
+  const winRate = 12;
+  const profitable = true;
   return (
     <Layout accountId={ens} appName="Profile" navbarItems={[]}>
       <Head>
         <title>{fluxpoolEns} | FluxPool Profile</title>
       </Head>
-      <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl mx-auto min-h-screen py-10 px-4 md:px-8 xl:px-0">
+      <div className="flex flex-col md:flex-row gap-8 w-full min-h-screen py-10 px-4 md:px-16">
         {/* Left: Profile Info */}
         <div className="w-full md:w-1/3 flex flex-col items-center md:items-start space-y-6">
           {/* Profile Header */}
@@ -458,22 +458,22 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
         {/* Right: Stats, Tabs */}
         <div className="w-full md:w-2/3 flex flex-col">
           {/* Winning Trades Progress Bar (above tabs, larger and more prominent) */}
-          <div className="w-full max-w-4xl mt-2 mb-2">
+          <div className="w-full mt-2 mb-2">
             <div className="flex flex-col items-center mb-6">
               <div className="w-full flex items-center justify-between mb-2">
                 <span className="text-base font-semibold text-gray-200 tracking-wide">Winning Trades</span>
-                <span className={`text-base font-bold ${profitable ? 'text-green-400' : 'text-crimson-500'}`}>{winRate}% {profitable ? 'Profitable' : 'Unprofitable'}</span>
+                <span className="text-base font-bold text-green-400">+12% Profitable</span>
               </div>
               <div className="w-full h-6 rounded-2xl bg-white/10 overflow-hidden shadow-lg border border-white/10">
                 <div
-                  className={`h-full rounded-2xl transition-all duration-500 ${profitable ? 'bg-green-500' : 'bg-crimson-600'}`}
-                  style={{ width: `${winRate}%` }}
+                  className="h-full rounded-2xl transition-all duration-500 bg-green-500"
+                  style={{ width: `12%` }}
                 />
               </div>
             </div>
           </div>
           {/* Tabs Section */}
-          <div className="w-full max-w-4xl mt-0">
+          <div className="w-full mt-0">
             <Tabs value={mainTab} onValueChange={v => setMainTab(v as 'broadcasts' | 'holdings')} className="w-full" defaultValue="broadcasts">
               <TabsList className="w-full flex bg-white/10 rounded-xl mb-2 h-8">
                 <TabsTrigger value="broadcasts" className="flex-1 text-white text-xs py-1">Broadcasts</TabsTrigger>
@@ -566,7 +566,7 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
         </div>
       </div>
       {/* Trading Activity Section (full width, bottom) */}
-      <div className="w-full max-w-[96vw] xl:max-w-[1400px] mx-auto mt-12 px-2 md:px-6 xl:px-0">
+      <div className="w-full mt-6 px-4 md:px-16">
         <Card className="w-full rounded-2xl">
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-4">
