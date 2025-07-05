@@ -27,7 +27,7 @@ export default function BroadcastCard({ pos, username, timeAgo, message }: {
     <div className="flex flex-col gap-0">
       <div className="flex flex-row items-stretch bg-white/5 border border-white/10 rounded-2xl p-0 overflow-hidden shrink-0">
         {/* Left: Info box (50%) */}
-        <div className="w-1/2 flex flex-col pl-2 pr-6 py-6 min-w-0">
+        <div className="w-1/2 flex flex-col pl-3 pr-6 py-6 min-w-0">
           <div className="flex flex-row items-start gap-3">
             {/* ENS avatar above coin avatar, stacked in a column */}
             <div className="flex flex-col items-center gap-2 flex-shrink-0">
