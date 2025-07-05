@@ -155,6 +155,28 @@ const mockPositions = [
 const LOCAL_STORAGE_KEY = "fluxpool-messages";
 
 const initialThreads = [
+  // Default group chat
+  {
+    id: 99,
+    group: true,
+    groupName: "Fluxpool General",
+    participants: [
+      { username: "admin", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=admin" },
+      { username: "trader123", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=trader123" },
+      { username: "ape4life", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=ape4life" },
+      { username: "diamondhandz", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=diamondhandz" },
+      { username: "you", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=you" },
+    ],
+    avatar: null,
+    preview: "Welcome to Fluxpool General!",
+    time: "Just now",
+    unread: true,
+    messages: [
+      { from: "admin", text: "Welcome to Fluxpool General! Introduce yourself and share your trades.", time: "Just now" },
+      { from: "trader123", text: "Hey all! Pumped to be here.", time: "Just now" },
+      { from: "you", text: "Excited to join the community!", time: "Just now" },
+    ],
+  },
   // Mock group chat
   {
     id: 100,
@@ -277,7 +299,7 @@ import Link from "next/link";
 
 export default function MessagesPage() {
   const [threads, setThreads] = useState<any[]>(getThreadsFromStorage());
-  const [selectedId, setSelectedId] = useState<number>(threads[0]?.id || 1);
+  const [selectedId, setSelectedId] = useState<number>(threads[0]?.id ?? 99);
   const [reply, setReply] = useState("");
   const [newDialogOpen, setNewDialogOpen] = useState(false);
   const [newUsers, setNewUsers] = useState("");
@@ -422,12 +444,12 @@ export default function MessagesPage() {
                         {msg.groupName}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          {msg.unread && <Badge variant="destructive" className="ml-1">Unread</Badge>}
-                        </div>
                         <div className="text-gray-300 text-sm truncate max-w-xs">{msg.preview}</div>
                       </div>
-                      <div className="text-xs text-gray-400 whitespace-nowrap">{msg.time}</div>
+                      <div className="flex flex-col items-end min-w-[56px] ml-2">
+                        <span className="text-xs text-gray-400 whitespace-nowrap">{msg.time}</span>
+                        {msg.unread && <Badge variant="destructive" className="mt-1">Unread</Badge>}
+                      </div>
                     </button>
                   );
                 }
@@ -448,12 +470,12 @@ export default function MessagesPage() {
                       </a>
                     </Link>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        {msg.unread && <Badge variant="destructive" className="ml-1">Unread</Badge>}
-                      </div>
                       <div className="text-gray-300 text-sm truncate max-w-xs">{msg.preview}</div>
                     </div>
-                    <div className="text-xs text-gray-400 whitespace-nowrap">{msg.time}</div>
+                    <div className="flex flex-col items-end min-w-[56px] ml-2">
+                      <span className="text-xs text-gray-400 whitespace-nowrap">{msg.time}</span>
+                      {msg.unread && <Badge variant="destructive" className="mt-1">Unread</Badge>}
+                    </div>
                   </button>
                 );
               })}
