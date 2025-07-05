@@ -19,7 +19,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { ChevronDown, LogOut, Settings, User, Star, Bell } from "lucide-react";
+import { ChevronDown, LogOut, Settings, User, Star, Bell, MessageCircle } from "lucide-react";
 import TokenSearch from "./TokenSearch";
 import BalanceWidget from './BalanceWidget';
 
@@ -198,19 +198,47 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
             })()
           ) : null}
           
-          {/* Notifications Icon */}
+          {/* Notifications Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:text-white hover:bg-gray-700 relative"
+              >
+                <Bell className="h-5 w-5" />
+                {/* Notification badge */}
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-bold">
+                  3
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {/* Mock notifications */}
+              <DropdownMenuItem>New follower: trader123</DropdownMenuItem>
+              <DropdownMenuItem>Trade executed: +2.5 ETH</DropdownMenuItem>
+              <DropdownMenuItem>PnL update: +$1,200</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-center text-xs text-gray-400">View all notifications</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Messages Icon */}
           <Button
             variant="ghost"
             size="sm"
             className="text-white hover:text-white hover:bg-gray-700 relative"
+            onClick={() => router.push("/messages")}
           >
-            <Bell className="h-5 w-5" />
-            {/* Notification badge */}
-            <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-crimson text-white text-xs flex items-center justify-center">
-              3
+            <MessageCircle className="h-5 w-5" />
+            {/* Unread messages badge */}
+            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-bold">
+              2
             </span>
           </Button>
-
+          
           {/* Balance Widget */}
           <BalanceWidget />
           

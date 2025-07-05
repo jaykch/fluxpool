@@ -105,7 +105,7 @@ export default function HomePage() {
             Welcome to <span className="text-violet-400">FluxPool</span>
           </h1>
           <p className="text-xl text-gray-200 max-w-2xl mx-auto">
-            The next-generation Web3 trading platform with advanced liquidity protocols and real-time market insights.
+            The social trading platform for Web3. Connect, share, and trade with friends.
           </p>
           <div className="flex justify-center space-x-4">
             <Button size="lg" className="bg-violet-500/30 hover:bg-violet-500/50 text-white shadow-lg backdrop-blur-md border-0">

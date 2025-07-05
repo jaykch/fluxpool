@@ -55,7 +55,7 @@ export default function HomePage() {
             Welcome to <Logo />
           </h1>
           <p className="text-xl text-gray-200 text-center max-w-2xl">
-            The next-generation Web3 trading platform with advanced liquidity protocols and real-time market insights.
+            The social trading platform for Web3. Connect, share, and trade with friends.
           </p>
           <button
             onClick={login}
