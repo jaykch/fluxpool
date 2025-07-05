@@ -2,75 +2,48 @@ import { CandlestickData } from 'lightweight-charts';
 
 export function generateSampleData(tokenSymbol: string = 'BTC', days: number = 730): CandlestickData[] {
   const data: CandlestickData[] = [];
-  
-  // Different base prices and volatility for different tokens
-  const tokenConfigs: { [key: string]: { basePrice: number; volatility: number; trend: number } } = {
-    'BTC': { basePrice: 45000, volatility: 0.03, trend: 0.0001 },
-    'ETH': { basePrice: 2800, volatility: 0.04, trend: 0.0002 },
-    // 'SOL': { basePrice: 95, volatility: 0.06, trend: 0.0003 },
-    'ADA': { basePrice: 0.45, volatility: 0.05, trend: -0.0001 },
-    'DOT': { basePrice: 6.5, volatility: 0.05, trend: 0.0001 },
-    'LINK': { basePrice: 14, volatility: 0.06, trend: 0.0002 },
-    'UNI': { basePrice: 7.5, volatility: 0.05, trend: 0.0002 },
-    'AVAX': { basePrice: 32, volatility: 0.07, trend: 0.0003 },
-    'MATIC': { basePrice: 0.75, volatility: 0.08, trend: 0.0004 },
-    'ATOM': { basePrice: 8.5, volatility: 0.05, trend: 0.0001 },
+  const tokenConfigs: { [key: string]: { basePrice: number; volatility: number; drift: number } } = {
+    'BTC': { basePrice: 45000, volatility: 0.012, drift: 0.0002 },
+    'ETH': { basePrice: 2800, volatility: 0.015, drift: 0.0003 },
+    'ADA': { basePrice: 0.45, volatility: 0.018, drift: -0.0001 },
+    'DOT': { basePrice: 6.5, volatility: 0.017, drift: 0.0001 },
+    'LINK': { basePrice: 14, volatility: 0.018, drift: 0.0002 },
+    'UNI': { basePrice: 7.5, volatility: 0.017, drift: 0.0002 },
+    'AVAX': { basePrice: 32, volatility: 0.02, drift: 0.0003 },
+    'MATIC': { basePrice: 0.75, volatility: 0.022, drift: 0.0004 },
+    'ATOM': { basePrice: 8.5, volatility: 0.017, drift: 0.0001 },
   };
-  
-  const config = tokenConfigs[tokenSymbol] || tokenConfigs['BTC'];
-  let currentPrice = config.basePrice;
+  const safeConfig = tokenConfigs[tokenSymbol] ?? tokenConfigs['BTC'] ?? { basePrice: 45000, volatility: 0.012, drift: 0.0002 };
+  let currentPrice = safeConfig.basePrice;
   const now = new Date();
-  
-  // Generate 2 years of daily data (730 days)
   for (let i = days; i >= 0; i--) {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
-    
-    // Ensure smooth price transitions
-    const dailyChange = (Math.random() - 0.5) * config.volatility;
+    // Simulate a random walk with drift
+    const drift = safeConfig.drift;
+    let shock = (Math.random() - 0.5) * (safeConfig.volatility * 0.6); // Lower base volatility
+    // Occasionally add a spike
+    if (Math.random() < 0.02) {
+      shock += (Math.random() - 0.5) * (safeConfig.volatility * 8);
+    }
     const open = currentPrice;
-    const close = currentPrice * (1 + dailyChange);
-    
-    // Ensure close price is reasonable
-    const finalClose = Math.max(close, currentPrice * 0.7);
-    const finalClose2 = Math.min(finalClose, currentPrice * 1.5);
-    
-    // Generate high/low that are always between open and close, or slightly beyond
-    const priceRange = Math.abs(finalClose2 - open) * 0.5;
-    const high = Math.max(open, finalClose2) + (Math.random() * priceRange);
-    const low = Math.min(open, finalClose2) - (Math.random() * priceRange);
-    
-    // Ensure low is never negative or too low
-    const safeLow = Math.max(low, currentPrice * 0.5);
-    
-    // Add subtle market events
-    let eventMultiplier = 1;
-    if (i === 365) eventMultiplier = 0.9;
-    if (i === 180) eventMultiplier = 1.1;
-    if (i === 90) eventMultiplier = 0.95;
-    if (i === 30) eventMultiplier = 1.05;
-    
-    const finalOpen = open * eventMultiplier;
-    const finalClose3 = finalClose2 * eventMultiplier;
-    const finalHigh = high * eventMultiplier;
-    const finalLow = safeLow * eventMultiplier;
-    
-    // Ensure data integrity - high should be highest, low should be lowest
-    const actualHigh = Math.max(finalOpen, finalClose3, finalHigh);
-    const actualLow = Math.min(finalOpen, finalClose3, finalLow);
-    
+    // Simulate close price with drift and shock
+    let close = open * (1 + drift + shock);
+    // Keep close price in a reasonable range
+    close = Math.max(close, open * 0.97);
+    close = Math.min(close, open * 1.03);
+    // High/low are close to open/close, with small random wiggle
+    const high = Math.max(open, close) * (1 + Math.random() * 0.01);
+    const low = Math.min(open, close) * (1 - Math.random() * 0.01);
     data.push({
       time: Math.floor(date.getTime() / 1000) as any,
-      open: finalOpen,
-      high: actualHigh,
-      low: actualLow,
-      close: finalClose3,
+      open,
+      high,
+      low,
+      close,
     });
-    
-    // Update current price for next iteration
-    currentPrice = finalClose3;
+    currentPrice = close;
   }
-  
   return data;
 }
 

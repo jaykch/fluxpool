@@ -186,7 +186,6 @@ interface TopTrader {
   sold: string;
   pnl: string;
   remaining: string;
-  remainingPercent: number;
 }
 const topTradersColumns: ColumnDef<TopTrader>[] = [
   { accessorKey: "rank", header: () => "#" },
@@ -199,13 +198,6 @@ const topTradersColumns: ColumnDef<TopTrader>[] = [
   { accessorKey: "bought", header: () => "Bought (Avg Buy)" },
   { accessorKey: "sold", header: () => "Sold (Avg Sell)" },
   { accessorKey: "pnl", header: () => "PnL", cell: ({ row }) => <span className={row.original.pnl.startsWith("+") ? "text-green-400" : "text-red-400"}>{row.original.pnl}</span> },
-  { accessorKey: "remainingPercent", header: () => "Remaining %", cell: ({ row }) => (
-    <div className="flex items-center space-x-2 w-40">
-      <span className="text-xs text-gray-400 w-8 text-right">{row.original.remaining}</span>
-      <ColoredProgress value={row.original.remainingPercent} positive={row.original.pnl.startsWith("+")} />
-      <span className="text-xs text-gray-400 w-8 text-left">{row.original.sold}</span>
-    </div>
-  ) },
 ];
 
 // --- Mock Data ---
@@ -236,16 +228,18 @@ const mockHolders: Holder[] = Array.from({ length: 10 }, (_, i) => {
   };
 });
 
-const mockTopTraders: TopTrader[] = [
-  { rank: 1, wallet: "BZh6x6...4MSk", balance: "431.7", bought: "$7.76K (683M / 1)", sold: "$62.2K (683M / 307)", pnl: "+$54.4K", remaining: "$2.1K (10%)", remainingPercent: 10 },
-  { rank: 2, wallet: "4NHB6q...fAs7", balance: "100.4", bought: "$4.46K (56.6M / 3)", sold: "$11.9K (56.6M / 19)", pnl: "+$7.47K", remaining: "$0 (0%)", remainingPercent: 0 },
-  { rank: 3, wallet: "5W99ZU...h317", balance: "100.3", bought: "$2.44K (47M / 1)", sold: "$7.68K (47M / 170)", pnl: "+$5.24K", remaining: "$1.2K (15%)", remainingPercent: 15 },
-  { rank: 4, wallet: "3yXtHP...LyzR", balance: "49.99", bought: "$2.3K (7.68M / 58)", sold: "$7K (7.68M / 2)", pnl: "+$4.71K", remaining: "$0 (0%)", remainingPercent: 0 },
-  { rank: 5, wallet: "6S4MnP...MzN9", balance: "42.02", bought: "$3.69K (11.4M / 82)", sold: "$7.25K (11.4M / 6)", pnl: "-$2.56K", remaining: "$0.5K (5%)", remainingPercent: 5 },
-  { rank: 6, wallet: "48RwG8...gnDh", balance: "40.8", bought: "$3.6K (10.1M / 87)", sold: "$6.95K (10.1M / 2)", pnl: "-$1.35K", remaining: "$0 (0%)", remainingPercent: 0 },
-  { rank: 7, wallet: "Fc76X5...6G3J", balance: "2.047", bought: "$432.03 (10.9M / 1)", sold: "$3.7K (10.9M / 3)", pnl: "+$3.27K", remaining: "$0.8K (20%)", remainingPercent: 20 },
-];
+const mockTopTraders: TopTrader[] = Array.from({ length: 20 }, (_, i) => {
+  const rank = i + 1;
+  const wallet = Math.random().toString(36).substring(2, 9).toUpperCase() + '...' + Math.random().toString(36).substring(2, 6).toUpperCase();
+  const balance = (Math.random() * 500).toFixed(2);
+  const bought = `$${(Math.random() * 10000).toFixed(2)}K (${(Math.random() * 1000).toFixed(1)}M / ${Math.floor(Math.random() * 10) + 1})`;
+  const sold = `$${(Math.random() * 20000).toFixed(2)}K (${(Math.random() * 1000).toFixed(1)}M / ${Math.floor(Math.random() * 100) + 1})`;
+  const pnl = (Math.random() > 0.2 ? '+' : '-') + `$${(Math.random() * 10000).toFixed(2)}`;
+  const remaining = `$${(Math.random() * 5000).toFixed(1)} (${Math.floor(Math.random() * 100)}%)`;
+  return { rank, wallet, balance, bought, sold, pnl, remaining };
+});
 
+export { topTradersColumns, mockTopTraders };
 export default function TradingData() {
   const [tab, setTab] = useState("trades");
   const [trades, setTrades] = useState<Trade[]>([]);

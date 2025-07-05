@@ -157,7 +157,7 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
         </div>
         {/* Right: Activity Feed */}
         <div className="w-full md:w-2/3 flex flex-col space-y-6">
-          <Card className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl rounded-2xl">
+          <Card className="w-full rounded-2xl">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="h-5 w-5 text-blue-400" />
@@ -166,7 +166,7 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
               <DataTable columns={tradeColumns} data={mockTrades} />
             </CardContent>
           </Card>
-          <Card className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl rounded-2xl">
+          <Card className="w-full rounded-2xl">
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold mb-2 text-gray-200">Friends</h3>
               <div className="flex flex-wrap gap-3">
