@@ -49,18 +49,17 @@ export default function HomePage() {
         <meta name="description" content="Next-generation Web3 trading platform" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center p-24">
-        <div className="flex flex-col items-center justify-center space-y-6">
-          
+      <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-gradient-to-br from-violet-900/60 via-black/80 to-violet-950/80">
+        <div className="flex flex-col items-center justify-center space-y-6 bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl rounded-2xl p-10 border-0">
           <h1 className="text-4xl font-bold text-white flex items-center gap-3">
             Welcome to <Logo />
           </h1>
-          <p className="text-xl text-gray-400 text-center max-w-2xl">
+          <p className="text-xl text-gray-200 text-center max-w-2xl">
             The next-generation Web3 trading platform with advanced liquidity protocols and real-time market insights.
           </p>
           <button
             onClick={login}
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+            className="px-8 py-3 bg-violet-500/30 hover:bg-violet-500/50 text-white font-semibold rounded-lg transition-colors shadow-lg backdrop-blur-md border-0"
           >
             Get Started
           </button>

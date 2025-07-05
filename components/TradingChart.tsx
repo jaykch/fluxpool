@@ -99,7 +99,7 @@ export default function TradingChart({
         <h3 className="text-lg font-semibold text-white">{symbol}</h3>
         {isLoading && <div className="text-gray-400">Loading chart...</div>}
       </div>
-      <div ref={chartContainerRef} className="w-full" />
+      <div ref={chartContainerRef} className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl" />
     </div>
   );
 } 

@@ -100,19 +100,19 @@ export default function HomePage() {
     >
       <main className="flex-1 p-6 space-y-6">
         {/* Hero Section */}
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-4 p-10 mx-auto max-w-3xl">
           <h1 className="text-4xl font-bold text-white">
-            Welcome to <span className="text-blue-400">FluxPool</span>
+            Welcome to <span className="text-violet-400">FluxPool</span>
           </h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-200 max-w-2xl mx-auto">
             The next-generation Web3 trading platform with advanced liquidity protocols and real-time market insights.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <Button size="lg" className="bg-violet-500/30 hover:bg-violet-500/50 text-white shadow-lg backdrop-blur-md border-0">
               <Play className="h-4 w-4 mr-2" />
               Start Trading
             </Button>
-            <Button size="lg" variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
+            <Button size="lg" variant="outline" className="border-violet-500/20 text-white hover:bg-violet-500/20 hover:text-white shadow-lg backdrop-blur-md">
               <Target className="h-4 w-4 mr-2" />
               Learn More
             </Button>
@@ -120,8 +120,8 @@ export default function HomePage() {
         </div>
 
         {/* Market Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-gray-700">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl p-6">
+          <Card className="bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -133,7 +133,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className="border-gray-700">
+          <Card className="bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -145,7 +145,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className="border-gray-700">
+          <Card className="bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -157,7 +157,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className="border-gray-700">
+          <Card className="bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -184,7 +184,7 @@ export default function HomePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {trendingTokens.map((token) => (
-              <Card key={token.id} className="border-gray-700 hover:border-gray-600 transition-colors">
+              <Card key={token.id} className="bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl transition-colors hover:bg-white/20 dark:hover:bg-black/30">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center space-x-3">

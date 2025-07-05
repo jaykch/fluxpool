@@ -292,12 +292,12 @@ export default function TradingData() {
   return (
     <div className="w-full min-h-screen flex flex-col flex-1">
       <Tabs value={tab} onValueChange={setTab} className="w-full flex flex-col flex-1 min-h-0">
-        <TabsList className="grid w-full grid-cols-5 gap-1 text-xs h-9">
-          <TabsTrigger value="trades" className="px-2 py-1 h-8"> <TrendingUp className="h-3 w-3 mr-1" /> Trades </TabsTrigger>
-          <TabsTrigger value="spot" className="px-2 py-1 h-8"> <BarChart3 className="h-3 w-3 mr-1" /> Spot Positions </TabsTrigger>
-          <TabsTrigger value="curve" className="px-2 py-1 h-8"> <Wallet className="h-3 w-3 mr-1" /> Curve Positions </TabsTrigger>
-          <TabsTrigger value="holders" className="px-2 py-1 h-8"> <Users className="h-3 w-3 mr-1" /> Holders </TabsTrigger>
-          <TabsTrigger value="traders" className="px-2 py-1 h-8"> <Trophy className="h-3 w-3 mr-1" /> Top Traders </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-5 gap-1 text-xs h-9 bg-violet-500/30 backdrop-blur-lg shadow-2xl rounded-2xl text-white">
+          <TabsTrigger value="trades" className="px-2 py-1 h-8 text-white hover:bg-violet-500/40 focus:bg-violet-500/50 rounded-xl transition-colors"> <TrendingUp className="h-3 w-3 mr-1" /> Trades </TabsTrigger>
+          <TabsTrigger value="spot" className="px-2 py-1 h-8 text-white hover:bg-violet-500/40 focus:bg-violet-500/50 rounded-xl transition-colors"> <BarChart3 className="h-3 w-3 mr-1" /> Spot Positions </TabsTrigger>
+          <TabsTrigger value="curve" className="px-2 py-1 h-8 text-white hover:bg-violet-500/40 focus:bg-violet-500/50 rounded-xl transition-colors"> <Wallet className="h-3 w-3 mr-1" /> Curve Positions </TabsTrigger>
+          <TabsTrigger value="holders" className="px-2 py-1 h-8 text-white hover:bg-violet-500/40 focus:bg-violet-500/50 rounded-xl transition-colors"> <Users className="h-3 w-3 mr-1" /> Holders </TabsTrigger>
+          <TabsTrigger value="traders" className="px-2 py-1 h-8 text-white hover:bg-violet-500/40 focus:bg-violet-500/50 rounded-xl transition-colors"> <Trophy className="h-3 w-3 mr-1" /> Top Traders </TabsTrigger>
         </TabsList>
 
         <TabsContent value="trades" className="mt-4 flex-1 min-h-0">
