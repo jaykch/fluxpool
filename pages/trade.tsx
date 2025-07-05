@@ -69,6 +69,20 @@ export default function DashboardPage() {
     }
   }, [ready, authenticated, router]);
 
+  // If query params are present, set the selected token and chart
+  useEffect(() => {
+    if (router.isReady) {
+      const { token0, token1 } = router.query;
+      const t0 = typeof token0 === 'string' ? token0 : '';
+      const t1 = typeof token1 === 'string' ? token1 : '';
+      if (t0 && t1) {
+        const symbol = `${t0}/${t1}`;
+        setSelectedToken({ symbol, name: `${t0}/${t1} Pool` });
+        setChartData(generateSampleData(t0, 730));
+      }
+    }
+  }, [router.isReady, router.query.token0, router.query.token1]);
+
   const numAccounts = user?.linkedAccounts?.length || 0;
   const canRemoveAccount = numAccounts > 1;
 
