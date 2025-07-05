@@ -63,10 +63,28 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
       <div className="flex h-16 items-center justify-between">
         {/* Left side: Logo and Navigation */}
         <div className="flex items-center space-x-6">
-          <Logo />
+          <button 
+            onClick={() => navigateToPage("home")}
+            className="hover:opacity-80 transition-opacity"
+          >
+            <Logo />
+          </button>
           
           <NavigationMenu>
             <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Button
+                    variant={router.pathname === "/home" ? "default" : "ghost"}
+                    size="sm"
+                    className="text-white hover:text-white hover:bg-gray-700"
+                    onClick={() => navigateToPage("home")}
+                  >
+                    Home
+                  </Button>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Button
