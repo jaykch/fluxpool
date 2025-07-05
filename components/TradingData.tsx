@@ -85,6 +85,24 @@ const tradeColumns: ColumnDef<Trade>[] = [
     cell: ({ row }) => row.original.marketCap,
   },
   {
+    accessorKey: "ens",
+    header: () => "User Address",
+    cell: ({ row }) => {
+      const ens = row.original.ens;
+      // If ENS is present, show as link, else show a fake address
+      if (ens) {
+        return (
+          <Link href={`/profile/${ens}`} className="text-blue-400 underline underline-offset-2 hover:text-blue-300 transition-colors font-mono text-xs">
+            {ens}
+          </Link>
+        );
+      } else {
+        // Fallback: show a fake address
+        return <span className="font-mono text-xs text-gray-400">0x{row.original.txHash.slice(2, 10)}...{row.original.txHash.slice(-6)}</span>;
+      }
+    },
+  },
+  {
     accessorKey: "txHash",
     header: () => "Transaction Hash",
     cell: ({ row }) => {

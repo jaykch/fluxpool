@@ -43,7 +43,7 @@ export function Logo() {
           Fluxpool
         </span>
         <span className="text-xs text-gray-400 font-medium leading-none">
-          Trading Platform
+          Social Trading
         </span>
       </div>
     </div>

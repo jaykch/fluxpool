@@ -40,6 +40,14 @@ type NavbarProps = {
   onTokenSelect?: (token: any) => void;
 };
 
+// Helper to get the user's Fluxpool ENS subname from their wallet address
+function toFluxpoolENS(address: string | undefined) {
+  if (!address) return '';
+  // For demo, use the address (or a substring) as the subname
+  // In production, replace with actual ENS logic
+  return `${address.toLowerCase().replace(/^0x/, '').slice(0, 8)}.fluxpool.eth`;
+}
+
 export default function Navbar({ items, accountId, appName, onTokenSelect }: NavbarProps) {
   const router = useRouter();
   const resourceId = router.query.id;
@@ -160,14 +168,35 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
           {/* Search Bar */}
           <TokenSearch onTokenSelect={onTokenSelect} />
           
-          {/* Favorite Icon */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-white hover:text-white hover:bg-gray-700"
-          >
-            <Star className="h-5 w-5" />
-          </Button>
+          {/* Favorite or Edit Icon (conditionally rendered) */}
+          {router.pathname.startsWith("/profile/") && user?.wallet?.address ? (
+            (() => {
+              const ens = router.query.ens as string | undefined;
+              const userEns = toFluxpoolENS(user.wallet.address);
+              if (ens && userEns && ens.toLowerCase() === userEns.toLowerCase()) {
+                return (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-white hover:text-white hover:bg-gray-700"
+                    onClick={() => router.push("/account")}
+                  >
+                    <Settings className="h-5 w-5" />
+                  </Button>
+                );
+              } else {
+                return (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-white hover:text-white hover:bg-gray-700"
+                  >
+                    <Star className="h-5 w-5" />
+                  </Button>
+                );
+              }
+            })()
+          ) : null}
           
           {/* Notifications Icon */}
           <Button
