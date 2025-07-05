@@ -217,17 +217,17 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
               <DropdownMenuLabel>Notifications</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-white/10 dark:bg-black/30" />
               {/* Mock notifications - more visual */}
-              <DropdownMenuItem className="flex items-center gap-3 py-1 rounded-xl hover:bg-violet-500/10 transition">
+              <DropdownMenuItem className="group flex items-center gap-3 py-1 rounded-xl hover:bg-violet-500/10 transition">
                 <span className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500/20 text-blue-400"><UserPlus className="h-5 w-5" /></span>
-                <span className="flex-1 text-sm">New follower: <span className="font-semibold text-white">trader123</span></span>
+                <span className="flex-1 text-sm">New follower: <span className="font-semibold group-hover:text-violet-400 transition">trader123</span></span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="flex items-center gap-3 py-1 rounded-xl hover:bg-green-500/10 transition">
+              <DropdownMenuItem className="group flex items-center gap-3 py-1 rounded-xl hover:bg-green-500/10 transition">
                 <span className="w-8 h-8 flex items-center justify-center rounded-full bg-green-500/20 text-green-400"><ArrowUpRight className="h-5 w-5" /></span>
-                <span className="flex-1 text-sm">Trade executed: <span className="font-semibold text-white">+2.5 ETH</span></span>
+                <span className="flex-1 text-sm">Trade executed: <span className="font-semibold group-hover:text-green-400 transition">+2.5 ETH</span></span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="flex items-center gap-3 py-1 rounded-xl hover:bg-fuchsia-500/10 transition">
+              <DropdownMenuItem className="group flex items-center gap-3 py-1 rounded-xl hover:bg-fuchsia-500/10 transition">
                 <span className="w-8 h-8 flex items-center justify-center rounded-full bg-fuchsia-500/20 text-fuchsia-400"><BarChart3 className="h-5 w-5" /></span>
-                <span className="flex-1 text-sm">PnL update: <span className="font-semibold text-white">+$1,200</span></span>
+                <span className="flex-1 text-sm">PnL update: <span className="font-semibold group-hover:text-fuchsia-400 transition">+$1,200</span></span>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-white/10 dark:bg-black/30" />
               <DropdownMenuItem className="text-center text-xs text-gray-400">View all notifications</DropdownMenuItem>

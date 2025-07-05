@@ -12,6 +12,7 @@ import { TrendingUp, UserPlus, MessageCircle, Wallet } from 'lucide-react';
 import { usePrivy } from '@privy-io/react-auth';
 
 import { Pencil, X, Check } from 'lucide-react';
+import { useSignMessage } from '@privy-io/react-auth';
 
 const mockENS = 'myaccount.fluxpool.eth';
 const mockAddress = '0x0000...0000';
@@ -74,6 +75,40 @@ export default function AccountPage() {
   const [wallet, setWallet] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { user, ready, authenticated } = usePrivy();
+  const { signMessage } = useSignMessage();
+  // Editable profile state
+  const [editing, setEditing] = useState(false);
+  const [fields, setFields] = useState({
+    description: mockProfile.description,
+    twitter: mockProfile.twitter,
+    website: mockProfile.website,
+    location: mockProfile.location,
+    github: mockProfile.github,
+    telegram: mockProfile.telegram,
+  });
+  const [savedFields, setSavedFields] = useState(fields);
+  const [saving, setSaving] = useState(false);
+  const handleFieldChange = (key: string, value: string) => {
+    setFields(f => ({ ...f, [key]: value }));
+  };
+  const handleEdit = () => setEditing(true);
+  const handleCancel = () => {
+    setFields(savedFields);
+    setEditing(false);
+  };
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const message = `Confirming update to my Fluxpool profile:\n${Object.entries(fields).map(([k, v]) => `${k}: ${v}`).join('\n')}`;
+      await signMessage({ message });
+      setSavedFields(fields);
+      setEditing(false);
+    } catch (err) {
+      alert('Signature required to update profile.');
+    } finally {
+      setSaving(false);
+    }
+  };
   // Mock PnL and stats
   const pnl = Math.random() > 0.5 ? `+$${(Math.random() * 10000).toFixed(2)}` : `-$${(Math.random() * 10000).toFixed(2)}`;
   const followers = Math.floor(Math.random() * 1000);
@@ -118,12 +153,61 @@ export default function AccountPage() {
               )}
               <Separator className="my-2 bg-muted" />
               <div className="w-full space-y-1">
-                <EditableProfileField label="Description" value={mockProfile.description} />
-                <EditableProfileField label="Twitter" value={mockProfile.twitter} />
-                <EditableProfileField label="Website" value={mockProfile.website} />
-                <EditableProfileField label="Location" value={mockProfile.location} />
-                <EditableProfileField label="GitHub" value={mockProfile.github} />
-                <EditableProfileField label="Telegram" value={mockProfile.telegram} />
+                <ProfileFieldBlock
+                  label="Description"
+                  value={fields.description}
+                  savedValue={savedFields.description}
+                  editing={editing}
+                  onChange={v => handleFieldChange('description', v)}
+                />
+                <ProfileFieldBlock
+                  label="Twitter"
+                  value={fields.twitter}
+                  savedValue={savedFields.twitter}
+                  editing={editing}
+                  onChange={v => handleFieldChange('twitter', v)}
+                />
+                <ProfileFieldBlock
+                  label="Website"
+                  value={fields.website}
+                  savedValue={savedFields.website}
+                  editing={editing}
+                  onChange={v => handleFieldChange('website', v)}
+                />
+                <ProfileFieldBlock
+                  label="Location"
+                  value={fields.location}
+                  savedValue={savedFields.location}
+                  editing={editing}
+                  onChange={v => handleFieldChange('location', v)}
+                />
+                <ProfileFieldBlock
+                  label="GitHub"
+                  value={fields.github}
+                  savedValue={savedFields.github}
+                  editing={editing}
+                  onChange={v => handleFieldChange('github', v)}
+                />
+                <ProfileFieldBlock
+                  label="Telegram"
+                  value={fields.telegram}
+                  savedValue={savedFields.telegram}
+                  editing={editing}
+                  onChange={v => handleFieldChange('telegram', v)}
+                />
+              </div>
+              <div className="flex gap-2 mt-3 w-full justify-end">
+                {!editing && (
+                  <Button size="sm" variant="outline" onClick={handleEdit} className="text-violet-400 border-violet-400/40">Edit</Button>
+                )}
+                {editing && (
+                  <>
+                    <Button size="sm" variant="default" onClick={handleSave} disabled={saving} className="bg-violet-600 hover:bg-violet-700">
+                      {saving ? 'Saving...' : 'Save'}
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={handleCancel} disabled={saving} className="text-gray-400 border-gray-400/40">Cancel</Button>
+                  </>
+                )}
               </div>
               <Separator className="my-2 bg-muted" />
               <div className="flex gap-4 text-xs text-gray-400">
@@ -169,39 +253,29 @@ export default function AccountPage() {
   );
 }
 
-function EditableProfileField({ label, value }: { label: string; value: string }) {
-  const [editing, setEditing] = useState(false);
-  const [val, setVal] = useState(value);
-  const [savedVal, setSavedVal] = useState(value);
-  const handleSave = () => {
-    setSavedVal(val);
-    setEditing(false);
-  };
-  const handleCancel = () => {
-    setVal(savedVal);
-    setEditing(false);
-  };
+function ProfileFieldBlock({ label, value, savedValue, editing, onChange }: {
+  label: string;
+  value: string;
+  savedValue: string;
+  editing: boolean;
+  onChange: (v: string) => void;
+}) {
   return (
     <div className="flex items-center justify-between w-full gap-1">
       <span className="text-muted-foreground text-sm text-gray-400 min-w-[80px] flex-shrink-0">{label}</span>
       {editing ? (
-        <div className="flex items-center gap-1 flex-1">
-          <input
-            className="rounded bg-white/10 border border-white/20 px-2 py-1 text-white text-sm flex-1 min-w-0"
-            value={val}
-            onChange={e => setVal(e.target.value)}
-            autoFocus
-          />
-          <button onClick={handleSave} className="text-green-400 hover:text-green-300"><Check className="h-4 w-4" /></button>
-          <button onClick={handleCancel} className="text-red-400 hover:text-red-300"><X className="h-4 w-4" /></button>
-        </div>
+        <input
+          className="rounded bg-white/10 border border-white/20 px-2 py-1 text-white text-sm flex-1 min-w-0"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          autoFocus={label === 'Description'}
+        />
       ) : (
         <div className="flex flex-row-reverse items-center gap-1 flex-1">
-          <button onClick={() => setEditing(true)} className="text-gray-400 hover:text-violet-400"><Pencil className="h-4 w-4" /></button>
           {label === 'Description' ? (
-            <span className="text-sm font-medium text-right whitespace-pre-line break-words max-w-[60%] text-gray-200 flex-1">{savedVal}</span>
+            <span className="text-sm font-medium text-right whitespace-pre-line break-words max-w-[60%] text-gray-200 flex-1">{savedValue}</span>
           ) : (
-            <span className="text-sm font-medium text-right truncate max-w-[60%] text-gray-200 flex-1">{savedVal}</span>
+            <span className="text-sm font-medium text-right truncate max-w-[60%] text-gray-200 flex-1">{savedValue}</span>
           )}
         </div>
       )}
