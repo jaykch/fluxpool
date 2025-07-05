@@ -3,7 +3,7 @@ import { Card, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { PieChart, ArrowDownLeft, ArrowUpRight, DollarSign, TrendingUp, TrendingDown, Banknote, Gift, CreditCard, CheckCircle, Star, Plus, Share2 } from 'lucide-react';
+import { PieChart, ArrowDownLeft, ArrowUpRight, DollarSign, TrendingUp, TrendingDown, Banknote, Gift, CreditCard, CheckCircle, Star, Plus, Share2, Copy, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -142,6 +142,41 @@ function formatTimeHeld(ms: number) {
   return `${d ? `${d}d ` : ''}${h}h`;
 }
 
+// Pie chart helper for allocation
+function PortfolioPieChart({ data, size = 180 }: { data: { value: number; color: string; label: string }[]; size?: number }) {
+  const total = data.reduce((sum, d) => sum + d.value, 0);
+  let cumulative = 0;
+  const center = size / 2;
+  const radius = center - 8;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
+      {data.map((d, i) => {
+        const startAngle = (cumulative / total) * 2 * Math.PI;
+        const endAngle = ((cumulative + d.value) / total) * 2 * Math.PI;
+        const x1 = center + radius * Math.sin(startAngle);
+        const y1 = center - radius * Math.cos(startAngle);
+        const x2 = center + radius * Math.sin(endAngle);
+        const y2 = center - radius * Math.cos(endAngle);
+        const largeArc = d.value / total > 0.5 ? 1 : 0;
+        const pathData = `M${center},${center} L${x1},${y1} A${radius},${radius} 0 ${largeArc} 1 ${x2},${y2} Z`;
+        cumulative += d.value;
+        return (
+          <g key={i}>
+            <path d={pathData} fill={d.color} opacity={0.92} style={{ filter: 'drop-shadow(0 2px 8px rgba(255,255,255,0.12))' }} />
+            <path d={pathData} fill="url(#glass)" opacity={0.18} />
+          </g>
+        );
+      })}
+      <defs>
+        <radialGradient id="glass" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.7" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0.1" />
+        </radialGradient>
+      </defs>
+    </svg>
+  );
+}
+
 export default function PortfolioPage() {
   const [broadcastOpen, setBroadcastOpen] = useState(false);
   const [broadcastToken, setBroadcastToken] = useState<string | null>(null);
@@ -275,12 +310,24 @@ export default function PortfolioPage() {
               })}
             </div>
           </Card>
-          {/* Pie/Bar Chart Placeholder */}
+          {/* Pie/Bar Chart Placeholder replaced with Pie Chart */}
           <Card className="w-full md:w-[340px] bg-white/10 backdrop-blur-lg shadow-2xl border-0 rounded-2xl p-6 flex flex-col items-center justify-center">
             <CardTitle className="text-white text-xl mb-4 flex items-center gap-2"><PieChart className="h-6 w-6 text-violet-400" /> Allocation</CardTitle>
-            <div className="w-full h-40 flex flex-col items-center justify-center text-gray-400">
-              <Progress value={48} className="w-40 mb-2" />
-              <div className="text-white text-sm">ETH 48% • USDC 25% • UNI 10% • Other 17%</div>
+            <div className="w-full flex flex-col items-center justify-center">
+              <PortfolioPieChart
+                data={[
+                  { value: 48, color: '#8b5cf6', label: 'ETH' },
+                  { value: 25, color: '#38bdf8', label: 'USDC' },
+                  { value: 10, color: '#f472b6', label: 'UNI' },
+                  { value: 17, color: '#a3e635', label: 'Other' },
+                ]}
+              />
+              <div className="flex flex-wrap gap-3 mt-4 justify-center">
+                <span className="flex items-center gap-1 text-xs text-white"><span className="w-3 h-3 rounded-full inline-block" style={{ background: '#8b5cf6' }} /> ETH 48%</span>
+                <span className="flex items-center gap-1 text-xs text-white"><span className="w-3 h-3 rounded-full inline-block" style={{ background: '#38bdf8' }} /> USDC 25%</span>
+                <span className="flex items-center gap-1 text-xs text-white"><span className="w-3 h-3 rounded-full inline-block" style={{ background: '#f472b6' }} /> UNI 10%</span>
+                <span className="flex items-center gap-1 text-xs text-white"><span className="w-3 h-3 rounded-full inline-block" style={{ background: '#a3e635' }} /> Other 17%</span>
+              </div>
             </div>
           </Card>
         </div>
@@ -313,9 +360,29 @@ export default function PortfolioPage() {
                   <span className="text-xs text-gray-400 ml-auto">12h ago</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Gift className="h-5 w-5 text-yellow-400" />
-                  <span className="text-white">Received UNI rewards</span>
-                  <span className="text-xs text-gray-400 ml-auto">2h ago</span>
+                  <ArrowUpRight className="h-5 w-5 text-violet-400" />
+                  <span className="text-white">Sold 0.5 BTC</span>
+                  <span className="text-xs text-gray-400 ml-auto">10h ago</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <DollarSign className="h-5 w-5 text-green-400" />
+                  <span className="text-white">Deposited $1,000 via Privy Fiat</span>
+                  <span className="text-xs text-gray-400 ml-auto">8h ago</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <ArrowDownLeft className="h-5 w-5 text-fuchsia-400" />
+                  <span className="text-white">Withdrew $250</span>
+                  <span className="text-xs text-gray-400 ml-auto">6h ago</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <ArrowUpRight className="h-5 w-5 text-violet-400" />
+                  <span className="text-white">Bought 300 UNI</span>
+                  <span className="text-xs text-gray-400 ml-auto">3h ago</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <ArrowUpRight className="h-5 w-5 text-violet-400" />
+                  <span className="text-white">Bought 50 SOL</span>
+                  <span className="text-xs text-gray-400 ml-auto">1h ago</span>
                 </div>
               </div>
             </TabsContent>
@@ -326,6 +393,11 @@ export default function PortfolioPage() {
                   <span className="text-white">Deposited $2,000 via Privy Fiat</span>
                   <span className="text-xs text-gray-400 ml-auto">2d ago</span>
                 </div>
+                <div className="flex items-center gap-3">
+                  <DollarSign className="h-5 w-5 text-green-400" />
+                  <span className="text-white">Deposited $1,000 via Privy Fiat</span>
+                  <span className="text-xs text-gray-400 ml-auto">8h ago</span>
+                </div>
               </div>
             </TabsContent>
             <TabsContent value="trades">
@@ -334,6 +406,21 @@ export default function PortfolioPage() {
                   <ArrowUpRight className="h-5 w-5 text-violet-400" />
                   <span className="text-white">Bought 1.2 ETH</span>
                   <span className="text-xs text-gray-400 ml-auto">1d ago</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <ArrowUpRight className="h-5 w-5 text-violet-400" />
+                  <span className="text-white">Sold 0.5 BTC</span>
+                  <span className="text-xs text-gray-400 ml-auto">10h ago</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <ArrowUpRight className="h-5 w-5 text-violet-400" />
+                  <span className="text-white">Bought 300 UNI</span>
+                  <span className="text-xs text-gray-400 ml-auto">3h ago</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <ArrowUpRight className="h-5 w-5 text-violet-400" />
+                  <span className="text-white">Bought 50 SOL</span>
+                  <span className="text-xs text-gray-400 ml-auto">1h ago</span>
                 </div>
               </div>
             </TabsContent>
@@ -344,12 +431,17 @@ export default function PortfolioPage() {
                   <span className="text-white">Withdrew $500</span>
                   <span className="text-xs text-gray-400 ml-auto">12h ago</span>
                 </div>
+                <div className="flex items-center gap-3">
+                  <ArrowDownLeft className="h-5 w-5 text-fuchsia-400" />
+                  <span className="text-white">Withdrew $250</span>
+                  <span className="text-xs text-gray-400 ml-auto">6h ago</span>
+                </div>
               </div>
             </TabsContent>
           </Tabs>
         </Card>
 
-        {/* Fiat Onramp/Rewards Section */}
+        {/* Fiat Onramp Section Only (Rewards removed) + Invite Friends */}
         <div className="flex flex-col md:flex-row gap-6 w-full">
           {/* Fiat Onramp */}
           <Card className="flex-1 bg-white/10 backdrop-blur-lg shadow-2xl border-0 rounded-2xl p-6 flex flex-col items-center justify-center">
@@ -363,17 +455,22 @@ export default function PortfolioPage() {
               <div className="text-xs text-gray-400 text-center">Powered by Privy Fiat Onramp. Your funds are securely processed.</div>
             </div>
           </Card>
-          {/* Rewards */}
+          {/* Invite Friends Panel */}
           <Card className="flex-1 bg-white/10 backdrop-blur-lg shadow-2xl border-0 rounded-2xl p-6 flex flex-col items-center justify-center">
-            <CardTitle className="text-white text-xl mb-4 flex items-center gap-2"><Gift className="h-6 w-6 text-yellow-400" /> Rewards</CardTitle>
+            <CardTitle className="text-white text-xl mb-4 flex items-center gap-2"><UserPlus className="h-6 w-6 text-violet-400" /> Invite Friends</CardTitle>
             <div className="w-full flex flex-col items-center gap-4">
-              <div className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-2">
-                <Star className="h-5 w-5 text-yellow-400" />
-                <span className="text-white">UNI Trading Rewards</span>
-                <Badge className="ml-2 bg-green-500/80 text-white">Claimable</Badge>
+              <div className="flex flex-col items-center gap-2 w-full">
+                <span className="text-gray-300 text-sm">Share your referral link and earn rewards when friends join Fluxpool!</span>
+                <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 w-full">
+                  <span className="text-xs text-white font-mono truncate">https://fluxpool.xyz/ref/yourcode123</span>
+                  <Button size="icon" variant="ghost" className="text-violet-400 hover:bg-violet-500/10" onClick={() => {navigator.clipboard.writeText('https://fluxpool.xyz/ref/yourcode123')}}><Copy className="h-4 w-4" /></Button>
+                </div>
+                <div className="flex gap-2 mt-2">
+                  <Button size="sm" className="bg-gradient-to-br from-violet-500/70 to-fuchsia-500/70 text-white shadow border-0 transition-all hover:from-violet-400 hover:to-fuchsia-400" onClick={() => window.open('mailto:?subject=Join%20me%20on%20Fluxpool&body=Sign%20up%20with%20my%20referral%20link:%20https://fluxpool.xyz/ref/yourcode123', '_blank')}>Email</Button>
+                  <Button size="sm" className="bg-gradient-to-br from-blue-500/70 to-cyan-400/70 text-white shadow border-0 transition-all hover:from-blue-400 hover:to-cyan-300" onClick={() => window.open('https://twitter.com/intent/tweet?text=Join%20me%20on%20Fluxpool!%20https://fluxpool.xyz/ref/yourcode123', '_blank')}>Twitter</Button>
+                  <Button size="sm" className="bg-gradient-to-br from-green-400/70 to-blue-400/70 text-white shadow border-0 transition-all hover:from-green-300 hover:to-blue-300" onClick={() => window.open('https://t.me/share/url?url=https://fluxpool.xyz/ref/yourcode123', '_blank')}>Telegram</Button>
+                </div>
               </div>
-              <Button className="w-full bg-gradient-to-br from-yellow-400/60 to-fuchsia-400/60 text-white font-semibold shadow flex items-center gap-2"><CheckCircle className="h-4 w-4" /> Claim Rewards</Button>
-              <div className="text-xs text-gray-400 text-center">Earn rewards by trading and holding tokens. More coming soon!</div>
             </div>
           </Card>
         </div>
