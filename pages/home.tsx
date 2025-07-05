@@ -105,61 +105,30 @@ export default function HomePage() {
 
   // Mock trending tokens
   const trendingTokens = [
-    {
-      id: 1,
-      symbol: "ETH",
-      name: "Ethereum",
-      price: 2450.50,
-      change24h: 2.34,
-      marketCap: "2.45B",
-      volume24h: "156.7M"
-    },
-    {
-      id: 2,
-      symbol: "SOL",
-      name: "Solana",
-      price: 102.30,
-      change24h: -1.25,
-      marketCap: "1.23B",
-      volume24h: "89.4M"
-    },
-    {
-      id: 3,
-      symbol: "UNI",
-      name: "Uniswap",
-      price: 7.85,
-      change24h: 5.67,
-      marketCap: "890M",
-      volume24h: "45.2M"
-    }
+    { id: 1, symbol: "ETH", name: "Ethereum", price: 2450.50, change24h: 2.34, marketCap: "2.45B", volume24h: "156.7M" },
+    { id: 2, symbol: "SOL", name: "Solana", price: 102.30, change24h: -1.25, marketCap: "1.23B", volume24h: "89.4M" },
+    { id: 3, symbol: "UNI", name: "Uniswap", price: 7.85, change24h: 5.67, marketCap: "890M", volume24h: "45.2M" },
+    { id: 4, symbol: "BTC", name: "Bitcoin", price: 60250, change24h: 0.42, marketCap: "1.1T", volume24h: "200.1M" },
+    { id: 5, symbol: "ADA", name: "Cardano", price: 0.52, change24h: -0.89, marketCap: "16.7B", volume24h: "1.2B" },
+    { id: 6, symbol: "AVAX", name: "Avalanche", price: 35.20, change24h: 4.56, marketCap: "12.3B", volume24h: "900M" },
+    { id: 7, symbol: "LINK", name: "Chainlink", price: 15.67, change24h: -2.12, marketCap: "8.9B", volume24h: "700M" },
+    { id: 8, symbol: "MATIC", name: "Polygon", price: 0.85, change24h: -1.34, marketCap: "7.1B", volume24h: "600M" },
   ];
 
   // Mock recent activity
   const recentActivity = [
-    {
-      id: 1,
-      type: "trade",
-      user: "0x1234...5678",
-      action: "Bought 2.5 ETH",
-      amount: "$6,125",
-      time: "2 min ago"
-    },
-    {
-      id: 2,
-      type: "liquidity",
-      user: "0xabcd...efgh",
-      action: "Added liquidity to ETH/USDT",
-      amount: "$12,450",
-      time: "5 min ago"
-    },
-    {
-      id: 3,
-      type: "trade",
-      user: "0x9876...4321",
-      action: "Sold 15 SOL",
-      amount: "$1,534",
-      time: "8 min ago"
-    }
+    { id: 1, type: "trade", user: "0x1234...5678", action: "Bought 2.5 ETH", amount: "$6,125", time: "2 min ago" },
+    { id: 2, type: "liquidity", user: "0xabcd...efgh", action: "Added liquidity to ETH/USDT", amount: "$12,450", time: "5 min ago" },
+    { id: 3, type: "trade", user: "0x9876...4321", action: "Sold 15 SOL", amount: "$1,534", time: "8 min ago" },
+    { id: 4, type: "trade", user: "0x1111...aaaa", action: "Bought 10 UNI", amount: "$78", time: "10 min ago" },
+    { id: 5, type: "liquidity", user: "0x2222...bbbb", action: "Removed liquidity from SOL/USDT", amount: "$2,300", time: "12 min ago" },
+    { id: 6, type: "trade", user: "0x3333...cccc", action: "Bought 0.5 BTC", amount: "$30,125", time: "15 min ago" },
+    { id: 7, type: "trade", user: "0x4444...dddd", action: "Sold 100 MATIC", amount: "$85", time: "18 min ago" },
+    { id: 8, type: "liquidity", user: "0x5555...eeee", action: "Added liquidity to UNI/ETH", amount: "$1,200", time: "20 min ago" },
+    { id: 9, type: "trade", user: "0x6666...ffff", action: "Bought 200 ADA", amount: "$104", time: "22 min ago" },
+    { id: 10, type: "trade", user: "0x7777...gggg", action: "Sold 5 AVAX", amount: "$176", time: "25 min ago" },
+    { id: 11, type: "trade", user: "0x8888...hhhh", action: "Bought 3 LINK", amount: "$47", time: "28 min ago" },
+    { id: 12, type: "liquidity", user: "0x9999...iiii", action: "Added liquidity to BTC/ETH", amount: "$5,000", time: "30 min ago" },
   ];
 
   // Mock broadcast data (10 trending, 4 following)
@@ -248,51 +217,35 @@ export default function HomePage() {
       appName="Home" 
       navbarItems={[]}
     >
-      <main className="flex flex-col md:flex-row gap-8 p-6">
+      <main className="flex flex-row gap-8 p-6 min-h-[calc(100vh-4rem)] h-[calc(100vh-4rem)]">
         {/* Main Content */}
-        <div className="flex-1 flex flex-col space-y-6">
-          {/* Trending Tokens */}
-          <Card className="border-0 shadow-none rounded-2xl">
+        <div className="flex-1 flex flex-col h-full">
+          <Card className="border-0 shadow-none mb-2">
             <CardHeader>
               <CardTitle className="text-white text-lg">Trending Tokens</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <CardContent className="p-0 pb-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {trendingTokens.map((token) => (
-                  <Card key={token.id} className="bg-black/80 backdrop-blur border border-white/20 rounded-xl p-4 flex flex-col items-center shadow-2xl">
-                    <div className="w-10 h-10 rounded-full bg-violet-500/30 flex items-center justify-center mb-2">
+                  <Card key={token.id} className="bg-white/10 border-0 shadow-2xl p-2 flex flex-col items-center">
+                    <div className="w-7 h-7 rounded-full bg-violet-500/20 flex items-center justify-center mb-1">
                       {(() => {
                         const Logo = tokenLogos[token.symbol];
-                        return Logo ? <Logo className="w-7 h-7" /> : <span className="text-white font-bold text-lg">{token.symbol}</span>;
+                        return Logo ? <Logo className="w-5 h-5" /> : <span className="text-white font-bold text-base">{token.symbol}</span>;
                       })()}
                     </div>
-                    <div className="text-white font-semibold">{token.name}</div>
-                    <div className="text-gray-400 text-xs">{token.symbol}</div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-white font-semibold">${token.price.toLocaleString()}</span>
-                        <div className={`flex items-center ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {token.change24h >= 0 ? (
-                            <ArrowUpRight className="h-4 w-4 mr-1" />
-                          ) : (
-                            <ArrowDownLeft className="h-4 w-4 mr-1" />
-                          )}
-                          <span className="font-medium">{Math.abs(token.change24h)}%</span>
-                        </div>
+                    <div className="text-white font-medium text-xs">{token.name}</div>
+                    <div className="text-gray-400 text-[10px]">{token.symbol}</div>
+                    <div className="flex items-center justify-between w-full mt-1">
+                      <span className="text-white text-xs font-semibold">${token.price.toLocaleString()}</span>
+                      <div className={`flex items-center ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'} text-xs`}>
+                        {token.change24h >= 0 ? (
+                          <ArrowUpRight className="h-3 w-3 mr-0.5" />
+                        ) : (
+                          <ArrowDownLeft className="h-3 w-3 mr-0.5" />
+                        )}
+                        <span className="font-medium">{Math.abs(token.change24h)}%</span>
                       </div>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                          <span className="text-gray-400">Market Cap</span>
-                          <p className="text-white">${token.marketCap}</p>
-                        </div>
-                        <div>
-                          <span className="text-gray-400">Volume</span>
-                          <p className="text-white">${token.volume24h}</p>
-                        </div>
-                      </div>
-                      <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                        Trade
-                      </Button>
                     </div>
                   </Card>
                 ))}
@@ -300,24 +253,22 @@ export default function HomePage() {
             </CardContent>
           </Card>
           {/* Recent Activity */}
-          <Card className="border border-white/20 bg-black/80 backdrop-blur rounded-2xl shadow-2xl">
+          <Card className="border-0 bg-white/10 shadow-2xl">
             <CardHeader>
               <CardTitle className="text-white text-lg">Recent Activity</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="divide-y divide-white/10">
+            <CardContent className="p-2">
+              <div className="divide-y divide-white/10 max-h-64 overflow-y-auto">
                 {recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex flex-col gap-1 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 border border-white/10">
-                        <span className="text-white font-bold">{activity.user[2]}</span>
-                      </div>
-                      <span className="text-white font-medium text-base w-32">{activity.user}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap ${activity.type === 'trade' ? 'bg-green-700/60 text-green-300' : 'bg-blue-700/60 text-blue-300'}`}>{activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}</span>
-                      <span className="text-white font-medium flex-1">{activity.action}</span>
-                      <span className="text-xs text-gray-400 whitespace-nowrap">{activity.time}</span>
-                      <span className="text-white font-semibold">{activity.amount}</span>
+                  <div key={activity.id} className="flex items-center gap-2 py-2">
+                    <div className="w-6 h-6 flex items-center justify-center rounded-full bg-violet-500/20">
+                      <span className="text-white text-xs font-bold">{activity.user[2]}</span>
                     </div>
+                    <span className="text-white font-medium text-xs w-20 truncate">{activity.user}</span>
+                    <span className={`text-[10px] px-1 py-0.5 rounded font-bold whitespace-nowrap ${activity.type === 'trade' ? 'bg-green-700/60 text-green-300' : 'bg-blue-700/60 text-blue-300'}`}>{activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}</span>
+                    <span className="text-white font-normal flex-1 text-xs truncate">{activity.action}</span>
+                    <span className="text-[10px] text-gray-400 whitespace-nowrap">{activity.time}</span>
+                    <span className="text-white font-semibold text-xs">{activity.amount}</span>
                   </div>
                 ))}
               </div>
@@ -325,23 +276,23 @@ export default function HomePage() {
           </Card>
         </div>
         {/* Broadcasts Sidebar */}
-        <aside className="w-full md:w-1/2 flex-shrink-0 mt-8 md:mt-0 px-0 md:pl-4">
-          <div className="flex flex-col w-full">
-            <div className="text-white text-lg font-semibold mb-2">Broadcasts</div>
-            <Tabs defaultValue="trending" className="w-full">
-              <TabsList className="w-full flex bg-white/10 rounded-xl mb-2 h-8">
-                <TabsTrigger value="trending" className="flex-1 text-white text-xs py-1">Trending</TabsTrigger>
-                <TabsTrigger value="following" className="flex-1 text-white text-xs py-1">Following</TabsTrigger>
+        <aside className="flex-1 flex flex-col h-full min-h-0 mt-0 px-0 md:pl-4">
+          <div className="flex flex-col w-full h-full min-h-0 flex-1">
+            <div className="text-white text-base font-semibold mb-1">Broadcasts</div>
+            <Tabs defaultValue="trending" className="w-full h-full flex-1 min-h-0">
+              <TabsList className="w-full flex bg-white/10 rounded-xl mb-1 h-7 min-h-0">
+                <TabsTrigger value="trending" className="flex-1 text-white text-xs py-0.5 min-h-0">Trending</TabsTrigger>
+                <TabsTrigger value="following" className="flex-1 text-white text-xs py-0.5 min-h-0">Following</TabsTrigger>
               </TabsList>
-              <TabsContent value="trending">
-                <div className="flex flex-col gap-4 max-h-[500px] overflow-y-auto pr-2">
+              <TabsContent value="trending" className="h-full flex-1 min-h-0">
+                <div className="flex flex-col gap-4 h-full min-h-0 flex-1 overflow-y-auto pr-2 pb-8">
                   {mockBroadcastsTrending.map((b, i) => (
                     <BroadcastCard key={i} pos={b.pos} username={b.username} timeAgo={b.timeAgo} />
                   ))}
                 </div>
               </TabsContent>
-              <TabsContent value="following">
-                <div className="flex flex-col gap-4 max-h-[500px] overflow-y-auto pr-2">
+              <TabsContent value="following" className="h-full flex-1 min-h-0">
+                <div className="flex flex-col gap-4 h-full min-h-0 flex-1 overflow-y-auto pr-2 pb-8">
                   {mockBroadcastsFollowing.map((b, i) => (
                     <BroadcastCard key={i} pos={b.pos} username={b.username} timeAgo={b.timeAgo} />
                   ))}

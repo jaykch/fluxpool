@@ -293,7 +293,7 @@ export default function MessagesPage() {
       <div className="flex flex-row w-full min-h-[calc(100vh-4rem)] h-[calc(100vh-4rem)] max-w-none gap-0">
         {/* Left: Message list */}
         <div className="w-full max-w-xs flex-shrink-0">
-          <Card className="bg-white/5 border border-white/10 rounded-2xl h-full flex flex-col overflow-hidden">
+          <Card className="bg-white/5 border border-white/10 h-full flex flex-col overflow-hidden">
             <CardHeader className="flex flex-row items-center gap-2 pb-4">
               <MessageCircle className="h-6 w-6 text-violet-500" />
               <CardTitle className="text-lg text-white">Messages</CardTitle>
@@ -331,7 +331,7 @@ export default function MessagesPage() {
         </div>
         {/* Right: Conversation */}
         <div className="flex-1 flex flex-col">
-          <Card className="bg-white/5 border border-white/10 rounded-2xl h-full flex flex-col">
+          <Card className="bg-white/5 border border-white/10 h-full flex flex-col">
             <CardHeader className="flex flex-row items-center gap-2 pb-4">
               <Link href={`/profile/${selectedThread?.ens || selectedThread?.sender}`} className="flex items-center gap-2 group">
                 <Avatar className="w-8 h-8 group-hover:ring-2 group-hover:ring-violet-500">
@@ -358,7 +358,7 @@ export default function MessagesPage() {
                 } else {
                   return (
                     <div key={i} className={`flex ${m.fromMe ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`rounded-xl px-4 py-2 max-w-xs ${m.broadcast ? 'bg-yellow-500/90 text-black font-bold' : m.fromMe ? 'bg-violet-600 text-white' : 'bg-white/10 text-gray-200'} shadow-sm`}> 
+                      <div className={`rounded-lg px-4 py-2 max-w-xs ${m.broadcast ? 'bg-yellow-500/90 text-black font-bold' : m.fromMe ? 'bg-gradient-to-br from-purple-500/60 via-purple-600/60 to-fuchsia-500/60 text-white border border-purple-400/40 shadow-lg backdrop-blur-md' : 'bg-white/10 text-gray-200'} shadow-sm`}> 
                         {m.text}
                         <div className="text-xs text-gray-400 mt-1 text-right">{m.time}</div>
                       </div>
