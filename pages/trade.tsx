@@ -49,17 +49,16 @@ export default function DashboardPage() {
   // Update the state initialization
   const [chartData, setChartData] = useState(generateSampleData('BTC', 730)); // 2 years of data
   // Add this state for the selected token
-  const [selectedToken, setSelectedToken] = useState({ symbol: 'BTC/USDT', name: 'Bitcoin' });
+  const [selectedToken, setSelectedToken] = useState<{ symbol: string; name: string }>({ symbol: 'BTC/USDT', name: 'Bitcoin' });
 
   // Update the token selection handler
   const handleTokenSelect = (token: any) => {
     setSelectedToken({
-      symbol: `${token.symbol}/USDT`,
-      name: token.name
+      symbol: token && token.symbol ? `${token.symbol}/USDT` : 'BTC/USDT',
+      name: token && token.name ? token.name : 'Bitcoin',
     });
-    
     // Generate 2 years of historical data for the selected token
-    const newData = generateSampleData(token.symbol, 730);
+    const newData = generateSampleData(token && token.symbol ? token.symbol : 'BTC', 730);
     setChartData(newData);
   };
 
@@ -73,8 +72,8 @@ export default function DashboardPage() {
   useEffect(() => {
     if (router.isReady) {
       const { token0, token1 } = router.query;
-      const t0 = typeof token0 === 'string' ? token0 : '';
-      const t1 = typeof token1 === 'string' ? token1 : '';
+      const t0 = typeof token0 === 'string' ? token0 : undefined;
+      const t1 = typeof token1 === 'string' ? token1 : undefined;
       if (t0 && t1) {
         const symbol = `${t0}/${t1}`;
         setSelectedToken({ symbol, name: `${t0}/${t1} Pool` });
@@ -117,7 +116,7 @@ export default function DashboardPage() {
             </div>
             
             {/* Sidebar - 30% width */}
-            <div className="w-[30%] border-l border-gray-700 p-4 space-y-4">
+            <div className="w-[30%] p-4 space-y-4">
               {/* Trading Panel */}
               <TradingPanel />
 
@@ -126,7 +125,7 @@ export default function DashboardPage() {
 
               {/* Token Info Section */}
               <TokenInfo 
-                symbol={selectedToken.symbol.split('/')[0]} 
+                symbol={(selectedToken.symbol && selectedToken.symbol.split('/')[0]) || 'BTC'}
                 name={selectedToken.name}
               />
             </div>

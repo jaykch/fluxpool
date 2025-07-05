@@ -31,12 +31,12 @@ export default function BalanceWidget() {
             <ChevronDown className="h-4 w-4 text-gray-400" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuContent align="end" className="w-48 bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl text-white">
           <DropdownMenuItem className="flex items-center space-x-2">
             <Wallet className="mr-2 h-4 w-4" />
             <span>Balance: {balance.toFixed(4)} ETH</span>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="bg-white/10 dark:bg-black/30" />
           <DropdownMenuItem 
             className="flex items-center space-x-2"
             onClick={() => setIsDepositModalOpen(true)}

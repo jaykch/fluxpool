@@ -290,15 +290,15 @@ export default function MessagesPage() {
 
   return (
     <Layout accountId="" appName="Messages" navbarItems={[]}> 
-      <div className="flex flex-row w-full min-h-[80vh] max-w-none gap-0">
+      <div className="flex flex-row w-full min-h-[calc(100vh-4rem)] h-[calc(100vh-4rem)] max-w-none gap-0">
         {/* Left: Message list */}
         <div className="w-full max-w-xs flex-shrink-0">
-          <Card className="bg-white/5 border border-white/10 rounded-2xl h-full overflow-hidden">
+          <Card className="bg-white/5 border border-white/10 rounded-2xl h-full flex flex-col overflow-hidden">
             <CardHeader className="flex flex-row items-center gap-2 pb-4">
               <MessageCircle className="h-6 w-6 text-violet-500" />
               <CardTitle className="text-lg text-white">Messages</CardTitle>
             </CardHeader>
-            <CardContent className="divide-y divide-white/10 p-0 overflow-y-auto max-h-[70vh]">
+            <CardContent className="divide-y divide-white/10 p-0 overflow-y-auto flex-1 h-full">
               {threads.map((msg) => {
                 const profileUrl = `/profile/${msg.ens || msg.sender}`;
                 return (
@@ -344,7 +344,7 @@ export default function MessagesPage() {
                 <Megaphone className="h-4 w-4 mr-1" /> Send Broadcast
               </Button>
             </CardHeader>
-            <CardContent className="flex-1 flex flex-col gap-2 p-6 overflow-y-auto max-h-[60vh]">
+            <CardContent className="flex-1 flex flex-col gap-2 p-6 overflow-y-auto h-full">
               {(selectedThread?.messages ?? []).map((m: any, i: number) => {
                 if (m.broadcast && m.pos) {
                   const pos = rehydratePos(m.pos);

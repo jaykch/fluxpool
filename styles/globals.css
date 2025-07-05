@@ -82,6 +82,6 @@
   body {
     @apply bg-background text-foreground;
     min-height: 100vh;
-    background: black;
+    background: linear-gradient(135deg, #181c2f 0%, #23243a 60%, #1a1830 100%);
   }
 }

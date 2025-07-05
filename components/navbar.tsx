@@ -213,14 +213,14 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
                 </span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 bg-black/80 backdrop-blur border border-white/20 shadow-2xl rounded-xl text-gray-200">
+            <DropdownMenuContent align="end" className="w-64 bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl text-white">
               <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuSeparator className="bg-white/10 dark:bg-black/30" />
               {/* Mock notifications */}
               <DropdownMenuItem>New follower: trader123</DropdownMenuItem>
               <DropdownMenuItem>Trade executed: +2.5 ETH</DropdownMenuItem>
               <DropdownMenuItem>PnL update: +$1,200</DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuSeparator className="bg-white/10 dark:bg-black/30" />
               <DropdownMenuItem className="text-center text-xs text-gray-400">View all notifications</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -255,9 +255,9 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
                 <ChevronDown className="ml-1 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-black/80 backdrop-blur border border-white/20 shadow-2xl rounded-xl text-gray-200">
+            <DropdownMenuContent align="end" className="w-48 bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl text-white">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuSeparator className="bg-white/10 dark:bg-black/30" />
               <DropdownMenuItem onClick={() => router.push('/account')}>
                 <User className="mr-2 h-4 w-4" />
                 Your account
@@ -266,7 +266,7 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuSeparator className="bg-white/10 dark:bg-black/30" />
               <DropdownMenuItem onClick={logout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Sign out

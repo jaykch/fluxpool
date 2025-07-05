@@ -71,12 +71,12 @@ export default function TokenSearch({ onTokenSelect }: TokenSearchProps) {
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          className="pl-10 pr-10 w-64 bg-white/10 backdrop-blur border border-white/20 text-white placeholder:text-muted-foreground focus:border-violet-500 focus:ring-2 focus:ring-violet-500/40 focus:bg-white/20 transition-all duration-200 rounded-xl shadow-md"
+          className="pl-9 pr-8 w-80 h-9 text-sm bg-white/10 dark:bg-black/20 backdrop-blur-lg border-0 text-white placeholder:text-muted-foreground focus:border-violet-500 focus:ring-2 focus:ring-violet-500/40 focus:bg-white/20 transition-all duration-200 rounded-2xl shadow-2xl"
         />
         {searchTerm && (
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={() => {
               setSearchTerm('');
               setIsOpen(false);
@@ -91,33 +91,33 @@ export default function TokenSearch({ onTokenSelect }: TokenSearchProps) {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-50 max-h-60 overflow-y-auto rounded-xl border border-white/20 bg-black/80 backdrop-blur shadow-2xl">
+        <div className="absolute top-full left-0 right-0 mt-2 z-50 max-h-60 overflow-y-auto bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl">
           {filteredTokens.length > 0 ? (
             filteredTokens.map((token) => (
               <div
                 key={token.symbol}
                 onClick={() => handleTokenSelect(token)}
-                className="flex items-center justify-between px-4 py-3 hover:bg-violet-600/30 cursor-pointer border-b border-white/10 last:border-b-0 transition-colors"
+                className="flex items-center justify-between px-3 py-2 hover:bg-violet-600/20 cursor-pointer border-b border-white/10 last:border-b-0 transition-colors text-sm"
               >
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-violet-600 rounded-full flex items-center justify-center shadow">
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-violet-600 rounded-full flex items-center justify-center shadow">
                     <span className="text-white text-xs font-bold">{token.symbol[0]}</span>
                   </div>
                   <div>
-                    <div className="text-white font-medium">{token.symbol}</div>
-                    <div className="text-gray-400 text-sm">{token.name}</div>
+                    <div className="text-white font-medium text-sm">{token.symbol}</div>
+                    <div className="text-gray-400 text-xs">{token.name}</div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-white font-medium">${token.price.toLocaleString()}</div>
-                  <div className={`text-sm ${token.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <div className="text-right min-w-[70px]">
+                  <div className="text-white font-medium text-xs">${token.price.toLocaleString()}</div>
+                  <div className={`text-xs ${token.change >= 0 ? 'text-green-400' : 'text-red-400'}`}> 
                     {token.change >= 0 ? '+' : ''}{token.change}%
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="px-4 py-3 text-gray-400 text-center">
+            <div className="px-3 py-2 text-gray-400 text-center text-sm">
               No tokens found
             </div>
           )}
