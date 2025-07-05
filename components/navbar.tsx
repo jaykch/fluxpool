@@ -201,7 +201,7 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/account')}>
                 <User className="mr-2 h-4 w-4" />
                 Your account
               </DropdownMenuItem>

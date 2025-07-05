@@ -5,6 +5,7 @@ import { DataTable } from "@/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { getENSorAddress } from "@/lib/ens";
 import { Progress } from "@/components/ui/progress";
+import Link from "next/link";
 
 // Helper for time ago
 function timeAgo(date: Date): string {
@@ -86,11 +87,17 @@ const tradeColumns: ColumnDef<Trade>[] = [
   {
     accessorKey: "address",
     header: () => "Address",
-    cell: ({ row }) => (
-      <span className="font-mono text-xs text-blue-400">
-        {row.original.ens || row.original.address.slice(0, 6) + "..." + row.original.address.slice(-4)}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const ens = row.original.ens;
+      const address = row.original.address;
+      return ens ? (
+        <Link href={`/profile/${ens}`} className="text-blue-400 underline underline-offset-2 hover:text-blue-300 transition-colors">
+          {ens}
+        </Link>
+      ) : (
+        <span className="font-mono text-xs text-blue-400">{address.slice(0, 6) + "..." + address.slice(-4)}</span>
+      );
+    },
   },
 ];
 
@@ -149,7 +156,11 @@ function ColoredProgress({ value, positive }: { value: number; positive: boolean
   );
 }
 const holdersColumns: ColumnDef<Holder>[] = [
-  { accessorKey: "address", header: () => "Address" },
+  { accessorKey: "address", header: () => "Address", cell: ({ row }) => (
+    <Link href={`/profile/${row.original.address}`} className="text-blue-400 underline underline-offset-2 hover:text-blue-300 transition-colors">
+      {row.original.address}
+    </Link>
+  ) },
   { accessorKey: "avgBuy", header: () => "Avg Buy" },
   { accessorKey: "avgSold", header: () => "Avg Sold" },
   { accessorKey: "positionSize", header: () => "Position Size" },
@@ -176,7 +187,11 @@ interface TopTrader {
 }
 const topTradersColumns: ColumnDef<TopTrader>[] = [
   { accessorKey: "rank", header: () => "#" },
-  { accessorKey: "wallet", header: () => "Wallet" },
+  { accessorKey: "wallet", header: () => "Wallet", cell: ({ row }) => (
+    <Link href={`/profile/${row.original.wallet}`} className="text-blue-400 underline underline-offset-2 hover:text-blue-300 transition-colors">
+      {row.original.wallet}
+    </Link>
+  ) },
   { accessorKey: "balance", header: () => "ETH Balance" },
   { accessorKey: "bought", header: () => "Bought (Avg Buy)" },
   { accessorKey: "sold", header: () => "Sold (Avg Sell)" },

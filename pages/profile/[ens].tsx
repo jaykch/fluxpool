@@ -1,27 +1,17 @@
-import { useState } from 'react';
-import Layout from '@/components/layout';
+import { GetServerSideProps } from 'next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
 import Head from 'next/head';
+import Layout from '@/components/layout';
+import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/data-table';
 import { ColumnDef } from '@tanstack/react-table';
-import { TrendingUp, UserPlus, MessageCircle, Wallet } from 'lucide-react';
-
-const mockENS = 'myaccount.eth';
-const mockAddress = '0x1234...abcd';
-const mockProfile = {
-  avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=myaccount.eth`,
-  twitter: '@myaccount',
-  description: 'This is your FluxPool account profile. You can manage your smart wallet and see your ENS info here.',
-  website: 'https://fluxpool.xyz',
-  email: 'me@fluxpool.xyz',
-  location: 'Internet',
-  github: 'myaccount',
-  telegram: '@myaccount',
-};
+import { TrendingUp, UserPlus, MessageCircle } from 'lucide-react';
+import Link from 'next/link';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { useState } from 'react';
 
 // --- Mock Data and Columns (reuse from TradingData) ---
 function timeAgo(date: Date): string {
@@ -64,24 +54,40 @@ const mockTrades: Trade[] = Array.from({ length: 10 }, (_, i) => ({
   price: randomPrice(),
 }));
 
-export default function AccountPage() {
-  const [wallet, setWallet] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+const mockTextRecords = (ens: string) => ({
+  avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(ens)}`,
+  twitter: `@${ens.replace('.eth', '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 12)}`,
+  description: `This is a mock profile for ${ens}. ${ens} is a legendary onchain trader, meme connoisseur, and DeFi degen.`,
+  website: `https://www.${ens.replace('.eth', '')}.xyz`,
+  email: `${ens.replace('.eth', '')}@notareal.email`,
+  location: 'Internet',
+  github: `https://github.com/${ens.replace('.eth', '')}`,
+  telegram: `t.me/${ens.replace('.eth', '')}`,
+});
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const ens = ctx.params?.ens as string;
+  return {
+    props: {
+      ens,
+      records: mockTextRecords(ens),
+    },
+  };
+};
+
+export default function ProfilePage({ ens, records }: { ens: string; records: Record<string, string> }) {
   // Mock PnL and stats
   const pnl = Math.random() > 0.5 ? `+$${(Math.random() * 10000).toFixed(2)}` : `-$${(Math.random() * 10000).toFixed(2)}`;
   const followers = Math.floor(Math.random() * 1000);
   const following = Math.floor(Math.random() * 500);
-  const handleGenerateWallet = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setWallet('0xFAKE1234...WALLET');
-      setLoading(false);
-    }, 1200);
-  };
+  const [msgOpen, setMsgOpen] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [msgSent, setMsgSent] = useState(false);
+  const isOwnProfile = ens === 'myaccount.eth'; // Demo: replace with real user check
   return (
-    <Layout accountId={mockENS} appName="My Account" navbarItems={[]}> 
+    <Layout accountId={ens} appName="Profile" navbarItems={[]}>
       <Head>
-        <title>My Account | FluxPool</title>
+        <title>{ens} | FluxPool Profile</title>
       </Head>
       <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl mx-auto min-h-screen py-12">
         {/* Left: Profile Info */}
@@ -89,30 +95,54 @@ export default function AccountPage() {
           <Card className="w-full shadow-md">
             <CardContent className="flex flex-col items-center md:items-start space-y-4 p-6">
               <Avatar className="w-28 h-28 mb-2">
-                <AvatarImage src={mockProfile.avatar} alt={mockENS} />
-                <AvatarFallback>{mockENS.slice(0, 2).toUpperCase()}</AvatarFallback>
+                <AvatarImage src={records.avatar} alt={ens} />
+                <AvatarFallback>{ens.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
-              <span className="text-2xl font-bold text-gray-200">{mockENS}</span>
-              <Badge variant="default" className="text-xs text-gray-400">{mockAddress}</Badge>
-              <span className="text-xs text-gray-400">{mockProfile.email}</span>
-              <Button onClick={handleGenerateWallet} disabled={loading || !!wallet} className="w-full mt-2 flex items-center gap-2">
-                <Wallet className="h-4 w-4" />
-                {wallet ? 'Wallet Generated' : loading ? 'Generating...' : 'Generate Privy Smart Wallet'}
-              </Button>
-              {wallet && (
-                <div className="w-full text-center mt-2">
-                  <span className="text-green-500 font-mono text-sm text-gray-200">{wallet}</span>
-                  <div className="text-xs text-gray-400 mt-1">(Mock wallet address)</div>
-                </div>
-              )}
+              <h2 className="text-2xl font-bold text-gray-200">{ens}</h2>
+              <Badge variant="default">{records.email}</Badge>
+              <div className="flex gap-2 mt-2">
+                <Button size="sm" variant="outline" className="flex items-center gap-1"><UserPlus className="h-4 w-4" /> Follow</Button>
+                {!isOwnProfile && (
+                  <Button size="sm" variant="default" className="flex items-center gap-1" onClick={() => setMsgOpen(true)}><MessageCircle className="h-4 w-4" /> Message</Button>
+                )}
+              </div>
+              {/* Message Dialog */}
+              <Dialog open={msgOpen} onOpenChange={setMsgOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Send Message to {ens}</DialogTitle>
+                  </DialogHeader>
+                  {msgSent ? (
+                    <div className="text-green-400 text-center py-8">Message sent successfully!</div>
+                  ) : (
+                    <>
+                      <textarea
+                        className="w-full min-h-[80px] rounded border border-gray-700 bg-gray-900 p-2 text-white"
+                        placeholder={`Write a message to ${ens}...`}
+                        value={msg}
+                        onChange={e => setMsg(e.target.value)}
+                      />
+                      <DialogFooter>
+                        <Button
+                          onClick={() => { setMsgSent(true); setTimeout(() => { setMsgOpen(false); setMsgSent(false); setMsg(''); }, 1200); }}
+                          disabled={!msg.trim()}
+                        >Send</Button>
+                        <DialogClose asChild>
+                          <Button variant="ghost">Cancel</Button>
+                        </DialogClose>
+                      </DialogFooter>
+                    </>
+                  )}
+                </DialogContent>
+              </Dialog>
               <Separator className="my-2 bg-muted" />
               <div className="w-full space-y-1">
-                <ProfileField label="Description" value={mockProfile.description} />
-                <ProfileField label="Twitter" value={mockProfile.twitter} />
-                <ProfileField label="Website" value={mockProfile.website} />
-                <ProfileField label="Location" value={mockProfile.location} />
-                <ProfileField label="GitHub" value={mockProfile.github} />
-                <ProfileField label="Telegram" value={mockProfile.telegram} />
+                <ProfileField label="Description" value={records.description || ''} />
+                <ProfileField label="Twitter" value={records.twitter || ''} />
+                <ProfileField label="Website" value={records.website || ''} />
+                <ProfileField label="Location" value={records.location || ''} />
+                <ProfileField label="GitHub" value={records.github || ''} />
+                <ProfileField label="Telegram" value={records.telegram || ''} />
               </div>
               <Separator className="my-2 bg-muted" />
               <div className="flex gap-4 text-xs text-gray-400">
@@ -160,9 +190,9 @@ export default function AccountPage() {
 
 function ProfileField({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between w-full">
-      <span className="text-muted-foreground text-sm text-gray-400">{label}</span>
-      <span className="text-sm font-medium text-right truncate max-w-[60%] text-gray-200">{value}</span>
+    <div className="flex items-center justify-between w-full text-sm text-gray-400">
+      <span className="font-medium text-gray-400">{label}</span>
+      <span className="truncate max-w-[60%] text-right text-gray-200">{value}</span>
     </div>
   );
 } 
