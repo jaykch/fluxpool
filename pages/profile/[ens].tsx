@@ -16,6 +16,85 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Trophy, Share2, CheckCircle2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
+// --- SVG LOGOS AND TOKENLOGOS (MUST BE FIRST) ---
+function EthereumLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#23292F" />
+      <g>
+        <polygon points="16,5 16,22.5 25,16.5" fill="#8C8C8C" />
+        <polygon points="16,5 7,16.5 16,22.5" fill="#343434" />
+        <polygon points="16,24 16,27 25,18" fill="#8C8C8C" />
+        <polygon points="16,27 16,24 7,18" fill="#343434" />
+        <polygon points="16,22.5 25,16.5 16,19.5" fill="#3C3C3B" />
+        <polygon points="16,19.5 7,16.5 16,22.5" fill="#8C8C8C" />
+      </g>
+    </svg>
+  );
+}
+function SolanaLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="16" fill="#131313" />
+      <linearGradient id="solana-gradient-1" x1="6" y1="8" x2="26" y2="24" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <linearGradient id="solana-gradient-2" x1="6" y1="14" x2="26" y2="30" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <linearGradient id="solana-gradient-3" x1="6" y1="20" x2="26" y2="36" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <g>
+        <rect x="8" y="9" width="16" height="3" rx="1.5" fill="url(#solana-gradient-1)" />
+        <rect x="8" y="15" width="16" height="3" rx="1.5" fill="url(#solana-gradient-2)" />
+        <rect x="8" y="21" width="16" height="3" rx="1.5" fill="url(#solana-gradient-3)" />
+      </g>
+    </svg>
+  );
+}
+function BitcoinLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#F7931A" />
+      <g>
+        <path d="M16 7v18" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+        <path d="M12 11h7a3 3 0 0 1 0 6h-7m0 0h7a3 3 0 0 1 0 6h-7" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+      </g>
+    </svg>
+  );
+}
+function UniswapLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#FF007A" />
+      <g>
+        <path d="M10 22c2-2 10-2 12-8" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+        <ellipse cx="20" cy="13" rx="1.5" ry="2.5" fill="#fff" />
+        <ellipse cx="12" cy="19" rx="1.5" ry="2.5" fill="#fff" />
+      </g>
+    </svg>
+  );
+}
+const tokenLogos: Record<string, string | (() => JSX.Element)> = {
+  ETH: () => <EthereumLogoSVG className="w-6 h-6" />, // Use SVG for ETH
+  SOL: () => <SolanaLogoSVG className="w-6 h-6" />, // Use SVG for SOL
+  BTC: () => <BitcoinLogoSVG className="w-6 h-6" />, // Use SVG for BTC
+  UNI: () => <UniswapLogoSVG className="w-6 h-6" />, // Use SVG for UNI
+  LINK: 'https://cryptologos.cc/logos/chainlink-link-logo.png',
+  AVAX: 'https://cryptologos.cc/logos/avalanche-avax-logo.png',
+  MATIC: 'https://cryptologos.cc/logos/polygon-matic-logo.png',
+  ADA: 'https://cryptologos.cc/logos/cardano-ada-logo.png',
+};
+
+// Fallback avatar SVG for missing tokens
+function DefaultTokenLogo({ className = "w-6 h-6" }: { className?: string }) {
+  return <svg className={className} viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#444" /></svg>;
+}
+
 // --- Mock Data and Columns (reuse from TradingData) ---
 function timeAgo(date: Date): string {
   const now = Date.now();
@@ -84,11 +163,55 @@ const mockFollowers = [
   { name: 'tofushit888', avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=tofushit888' },
   { name: 'Bull_Trap_', avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=bulltrap' },
 ];
+// Enhanced mock holdings with PnL, time held, amount, bought, sold
 const mockHoldings = [
-  { symbol: 'SOL', name: 'Solana', avatar: '/logos/solana.png', percent: 50.58 },
-  { symbol: 'Ana', name: 'Ana', avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=ana', percent: 46.05 },
-  { symbol: 'W', name: 'W', avatar: '/logos/w.png', percent: 3.36 },
+  {
+    symbol: 'SOL', name: 'Solana', avatar: tokenLogos.SOL || (() => <DefaultTokenLogo />), percent: 50.58,
+    amountHeld: 120,
+    amountBought: 200,
+    amountSoldProfit: 50,
+    amountSoldLoss: 30,
+    pnl: '+$1,250.00',
+    pnlPercent: '+12.5%',
+    timeHeld: 1000 * 60 * 60 * 24 * 7 + 1000 * 60 * 60 * 5, // 7d 5h
+  },
+  {
+    symbol: 'ETH', name: 'Ethereum', avatar: tokenLogos.ETH || (() => <DefaultTokenLogo />), percent: 30.12,
+    amountHeld: 10,
+    amountBought: 15,
+    amountSoldProfit: 2,
+    amountSoldLoss: 3,
+    pnl: '-$320.00',
+    pnlPercent: '-2.1%',
+    timeHeld: 1000 * 60 * 60 * 24 * 2 + 1000 * 60 * 60 * 8, // 2d 8h
+  },
+  {
+    symbol: 'BTC', name: 'Bitcoin', avatar: tokenLogos.BTC || (() => <DefaultTokenLogo />), percent: 15.30,
+    amountHeld: 0.5,
+    amountBought: 1.2,
+    amountSoldProfit: 0.4,
+    amountSoldLoss: 0.3,
+    pnl: '+$2,100.00',
+    pnlPercent: '+5.8%',
+    timeHeld: 1000 * 60 * 60 * 24 * 14 + 1000 * 60 * 60 * 2, // 14d 2h
+  },
+  {
+    symbol: 'UNI', name: 'Uniswap', avatar: tokenLogos.UNI || (() => <DefaultTokenLogo />), percent: 4.00,
+    amountHeld: 300,
+    amountBought: 500,
+    amountSoldProfit: 120,
+    amountSoldLoss: 80,
+    pnl: '+$80.00',
+    pnlPercent: '+1.2%',
+    timeHeld: 1000 * 60 * 60 * 24 * 1 + 1000 * 60 * 60 * 12, // 1d 12h
+  },
 ];
+
+function formatTimeHeld(ms: number) {
+  const d = Math.floor(ms / (1000 * 60 * 60 * 24));
+  const h = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  return `${d ? `${d}d ` : ''}${h}h`;
+}
 
 // Lightweight chart for broadcasts (dynamically import to avoid SSR issues)
 const MiniChart = dynamic(() => import('@/components/MiniChart'), { ssr: false });
@@ -105,88 +228,11 @@ type Position = {
   pnlPercent: () => string;
   time: Date;
 };
-// Custom Ethereum SVG logo component
-function EthereumLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="16" cy="16" r="16" fill="#23292F" />
-      <g>
-        <polygon points="16,5 16,22.5 25,16.5" fill="#8C8C8C" />
-        <polygon points="16,5 7,16.5 16,22.5" fill="#343434" />
-        <polygon points="16,24 16,27 25,18" fill="#8C8C8C" />
-        <polygon points="16,27 16,24 7,18" fill="#343434" />
-        <polygon points="16,22.5 25,16.5 16,19.5" fill="#3C3C3B" />
-        <polygon points="16,19.5 7,16.5 16,22.5" fill="#8C8C8C" />
-      </g>
-    </svg>
-  );
-}
-// Custom Solana SVG logo component
-function SolanaLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="32" height="32" rx="16" fill="#131313" />
-      <linearGradient id="solana-gradient-1" x1="6" y1="8" x2="26" y2="24" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#00FFA3" />
-        <stop offset="1" stopColor="#DC1FFF" />
-      </linearGradient>
-      <linearGradient id="solana-gradient-2" x1="6" y1="14" x2="26" y2="30" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#00FFA3" />
-        <stop offset="1" stopColor="#DC1FFF" />
-      </linearGradient>
-      <linearGradient id="solana-gradient-3" x1="6" y1="20" x2="26" y2="36" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#00FFA3" />
-        <stop offset="1" stopColor="#DC1FFF" />
-      </linearGradient>
-      <g>
-        <rect x="8" y="9" width="16" height="3" rx="1.5" fill="url(#solana-gradient-1)" />
-        <rect x="8" y="15" width="16" height="3" rx="1.5" fill="url(#solana-gradient-2)" />
-        <rect x="8" y="21" width="16" height="3" rx="1.5" fill="url(#solana-gradient-3)" />
-      </g>
-    </svg>
-  );
-}
-// Custom Bitcoin SVG logo component
-function BitcoinLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="16" cy="16" r="16" fill="#F7931A" />
-      <g>
-        <path d="M16 7v18" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-        <path d="M12 11h7a3 3 0 0 1 0 6h-7m0 0h7a3 3 0 0 1 0 6h-7" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-      </g>
-    </svg>
-  );
-}
-
-// Custom Uniswap SVG logo component
-function UniswapLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="16" cy="16" r="16" fill="#FF007A" />
-      <g>
-        <path d="M10 22c2-2 10-2 12-8" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-        <ellipse cx="20" cy="13" rx="1.5" ry="2.5" fill="#fff" />
-        <ellipse cx="12" cy="19" rx="1.5" ry="2.5" fill="#fff" />
-      </g>
-    </svg>
-  );
-}
-const tokenLogos: Record<string, string | (() => JSX.Element)> = {
-  ETH: () => <EthereumLogoSVG className="w-6 h-6" />, // Use SVG for ETH
-  SOL: () => <SolanaLogoSVG className="w-6 h-6" />, // Use SVG for SOL
-  BTC: () => <BitcoinLogoSVG className="w-6 h-6" />, // Use SVG for BTC
-  UNI: () => <UniswapLogoSVG className="w-6 h-6" />, // Use SVG for UNI
-  LINK: 'https://cryptologos.cc/logos/chainlink-link-logo.png',
-  AVAX: 'https://cryptologos.cc/logos/avalanche-avax-logo.png',
-  MATIC: 'https://cryptologos.cc/logos/polygon-matic-logo.png',
-  ADA: 'https://cryptologos.cc/logos/cardano-ada-logo.png',
-};
 const mockPositions: Position[] = [
   {
     symbol: 'ETH',
     name: 'Ethereum',
-    avatar: tokenLogos.ETH ?? 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    avatar: tokenLogos.ETH || (() => <DefaultTokenLogo />),
     side: Math.random() > 0.5 ? 'Long' : 'Short',
     entry: 2400 + Math.random() * 100,
     current: 2400 + Math.random() * 100,
@@ -203,7 +249,7 @@ const mockPositions: Position[] = [
   {
     symbol: 'SOL',
     name: 'Solana',
-    avatar: tokenLogos.SOL ?? 'https://cryptologos.cc/logos/solana-sol-logo.png',
+    avatar: tokenLogos.SOL || (() => <DefaultTokenLogo />),
     side: Math.random() > 0.5 ? 'Long' : 'Short',
     entry: 100 + Math.random() * 10,
     current: 100 + Math.random() * 10,
@@ -220,7 +266,7 @@ const mockPositions: Position[] = [
   {
     symbol: 'BTC',
     name: 'Bitcoin',
-    avatar: tokenLogos.BTC,
+    avatar: tokenLogos.BTC || (() => <DefaultTokenLogo />),
     side: Math.random() > 0.5 ? 'Long' : 'Short',
     entry: 60000 + Math.random() * 2000,
     current: 60000 + Math.random() * 2000,
@@ -237,7 +283,7 @@ const mockPositions: Position[] = [
   {
     symbol: 'UNI',
     name: 'Uniswap',
-    avatar: tokenLogos.UNI,
+    avatar: tokenLogos.UNI || (() => <DefaultTokenLogo />),
     side: Math.random() > 0.5 ? 'Long' : 'Short',
     entry: 10 + Math.random() * 2,
     current: 10 + Math.random() * 2,
@@ -480,16 +526,39 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
               </TabsContent>
               <TabsContent value="holdings">
                 <div className="divide-y divide-white/10">
-                  {mockHoldings.map((h, i) => (
-                    <div key={h.symbol} className="flex items-center py-3 gap-3">
-                      <Avatar className="w-8 h-8">
-                        <AvatarImage src={h.avatar} />
-                        <AvatarFallback>{h.symbol[0]}</AvatarFallback>
-                      </Avatar>
-                      <span className="text-white font-medium flex-1">{h.symbol}</span>
-                      <span className="text-gray-300 font-mono text-sm">{h.percent.toFixed(2)}%</span>
-                    </div>
-                  ))}
+                  {mockHoldings.map((h, i) => {
+                    const heldPercent = h.amountBought > 0 ? (h.amountHeld / h.amountBought) * 100 : 0;
+                    const soldProfitPercent = h.amountBought > 0 ? (h.amountSoldProfit / h.amountBought) * 100 : 0;
+                    const soldLossPercent = h.amountBought > 0 ? (h.amountSoldLoss / h.amountBought) * 100 : 0;
+                    return (
+                      <div key={h.symbol} className="flex flex-col gap-1 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 border border-white/10">
+                            {typeof h.avatar === 'function' ? h.avatar() : <img src={h.avatar} alt={h.symbol} className="w-6 h-6 object-contain" />}
+                          </div>
+                          <span className="text-white font-medium text-base w-16">{h.symbol}</span>
+                          <span className="text-gray-300 font-mono text-xs">{h.percent.toFixed(2)}%</span>
+                          <span className={`font-mono text-xs ${h.pnl.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>{h.pnl} ({h.pnlPercent})</span>
+                          <span className="text-xs text-gray-400">Held: <span className="text-white font-mono">{h.amountHeld}</span></span>
+                          <span className="text-xs text-gray-400">Bought: <span className="text-white font-mono">{h.amountBought}</span></span>
+                          <span className="text-xs text-blue-400">Sold (Profit): <span className="text-white font-mono">{h.amountSoldProfit}</span></span>
+                          <span className="text-xs text-red-400">Sold (Loss): <span className="text-white font-mono">{h.amountSoldLoss}</span></span>
+                          <span className="text-xs text-gray-400">Time: <span className="text-white font-mono">{formatTimeHeld(h.timeHeld)}</span></span>
+                        </div>
+                        {/* Bar visualization for held vs sold at profit/loss */}
+                        <div className="w-full flex items-center gap-2 mt-1">
+                          <div className="flex-1 h-3 bg-white/20 rounded-full overflow-hidden relative">
+                            <div className="absolute left-0 top-0 h-full bg-violet-500/80" style={{ width: `${heldPercent}%` }} />
+                            <div className="absolute left-0 top-0 h-full bg-green-500/80" style={{ left: `${heldPercent}%`, width: `${soldProfitPercent}%` }} />
+                            <div className="absolute left-0 top-0 h-full bg-red-500/70" style={{ left: `${heldPercent + soldProfitPercent}%`, width: `${soldLossPercent}%` }} />
+                          </div>
+                          <span className="text-xs text-violet-400">{heldPercent.toFixed(0)}% held</span>
+                          <span className="text-xs text-green-400">{soldProfitPercent.toFixed(0)}% sold (profit)</span>
+                          <span className="text-xs text-red-400">{soldLossPercent.toFixed(0)}% sold (loss)</span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </TabsContent>
             </Tabs>
