@@ -116,6 +116,7 @@ interface Position {
   current: string;
   pnl: string;
   pnlPercent: string;
+  curve?: string; // Add curve field
 }
 const spotColumns: ColumnDef<Position>[] = [
   { accessorKey: "symbol", header: () => "Symbol" },
@@ -126,8 +127,11 @@ const spotColumns: ColumnDef<Position>[] = [
   { accessorKey: "pnl", header: () => "PnL", cell: ({ row }) => <span className={row.original.pnl.startsWith("+") ? "text-green-400" : "text-red-400"}>{row.original.pnl}</span> },
   { accessorKey: "pnlPercent", header: () => "%" },
 ];
-const curveColumns = spotColumns.map(col => col); // For demo, same as spot
-const limitColumns = spotColumns.map(col => col); // For demo, same as spot
+// Curve columns: add curve name as first column
+const curveColumns: ColumnDef<Position>[] = [
+  { accessorKey: "curve", header: () => "Curve" },
+  ...spotColumns,
+];
 
 // --- Holders Columns ---
 interface Holder {
@@ -211,8 +215,8 @@ const mockSpotPositions: Position[] = [
   { id: 2, symbol: "BTC/USDT", type: "Short", size: "0.15 BTC", entry: "$43,200.00", current: "$43,000.00", pnl: "+$30.00", pnlPercent: "+0.46%" },
   { id: 3, symbol: "UNI/USDT", type: "Long", size: "150 UNI", entry: "$6.50", current: "$7.85", pnl: "+$202.50", pnlPercent: "+20.77%" },
 ];
-const mockCurvePositions = mockSpotPositions.map((p, i) => ({ ...p, type: "Curve" }));
-const mockLimitPositions = mockSpotPositions.map((p, i) => ({ ...p, type: "Limit" }));
+const mockCurveNames = ["Uniswap V3", "Curve.fi", "Balancer", "SushiSwap", "PancakeSwap"];
+const mockCurvePositions = mockSpotPositions.map((p, i) => ({ ...p, type: "Curve", curve: mockCurveNames[i % mockCurveNames.length] }));
 
 const mockHolders: Holder[] = Array.from({ length: 10 }, (_, i) => {
   const sold = Math.floor(Math.random() * 100);
@@ -289,11 +293,10 @@ export default function TradingData() {
   return (
     <div className="w-full min-h-screen flex flex-col flex-1">
       <Tabs value={tab} onValueChange={setTab} className="w-full flex flex-col flex-1 min-h-0">
-        <TabsList className="grid w-full grid-cols-6 gap-1 text-xs h-9">
+        <TabsList className="grid w-full grid-cols-5 gap-1 text-xs h-9">
           <TabsTrigger value="trades" className="px-2 py-1 h-8"> <TrendingUp className="h-3 w-3 mr-1" /> Trades </TabsTrigger>
           <TabsTrigger value="spot" className="px-2 py-1 h-8"> <BarChart3 className="h-3 w-3 mr-1" /> Spot Positions </TabsTrigger>
           <TabsTrigger value="curve" className="px-2 py-1 h-8"> <Wallet className="h-3 w-3 mr-1" /> Curve Positions </TabsTrigger>
-          <TabsTrigger value="limit" className="px-2 py-1 h-8"> <Wallet className="h-3 w-3 mr-1" /> Limit Positions </TabsTrigger>
           <TabsTrigger value="holders" className="px-2 py-1 h-8"> <Users className="h-3 w-3 mr-1" /> Holders </TabsTrigger>
           <TabsTrigger value="traders" className="px-2 py-1 h-8"> <Trophy className="h-3 w-3 mr-1" /> Top Traders </TabsTrigger>
         </TabsList>
@@ -311,11 +314,6 @@ export default function TradingData() {
         <TabsContent value="curve" className="mt-4 flex-1 min-h-0">
           <div className="flex flex-col flex-1 min-h-0">
             <DataTable columns={curveColumns} data={mockCurvePositions} />
-          </div>
-        </TabsContent>
-        <TabsContent value="limit" className="mt-4 flex-1 min-h-0">
-          <div className="flex flex-col flex-1 min-h-0">
-            <DataTable columns={limitColumns} data={mockLimitPositions} />
           </div>
         </TabsContent>
         <TabsContent value="holders" className="mt-4 flex-1 min-h-0">

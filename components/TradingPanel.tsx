@@ -9,17 +9,15 @@ import { useState } from "react";
 import PriceBins from './PriceBins';
 
 // Reusable Order Component
-function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
+function OrderComponent({ type }: { type: 'spot' | 'curve' }) {
   const [amount, setAmount] = useState('');
-  const [price, setPrice] = useState('');
   const [liquidityRatio, setLiquidityRatio] = useState([50]);
-  const currentPrice = 2450.50; // Mock current price - you can make this dynamic
+  const currentPrice = 2450.50;
 
   const getIcon = () => {
     switch (type) {
       case 'spot': return <BarChart3 className="h-4 w-4 text-white" />;
       case 'curve': return <ArrowUpRight className="h-4 w-4 text-white" />;
-      case 'limit': return <Clock className="h-4 w-4 text-white" />;
     }
   };
 
@@ -27,12 +25,10 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
     switch (type) {
       case 'spot': return 'Spot Order';
       case 'curve': return 'Curve Order';
-      case 'limit': return 'Limit Order';
     }
   };
 
   const handlePercentageClick = (percentage: number) => {
-    // Mock balance - you can make this dynamic
     const balance = 2.45;
     const calculatedAmount = (balance * percentage) / 100;
     setAmount(calculatedAmount.toFixed(4));
@@ -45,7 +41,6 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
           {getIcon()}
           <h4 className="text-sm font-medium text-white">{getTitle()}</h4>
         </div>
-
         {/* Liquidity Ratio Slider */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -65,10 +60,8 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
             <span>100%</span>
           </div>
         </div>
-
-        {/* Price Bins */}
-        <PriceBins symbol="ETH" />
-
+        {/* Price Bins (only for curve) */}
+        {type === 'curve' && <PriceBins symbol="ETH" />}
         <div className="space-y-3">
           <div>
             <Label htmlFor={`amount-${type}`} className="text-gray-300 text-sm">Amount (ETH)</Label>
@@ -80,7 +73,6 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
               onChange={(e) => setAmount(e.target.value)}
               className="bg-gray-800 border-gray-600 text-white"
             />
-            
             {/* Percentage Buttons */}
             <div className="flex mt-2">
               <Button 
@@ -117,21 +109,6 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
               </Button>
             </div>
           </div>
-
-          {type !== 'spot' && (
-            <div>
-              <Label htmlFor={`price-${type}`} className="text-gray-300 text-sm">Price (USDT)</Label>
-              <Input
-                id={`price-${type}`}
-                type="number"
-                placeholder="0.00"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                className="bg-gray-800 border-gray-600 text-white"
-              />
-            </div>
-          )}
-
           <div className="flex space-x-2 pt-2">
             <Button 
               className="flex-1 bg-green-600 hover:bg-green-700 text-white"
@@ -156,81 +133,20 @@ function OrderComponent({ type }: { type: 'spot' | 'curve' | 'limit' }) {
 
 // Main Trading Panel Component
 export default function TradingPanel() {
+  const [tab, setTab] = useState<'spot' | 'curve'>('spot');
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-white mb-4">Trading Panel</h3>
-      
-      <Tabs defaultValue="preset1" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="preset1">Preset 1</TabsTrigger>
-          <TabsTrigger value="preset2">Preset 2</TabsTrigger>
-          <TabsTrigger value="preset3">Preset 3</TabsTrigger>
+      <Tabs value={tab} onValueChange={v => setTab(v as 'spot' | 'curve')} className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="spot">Spot</TabsTrigger>
+          <TabsTrigger value="curve">Curve</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="preset1" className="mt-4">
-          <Tabs defaultValue="spot" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="spot">Spot</TabsTrigger>
-              <TabsTrigger value="curve">Curve</TabsTrigger>
-              <TabsTrigger value="limit">Limit</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="spot" className="mt-4">
-              <OrderComponent type="spot" />
-            </TabsContent>
-
-            <TabsContent value="curve" className="mt-4">
-              <OrderComponent type="curve" />
-            </TabsContent>
-
-            <TabsContent value="limit" className="mt-4">
-              <OrderComponent type="limit" />
-            </TabsContent>
-          </Tabs>
+        <TabsContent value="spot" className="mt-4">
+          <OrderComponent type="spot" />
         </TabsContent>
-
-        <TabsContent value="preset2" className="mt-4">
-          <Tabs defaultValue="spot" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="spot">Spot</TabsTrigger>
-              <TabsTrigger value="curve">Curve</TabsTrigger>
-              <TabsTrigger value="limit">Limit</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="spot" className="mt-4">
-              <OrderComponent type="spot" />
-            </TabsContent>
-
-            <TabsContent value="curve" className="mt-4">
-              <OrderComponent type="curve" />
-            </TabsContent>
-
-            <TabsContent value="limit" className="mt-4">
-              <OrderComponent type="limit" />
-            </TabsContent>
-          </Tabs>
-        </TabsContent>
-
-        <TabsContent value="preset3" className="mt-4">
-          <Tabs defaultValue="spot" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="spot">Spot</TabsTrigger>
-              <TabsTrigger value="curve">Curve</TabsTrigger>
-              <TabsTrigger value="limit">Limit</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="spot" className="mt-4">
-              <OrderComponent type="spot" />
-            </TabsContent>
-
-            <TabsContent value="curve" className="mt-4">
-              <OrderComponent type="curve" />
-            </TabsContent>
-
-            <TabsContent value="limit" className="mt-4">
-              <OrderComponent type="limit" />
-            </TabsContent>
-          </Tabs>
+        <TabsContent value="curve" className="mt-4">
+          <OrderComponent type="curve" />
         </TabsContent>
       </Tabs>
     </div>

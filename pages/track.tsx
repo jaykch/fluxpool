@@ -20,9 +20,22 @@ import {
   Activity,
   Target
 } from "lucide-react";
+import Link from 'next/link';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { useState } from 'react';
 
 export default function TrackPage() {
   const { user, ready, authenticated } = usePrivy();
+
+  // Mock tracked traders
+  const trackedTraders = [
+    { ens: 'diamondhandz.eth', address: '0x1234...abcd', status: 'Active' },
+    { ens: 'ape4life.eth', address: '0x5678...efgh', status: 'Idle' },
+    { ens: 'rektwizard.eth', address: '0x9abc...def0', status: 'Trading' },
+  ];
+  const [msgOpen, setMsgOpen] = useState<string | null>(null);
+  const [msg, setMsg] = useState('');
+  const [msgSent, setMsgSent] = useState(false);
 
   // Mock watchlist data
   const watchlist = [
@@ -119,6 +132,57 @@ export default function TrackPage() {
             Add Alert
           </Button>
         </div>
+
+        {/* Tracked Traders Section */}
+        <Card className="border-gray-700 mb-6">
+          <CardHeader>
+            <CardTitle className="text-white">Traders You're Tracking</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-4">
+              {trackedTraders.map((trader) => (
+                <div key={trader.ens} className="flex items-center gap-4">
+                  <Link href={`/profile/${trader.ens}`} className="text-blue-400 underline underline-offset-2 hover:text-blue-300 transition-colors text-lg font-semibold">
+                    {trader.ens}
+                  </Link>
+                  <Badge variant="secondary" className="text-xs">{trader.status}</Badge>
+                  <Button size="sm" variant="outline" onClick={() => setMsgOpen(trader.ens)}>
+                    Message
+                  </Button>
+                  {/* Message Dialog */}
+                  <Dialog open={msgOpen === trader.ens} onOpenChange={open => setMsgOpen(open ? trader.ens : null)}>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Send Message to {trader.ens}</DialogTitle>
+                      </DialogHeader>
+                      {msgSent && msgOpen === trader.ens ? (
+                        <div className="text-green-400 text-center py-8">Message sent successfully!</div>
+                      ) : (
+                        <>
+                          <textarea
+                            className="w-full min-h-[80px] rounded border border-gray-700 bg-gray-900 p-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            placeholder={`Write a message to ${trader.ens}...`}
+                            value={msg}
+                            onChange={e => setMsg(e.target.value)}
+                          />
+                          <DialogFooter>
+                            <Button
+                              onClick={() => { setMsgSent(true); setTimeout(() => { setMsgOpen(null); setMsgSent(false); setMsg(''); }, 1200); }}
+                              disabled={!msg.trim()}
+                            >Send</Button>
+                            <DialogClose asChild>
+                              <Button variant="ghost">Cancel</Button>
+                            </DialogClose>
+                          </DialogFooter>
+                        </>
+                      )}
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Search Bar */}
         <div className="relative">

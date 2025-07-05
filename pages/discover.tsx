@@ -30,7 +30,7 @@ export default function DiscoverPage() {
     >
       <main className="flex-1 p-6 space-y-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-white">Discover Uniswap V3 Pools</h1>
+          <h1 className="text-3xl font-bold text-white">Discover Uniswap V3 Tokens</h1>
         </div>
         {/* Chain Selector Tabs */}
         <div className="mb-4">
@@ -56,7 +56,7 @@ export default function DiscoverPage() {
         )}
         {/* Only show table when not loading or when pools are present */}
         {(!loading || pools.length > 0) && (
-          <DataTable columns={poolColumns} data={pools} caption={`Top Uniswap V3 Pools (${NETWORKS.find(n => n.id === selectedNetwork)?.label})`} />
+          <DataTable columns={poolColumns} data={pools} caption={`Top Uniswap V3 Tokens (${NETWORKS.find(n => n.id === selectedNetwork)?.label})`} />
         )}
       </main>
     </Layout>

@@ -83,6 +83,9 @@ export default function AccountPage() {
       <Head>
         <title>My Account | FluxPool</title>
       </Head>
+      <div className="flex flex-col items-center w-full">
+        
+      </div>
       <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl mx-auto min-h-screen py-12">
         {/* Left: Profile Info */}
         <div className="w-full md:w-1/3 flex flex-col items-center md:items-start space-y-6">
@@ -165,4 +168,4 @@ function ProfileField({ label, value }: { label: string; value: string }) {
       <span className="text-sm font-medium text-right truncate max-w-[60%] text-gray-200">{value}</span>
     </div>
   );
-} 
+}
