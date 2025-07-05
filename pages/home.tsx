@@ -85,11 +85,11 @@ function UniswapLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
   );
 }
 
-const tokenLogos: Record<string, () => JSX.Element> = {
-  ETH: () => <EthereumLogoSVG className="w-6 h-6" />, // Use SVG for ETH
-  SOL: () => <SolanaLogoSVG className="w-6 h-6" />, // Use SVG for SOL
-  BTC: () => <BitcoinLogoSVG className="w-6 h-6" />, // Use SVG for BTC
-  UNI: () => <UniswapLogoSVG className="w-6 h-6" />, // Use SVG for UNI
+const tokenLogos: Record<string, (props: { className?: string }) => JSX.Element> = {
+  ETH: (props) => <EthereumLogoSVG {...props} />, // Use SVG for ETH
+  SOL: (props) => <SolanaLogoSVG {...props} />, // Use SVG for SOL
+  BTC: (props) => <BitcoinLogoSVG {...props} />, // Use SVG for BTC
+  UNI: (props) => <UniswapLogoSVG {...props} />, // Use SVG for UNI
 };
 
 export default function HomePage() {
@@ -252,16 +252,19 @@ export default function HomePage() {
         {/* Main Content */}
         <div className="flex-1 flex flex-col space-y-6">
           {/* Trending Tokens */}
-          <Card className="bg-white/5 border border-white/10 rounded-2xl">
+          <Card className="border-0 shadow-none rounded-2xl">
             <CardHeader>
               <CardTitle className="text-white text-lg">Trending Tokens</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {trendingTokens.map((token) => (
-                  <Card key={token.id} className="bg-white/10 border-0 rounded-xl p-4 flex flex-col items-center">
+                  <Card key={token.id} className="bg-black/80 backdrop-blur border border-white/20 rounded-xl p-4 flex flex-col items-center shadow-2xl">
                     <div className="w-10 h-10 rounded-full bg-violet-500/30 flex items-center justify-center mb-2">
-                      <span className="text-white font-bold text-lg">{token.symbol}</span>
+                      {(() => {
+                        const Logo = tokenLogos[token.symbol];
+                        return Logo ? <Logo className="w-7 h-7" /> : <span className="text-white font-bold text-lg">{token.symbol}</span>;
+                      })()}
                     </div>
                     <div className="text-white font-semibold">{token.name}</div>
                     <div className="text-gray-400 text-xs">{token.symbol}</div>
@@ -297,24 +300,24 @@ export default function HomePage() {
             </CardContent>
           </Card>
           {/* Recent Activity */}
-          <Card className="bg-white/5 border border-white/10 rounded-2xl">
+          <Card className="border border-white/20 bg-black/80 backdrop-blur rounded-2xl shadow-2xl">
             <CardHeader>
               <CardTitle className="text-white text-lg">Recent Activity</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="divide-y divide-white/10">
                 {recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-center justify-between p-4 bg-white/10 rounded-xl">
+                  <div key={activity.id} className="flex flex-col gap-1 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-violet-500/30 flex items-center justify-center">
+                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 border border-white/10">
                         <span className="text-white font-bold">{activity.user[2]}</span>
                       </div>
-                      <div>
-                        <div className="text-white font-medium">{activity.action}</div>
-                        <div className="text-gray-400 text-xs">{activity.time}</div>
-                      </div>
+                      <span className="text-white font-medium text-base w-32">{activity.user}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap ${activity.type === 'trade' ? 'bg-green-700/60 text-green-300' : 'bg-blue-700/60 text-blue-300'}`}>{activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}</span>
+                      <span className="text-white font-medium flex-1">{activity.action}</span>
+                      <span className="text-xs text-gray-400 whitespace-nowrap">{activity.time}</span>
+                      <span className="text-white font-semibold">{activity.amount}</span>
                     </div>
-                    <div className="text-white font-semibold">{activity.amount}</div>
                   </div>
                 ))}
               </div>
