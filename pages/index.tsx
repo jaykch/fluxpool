@@ -49,7 +49,7 @@ export default function HomePage() {
         <meta name="description" content="Next-generation Web3 trading platform" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-gradient-to-br from-violet-900/60 via-black/80 to-violet-950/80">
+      <main className="flex min-h-screen flex-col items-center justify-center p-6">
         <div className="flex flex-col items-center justify-center space-y-6 bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl rounded-2xl p-10 border-0">
           <h1 className="text-4xl font-bold text-white flex items-center gap-3">
             Welcome to <Logo />
