@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Send, Megaphone } from "lucide-react";
+import { MessageCircle, Send, Megaphone, Plus, Users } from "lucide-react";
 import Layout from "@/components/layout";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { useMemo } from "react";
@@ -155,6 +155,48 @@ const mockPositions = [
 const LOCAL_STORAGE_KEY = "fluxpool-messages";
 
 const initialThreads = [
+  // Mock group chat
+  {
+    id: 100,
+    group: true,
+    groupName: "Alpha Traders",
+    participants: [
+      { username: "trader123", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=trader123" },
+      { username: "ape4life", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=ape4life" },
+      { username: "diamondhandz", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=diamondhandz" },
+      { username: "you", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=you" },
+    ],
+    avatar: null, // Will use group icon
+    preview: "Welcome to the group chat!",
+    time: "5m ago",
+    unread: false,
+    messages: [
+      { from: "trader123", text: "Welcome to the group chat!", time: "5m ago" },
+      { from: "ape4life", text: "Let's share our best trades here.", time: "4m ago" },
+      { from: "you", text: "Sounds good! 🚀", time: "3m ago" },
+      { from: "diamondhandz", text: "Who's watching BTC?", time: "2m ago" },
+    ],
+  },
+  // Second mock group chat
+  {
+    id: 101,
+    group: true,
+    groupName: "Fluxpool Degens",
+    participants: [
+      { username: "moonshot", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=moonshot" },
+      { username: "paperhands", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=paperhands" },
+      { username: "you", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=you" },
+    ],
+    avatar: null,
+    preview: "Degens unite!",
+    time: "10m ago",
+    unread: true,
+    messages: [
+      { from: "moonshot", text: "Degens unite!", time: "10m ago" },
+      { from: "you", text: "Ready for the next pump?", time: "9m ago" },
+      { from: "paperhands", text: "Always!", time: "8m ago" },
+    ],
+  },
   {
     id: 1,
     sender: "trader123",
@@ -237,6 +279,9 @@ export default function MessagesPage() {
   const [threads, setThreads] = useState<any[]>(getThreadsFromStorage());
   const [selectedId, setSelectedId] = useState<number>(threads[0]?.id || 1);
   const [reply, setReply] = useState("");
+  const [newDialogOpen, setNewDialogOpen] = useState(false);
+  const [newUsers, setNewUsers] = useState("");
+  const [newGroupName, setNewGroupName] = useState("");
   const selectedThread = threads.find((t) => t.id === selectedId);
 
   // Keep threads in sync with localStorage
@@ -258,6 +303,56 @@ export default function MessagesPage() {
       t.id === selectedId ? { ...t, messages: [...t.messages, msg] } : t
     ));
     setReply("");
+  }
+
+  // Add new conversation (single or group)
+  function handleCreateConversation(e: React.FormEvent) {
+    e.preventDefault();
+    const users = newUsers.split(",").map(u => u.trim()).filter(Boolean);
+    if (users.length === 0) return;
+    const id = Math.max(...threads.map(t => t.id)) + 1;
+    if (users.length === 1) {
+      // Single user chat
+      const username = users[0];
+      const newThread = {
+        id,
+        sender: username,
+        avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${username}`,
+        preview: "New conversation started.",
+        time: "now",
+        unread: false,
+        messages: [
+          { fromMe: false, text: `Hi, this is ${username}!`, time: "now" },
+        ],
+      };
+      setThreads(prev => [newThread, ...prev]);
+      setSelectedId(id);
+    } else {
+      // Group chat
+      const groupName = newGroupName.trim() || `Group Chat (${users.length} users)`;
+      const participants = users.map(username => ({
+        username,
+        avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${username}`,
+      })).concat({ username: "you", avatar: "https://api.dicebear.com/7.x/identicon/svg?seed=you" });
+      const newThread = {
+        id,
+        group: true,
+        groupName,
+        participants,
+        avatar: null,
+        preview: `Group chat with ${users.join(", ")}`,
+        time: "now",
+        unread: false,
+        messages: [
+          { from: "you", text: `Welcome to ${groupName}!`, time: "now" },
+        ],
+      };
+      setThreads(prev => [newThread, ...prev]);
+      setSelectedId(id);
+    }
+    setNewDialogOpen(false);
+    setNewUsers("");
+    setNewGroupName("");
   }
 
   const randomBroadcasts = [
@@ -296,10 +391,46 @@ export default function MessagesPage() {
           <Card className="bg-white/5 border border-white/10 h-full flex flex-col overflow-hidden">
             <CardHeader className="flex flex-row items-center gap-2 pb-4">
               <MessageCircle className="h-6 w-6 text-violet-500" />
-              <CardTitle className="text-lg text-white">Messages</CardTitle>
+              <CardTitle className="text-lg text-white flex-1">Messages</CardTitle>
+              <Button size="icon" variant="ghost" className="text-white hover:bg-white/10" onClick={() => setNewDialogOpen(true)} title="New Conversation">
+                <Plus className="h-5 w-5" />
+              </Button>
             </CardHeader>
             <CardContent className="divide-y divide-white/10 p-0 overflow-y-auto flex-1 h-full">
               {threads.map((msg) => {
+                if (msg.group) {
+                  // Group chat: show stacked avatars and group name
+                  return (
+                    <button
+                      key={msg.id}
+                      className={`w-full flex items-center gap-4 px-6 py-4 hover:bg-white/10 transition-colors text-left ${selectedId === msg.id ? 'bg-white/10' : ''}`}
+                      onClick={() => setSelectedId(msg.id)}
+                    >
+                      <span className="relative flex -space-x-2">
+                        {msg.participants.slice(0, 3).map((p: any, i: any) => (
+                          <Avatar key={p.username} className="w-8 h-8 border-2 border-white/20 z-10" style={{ zIndex: 10 - i, left: i * 12 }}>
+                            <AvatarImage src={p.avatar} />
+                            <AvatarFallback>{p.username[0]?.toUpperCase() || '?'}</AvatarFallback>
+                          </Avatar>
+                        ))}
+                        {msg.participants.length > 3 && (
+                          <span className="w-8 h-8 flex items-center justify-center rounded-full bg-violet-700 text-white text-xs border-2 border-white/20 z-0">+{msg.participants.length - 3}</span>
+                        )}
+                      </span>
+                      <span className="font-semibold text-white truncate max-w-[120px] flex items-center gap-1">
+                        <Users className="w-4 h-4 mr-1 text-violet-400" />
+                        {msg.groupName}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          {msg.unread && <Badge variant="destructive" className="ml-1">Unread</Badge>}
+                        </div>
+                        <div className="text-gray-300 text-sm truncate max-w-xs">{msg.preview}</div>
+                      </div>
+                      <div className="text-xs text-gray-400 whitespace-nowrap">{msg.time}</div>
+                    </button>
+                  );
+                }
                 const profileUrl = `/profile/${msg.ens || msg.sender}`;
                 return (
                   <button
@@ -333,13 +464,33 @@ export default function MessagesPage() {
         <div className="flex-1 flex flex-col">
           <Card className="bg-white/5 border border-white/10 h-full flex flex-col">
             <CardHeader className="flex flex-row items-center gap-2 pb-4">
-              <Link href={`/profile/${selectedThread?.ens || selectedThread?.sender}`} className="flex items-center gap-2 group">
-                <Avatar className="w-8 h-8 group-hover:ring-2 group-hover:ring-violet-500">
-                  <AvatarImage src={selectedThread?.avatar} />
-                  <AvatarFallback>{selectedThread?.sender?.[0]?.toUpperCase() || '?'}</AvatarFallback>
-                </Avatar>
-                <CardTitle className="text-base text-white group-hover:underline">{selectedThread?.sender}</CardTitle>
-              </Link>
+              {selectedThread?.group ? (
+                <div className="flex items-center gap-2">
+                  <span className="relative flex -space-x-2">
+                    {selectedThread.participants.slice(0, 3).map((p: any, i: any) => (
+                      <Avatar key={p.username} className="w-7 h-7 border-2 border-white/20 z-10" style={{ zIndex: 10 - i, left: i * 10 }}>
+                        <AvatarImage src={p.avatar} />
+                        <AvatarFallback>{p.username[0]?.toUpperCase() || '?'}</AvatarFallback>
+                      </Avatar>
+                    ))}
+                    {selectedThread.participants.length > 3 && (
+                      <span className="w-7 h-7 flex items-center justify-center rounded-full bg-violet-700 text-white text-xs border-2 border-white/20 z-0">+{selectedThread.participants.length - 3}</span>
+                    )}
+                  </span>
+                  <CardTitle className="text-base text-white group-hover:underline flex items-center gap-1">
+                    <Users className="w-4 h-4 mr-1 text-violet-400" />
+                    {selectedThread.groupName}
+                  </CardTitle>
+                </div>
+              ) : (
+                <Link href={`/profile/${selectedThread?.ens || selectedThread?.sender}`} className="flex items-center gap-2 group">
+                  <Avatar className="w-8 h-8 group-hover:ring-2 group-hover:ring-violet-500">
+                    <AvatarImage src={selectedThread?.avatar} />
+                    <AvatarFallback>{selectedThread?.sender?.[0]?.toUpperCase() || '?'}</AvatarFallback>
+                  </Avatar>
+                  <CardTitle className="text-base text-white group-hover:underline">{selectedThread?.sender}</CardTitle>
+                </Link>
+              )}
               <Button size="sm" variant="outline" className="ml-auto" onClick={handleSendBroadcast}>
                 <Megaphone className="h-4 w-4 mr-1" /> Send Broadcast
               </Button>
@@ -355,10 +506,31 @@ export default function MessagesPage() {
                       </div>
                     </div>
                   );
+                } else if (selectedThread?.group && m.from) {
+                  // Group chat message
+                  const sender = selectedThread.participants.find((p: any) => p.username === m.from);
+                  const isMe = m.from === "you";
+                  return (
+                    <div key={i} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                      <div className="flex items-end gap-2">
+                        {!isMe && (
+                          <Avatar className="w-7 h-7">
+                            <AvatarImage src={sender?.avatar} />
+                            <AvatarFallback>{sender?.username[0]?.toUpperCase() || '?'}</AvatarFallback>
+                          </Avatar>
+                        )}
+                        <div className={`rounded-lg px-4 py-2 max-w-xs ${isMe ? 'bg-purple-500/20 backdrop-blur-md border border-purple-400/20 text-white shadow-lg' : 'bg-white/10 text-gray-200'} shadow-sm`}>
+                          <span className="font-semibold text-xs text-violet-300">{isMe ? "You" : sender?.username}</span>
+                          <div>{m.text}</div>
+                          <div className="text-xs text-gray-400 mt-1 text-right">{m.time}</div>
+                        </div>
+                      </div>
+                    </div>
+                  );
                 } else {
                   return (
                     <div key={i} className={`flex ${m.fromMe ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`rounded-lg px-4 py-2 max-w-xs ${m.broadcast ? 'bg-yellow-500/90 text-black font-bold' : m.fromMe ? 'bg-gradient-to-br from-purple-500/60 via-purple-600/60 to-fuchsia-500/60 text-white border border-purple-400/40 shadow-lg backdrop-blur-md' : 'bg-white/10 text-gray-200'} shadow-sm`}> 
+                      <div className={`rounded-lg px-4 py-2 max-w-xs ${m.broadcast ? 'bg-yellow-500/90 text-black font-bold' : m.fromMe ? 'bg-purple-500/20 backdrop-blur-md border border-purple-400/20 text-white shadow-lg' : 'bg-white/10 text-gray-200'} shadow-sm`}> 
                         {m.text}
                         <div className="text-xs text-gray-400 mt-1 text-right">{m.time}</div>
                       </div>
@@ -381,6 +553,38 @@ export default function MessagesPage() {
           </Card>
         </div>
       </div>
+      {/* New Conversation Dialog */}
+      <Dialog open={newDialogOpen} onOpenChange={setNewDialogOpen}>
+        <DialogContent className="bg-white/10 backdrop-blur-lg border-0 shadow-2xl rounded-2xl text-white">
+          <DialogHeader>
+            <DialogTitle>Start New Conversation</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleCreateConversation} className="flex flex-col gap-4 mt-2">
+            <input
+              className="rounded-lg bg-white/10 border border-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              placeholder="Enter username(s), comma separated"
+              value={newUsers}
+              onChange={e => setNewUsers(e.target.value)}
+              autoFocus
+            />
+            <input
+              className="rounded-lg bg-white/10 border border-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              placeholder="Group name (optional, for multiple users)"
+              value={newGroupName}
+              onChange={e => setNewGroupName(e.target.value)}
+              disabled={newUsers.split(",").map(u => u.trim()).filter(Boolean).length < 2}
+            />
+            <DialogFooter>
+              <Button type="submit" variant="default" disabled={!newUsers.trim()}>
+                Start Conversation
+              </Button>
+              <DialogClose asChild>
+                <Button type="button" variant="ghost">Cancel</Button>
+              </DialogClose>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 } 

@@ -207,6 +207,22 @@ export default function HomePage() {
     },
   ];
 
+  // Mock watchlist data
+  const watchlist = [
+    { symbol: 'ETH', name: 'Ethereum', price: 2450.50, change24h: 2.34 },
+    { symbol: 'BTC', name: 'Bitcoin', price: 60250, change24h: 0.42 },
+    { symbol: 'SOL', name: 'Solana', price: 102.30, change24h: -1.25 },
+    { symbol: 'UNI', name: 'Uniswap', price: 7.85, change24h: 5.67 },
+    { symbol: 'AVAX', name: 'Avalanche', price: 35.20, change24h: 4.56 },
+    { symbol: 'LINK', name: 'Chainlink', price: 15.67, change24h: -2.12 },
+    { symbol: 'MATIC', name: 'Polygon', price: 0.85, change24h: -1.34 },
+    { symbol: 'ADA', name: 'Cardano', price: 0.52, change24h: -0.89 },
+    { symbol: 'DOGE', name: 'Dogecoin', price: 0.08, change24h: 3.21 },
+    { symbol: 'XRP', name: 'XRP', price: 0.62, change24h: 1.12 },
+    { symbol: 'DOT', name: 'Polkadot', price: 7.23, change24h: 3.45 },
+    { symbol: 'ATOM', name: 'Cosmos', price: 9.45, change24h: 2.89 },
+  ];
+
   if (!ready || !authenticated) {
     return null;
   }
@@ -219,15 +235,47 @@ export default function HomePage() {
     >
       <main className="flex flex-row gap-8 p-6 min-h-[calc(100vh-4rem)] h-[calc(100vh-4rem)]">
         {/* Main Content */}
-        <div className="flex-1 flex flex-col h-full">
+        <div className="flex-1 flex flex-col h-full min-w-0">
+          <Card className="border-0 shadow-none mb-2">
+            <CardHeader>
+              <CardTitle className="text-white text-lg">Your Watchlist</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0 pb-3">
+              <div className="flex flex-row gap-2 overflow-x-auto pb-1">
+                {watchlist.map((token) => (
+                  <Card key={token.symbol} className="bg-white/10 border-0 shadow-2xl p-2 min-w-[120px] flex flex-col items-center">
+                    <div className="w-7 h-7 rounded-full bg-violet-500/20 flex items-center justify-center mb-1">
+                      {(() => {
+                        const Logo = tokenLogos[token.symbol];
+                        return Logo ? <Logo className="w-5 h-5" /> : <span className="text-white font-bold text-base">{token.symbol}</span>;
+                      })()}
+                    </div>
+                    <div className="text-white font-medium text-xs">{token.name}</div>
+                    <div className="text-gray-400 text-[10px]">{token.symbol}</div>
+                    <div className="flex items-center justify-between w-full mt-1">
+                      <span className="text-white text-xs font-semibold">${token.price.toLocaleString()}</span>
+                      <div className={`flex items-center ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'} text-xs`}>
+                        {token.change24h >= 0 ? (
+                          <ArrowUpRight className="h-3 w-3 mr-0.5" />
+                        ) : (
+                          <ArrowDownLeft className="h-3 w-3 mr-0.5" />
+                        )}
+                        <span className="font-medium">{Math.abs(token.change24h)}%</span>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
           <Card className="border-0 shadow-none mb-2">
             <CardHeader>
               <CardTitle className="text-white text-lg">Trending Tokens</CardTitle>
             </CardHeader>
             <CardContent className="p-0 pb-3">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <div className="flex flex-row gap-2 overflow-x-auto">
                 {trendingTokens.map((token) => (
-                  <Card key={token.id} className="bg-white/10 border-0 shadow-2xl p-2 flex flex-col items-center">
+                  <Card key={token.id} className="bg-white/10 border-0 shadow-2xl p-2 min-w-[120px] flex flex-col items-center">
                     <div className="w-7 h-7 rounded-full bg-violet-500/20 flex items-center justify-center mb-1">
                       {(() => {
                         const Logo = tokenLogos[token.symbol];

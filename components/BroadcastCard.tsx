@@ -11,12 +11,19 @@ export default function BroadcastCard({ pos, username, timeAgo }: {
       {/* Left: Info box (50%) */}
       <div className="w-1/2 flex flex-col p-6 min-w-0">
         <div className="flex flex-row items-start gap-3">
-          {/* Token logo top left */}
-          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center">
-            {typeof pos.avatar === 'function'
-              ? pos.avatar()
-              : <img src={pos.avatar} alt={pos.symbol} className="w-6 h-6 object-contain" />
-            }
+          {/* ENS avatar above coin avatar, stacked in a column */}
+          <div className="flex flex-col items-center gap-2 flex-shrink-0">
+            <img
+              src={`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(username)}`}
+              alt={username}
+              className="w-8 h-8 rounded-full border-2 border-white bg-white"
+            />
+            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center">
+              {typeof pos.avatar === 'function'
+                ? pos.avatar()
+                : <img src={pos.avatar} alt={pos.symbol} className="w-6 h-6 object-contain" />
+              }
+            </div>
           </div>
           {/* Name, time, token badge, long/short badge */}
           <div className="flex flex-col flex-1 min-w-0">
