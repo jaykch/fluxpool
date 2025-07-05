@@ -1,32 +1,10 @@
 import { useState } from 'react';
 
-const SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV';
-
-export async function fetchSubgraphPoolData(poolAddresses: string[]) {
-  if (!poolAddresses.length) return {};
-  const query = `{
-    pools(where: { id_in: [${poolAddresses.map(addr => `\"${addr}\"`).join(',')}] }) {
-      id
-      liquidity
-      volumeUSD
-      totalValueLockedUSD
-      txCount
-    }
-  }`;
-  const res = await fetch(SUBGRAPH_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query }),
-  });
-  const { data } = await res.json();
-  // Map by id for easy merging
-  const map: Record<string, any> = {};
-  if (data && data.pools) {
-    for (const pool of data.pools) {
-      map[pool.id.toLowerCase()] = pool;
-    }
-  }
-  return map;
+function getRandomInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function getRandomFloat(min: number, max: number, decimals = 2) {
+  return parseFloat((Math.random() * (max - min) + min).toFixed(decimals));
 }
 
 export function useUniswapPools() {
@@ -34,20 +12,20 @@ export function useUniswapPools() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPools = async (limit: number = 5) => {
+  const fetchPools = async (limit: string = '5', networkId: string = 'mainnet') => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/uniswap-pools?limit=${limit}`);
+      const response = await fetch(`/api/uniswap-pools?limit=${limit}&network_id=${networkId}`);
       const data = await response.json();
       let basePools = Array.isArray(data.data) ? data.data : [];
-      // Fetch subgraph data for these pools
-      const poolAddresses = basePools.map((p: any) => p.pool.toLowerCase());
-      const subgraphMap = await fetchSubgraphPoolData(poolAddresses);
-      // Merge subgraph data into base pools
+      // Mock liquidity, TVL, volume, txCount
       basePools = basePools.map((p: any) => ({
         ...p,
-        ...subgraphMap[p.pool.toLowerCase()],
+        liquidity: getRandomInt(1_000_000, 100_000_000),
+        totalValueLockedUSD: getRandomFloat(1_000_000, 500_000_000),
+        volumeUSD: getRandomFloat(100_000, 50_000_000),
+        txCount: getRandomInt(1_000, 1_000_000),
       }));
       setPools(basePools);
     } catch (err: any) {
