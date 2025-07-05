@@ -8,7 +8,7 @@ import Layout from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/data-table';
 import { ColumnDef } from '@tanstack/react-table';
-import { TrendingUp, UserPlus, MessageCircle } from 'lucide-react';
+import { TrendingUp, UserPlus, MessageCircle, Loader2, Check } from 'lucide-react';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { useState, useMemo } from 'react';
@@ -331,6 +331,28 @@ function rehydratePos(pos: any) {
   };
 }
 
+// Follow button with animation and feedback
+function FollowButton() {
+  const [state, setState] = useState<'idle' | 'loading' | 'followed'>('idle');
+  const handleFollow = () => {
+    setState('loading');
+    setTimeout(() => setState('followed'), 900);
+  };
+  return (
+    <Button
+      size="sm"
+      variant="outline"
+      className="flex items-center gap-1 transition-all duration-200"
+      disabled={state === 'loading' || state === 'followed'}
+      onClick={handleFollow}
+    >
+      {state === 'idle' && (<><UserPlus className="h-4 w-4" /> Follow</>)}
+      {state === 'loading' && (<Loader2 className="h-4 w-4 animate-spin" />)}
+      {state === 'followed' && (<><Check className="h-4 w-4" /> Followed</>)}
+    </Button>
+  );
+}
+
 export default function ProfilePage({ ens, records }: { ens: string; records: Record<string, string> }) {
   // Mock PnL and stats
   const pnl = Math.random() > 0.5 ? `+$${(Math.random() * 10000).toFixed(2)}` : `-$${(Math.random() * 10000).toFixed(2)}`;
@@ -438,7 +460,7 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
             </div>
             {/* Follow/Message buttons */}
             <div className="flex gap-2 mt-4">
-              <Button size="sm" variant="outline" className="flex items-center gap-1"><UserPlus className="h-4 w-4" /> Follow</Button>
+              <FollowButton />
               <Button size="sm" variant="default" className="flex items-center gap-1" onClick={() => setMsgOpen(true)}><MessageCircle className="h-4 w-4" /> Message</Button>
             </div>
             {/* Message Dialog */}

@@ -167,15 +167,15 @@ export default function DiscoverPage() {
         </aside>
       </main>
       {/* Onboarding/Education full-width at the bottom with shadcn elements */}
-      <div className="w-full px-0 pb-8 flex justify-center">
-        <Card className="w-full max-w-[1600px] bg-white/10 rounded-xl p-6 flex flex-col gap-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="w-full flex justify-center px-6 mb-8">
+        <Card className="w-full max-w-[1600px] bg-white/10 rounded-xl py-6 px-4 md:px-8 flex flex-col gap-y-6 gap-x-12">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-x-8">
             <h2 className="text-2xl font-bold text-white">Onboarding & Education</h2>
             <Button className="bg-gradient-to-br from-violet-500/60 to-fuchsia-500/60 text-white font-semibold shadow hover:from-violet-600/80 hover:to-fuchsia-600/80 transition">View Full Guide</Button>
           </div>
           {/* Stepper */}
-          <div className="flex flex-col md:flex-row gap-6 items-center justify-center">
-            <div className="flex flex-row gap-8 w-full max-w-3xl justify-center">
+          <div className="flex flex-col md:flex-row gap-x-12 items-center justify-center">
+            <div className="flex flex-row gap-x-12 w-full max-w-3xl justify-center">
               <div className="flex flex-col items-center flex-1">
                 <div className="w-10 h-10 rounded-full bg-violet-500/80 flex items-center justify-center text-white font-bold text-lg mb-2">1</div>
                 <div className="text-white font-semibold">Connect Wallet</div>
@@ -194,7 +194,7 @@ export default function DiscoverPage() {
             </div>
           </div>
           {/* Callout/info card */}
-          <div className="flex items-center gap-3 bg-violet-500/10 border border-violet-500/20 rounded-lg p-4">
+          <div className="flex items-center gap-x-3 bg-violet-500/10 border border-violet-500/20 rounded-lg p-4">
             <Info className="h-6 w-6 text-violet-400" />
             <div className="text-white text-sm">Need help? Check out our <span className="underline underline-offset-2">FAQ</span> or join the community for support.</div>
           </div>
