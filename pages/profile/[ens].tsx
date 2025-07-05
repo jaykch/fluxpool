@@ -11,10 +11,13 @@ import { ColumnDef } from '@tanstack/react-table';
 import { TrendingUp, UserPlus, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Trophy, Share2, CheckCircle2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { usePrivy } from "@privy-io/react-auth";
+import BroadcastCard from "@/components/BroadcastCard";
+import React from 'react';
 
 // --- SVG LOGOS AND TOKENLOGOS (MUST BE FIRST) ---
 function EthereumLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
@@ -309,6 +312,25 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
+// Helper to rehydrate a broadcast pos object with methods if missing
+function rehydratePos(pos: any) {
+  if (!pos) return pos;
+  // Only rehydrate if methods are missing
+  if (typeof pos.pnl === 'function' && typeof pos.pnlPercent === 'function') return pos;
+  return {
+    ...pos,
+    pnl: function (): string {
+      const diff = (this.current - this.entry) * (this.side === 'Long' ? 1 : -1);
+      return diff > 0 ? `+$${diff.toFixed(2)}` : `-$${Math.abs(diff).toFixed(2)}`;
+    },
+    pnlPercent: function (): string {
+      const diff = (this.current - this.entry) * (this.side === 'Long' ? 1 : -1);
+      return ((diff / this.entry) * 100).toFixed(2) + '%';
+    },
+    avatar: tokenLogos[pos.symbol] || tokenLogos.ETH,
+  };
+}
+
 export default function ProfilePage({ ens, records }: { ens: string; records: Record<string, string> }) {
   // Mock PnL and stats
   const pnl = Math.random() > 0.5 ? `+$${(Math.random() * 10000).toFixed(2)}` : `-$${(Math.random() * 10000).toFixed(2)}`;
@@ -317,7 +339,9 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
   const [msgOpen, setMsgOpen] = useState(false);
   const [msg, setMsg] = useState('');
   const [msgSent, setMsgSent] = useState(false);
-  const isOwnProfile = ens === 'myaccount.fluxpool.eth'; // Demo: replace with real user check
+  const { user } = usePrivy();
+  const userEns = user?.wallet?.address ? toFluxpoolENS(user.wallet.address) : undefined;
+  const isOwnProfile = userEns && ens && userEns.toLowerCase() === ens.toLowerCase();
   const [statsTab, setStatsTab] = useState<'today' | 'week'>('today');
   const [mainTab, setMainTab] = useState<'broadcasts' | 'holdings'>('broadcasts');
   const fluxpoolEns = toFluxpoolENS(ens);
@@ -325,6 +349,48 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
   // Winning trades progress bar: hardcoded to +12% (profitable)
   const winRate = 12;
   const profitable = true;
+  // Load saved broadcasts from localStorage if this is the user's own profile
+  const [savedBroadcasts, setSavedBroadcasts] = useState<any[]>([]);
+  React.useEffect(() => {
+    if (isOwnProfile) {
+      try {
+        const raw = localStorage.getItem('fluxpool-broadcasts');
+        if (raw) {
+          let arr = JSON.parse(raw);
+          // Only show broadcasts for this user (by ENS if present)
+          arr = arr.filter((b: any) => {
+            // If b.ens exists, match to userEns; else, if no ENS, assume all are for this user (legacy)
+            if (b.ens) return b.ens.toLowerCase() === userEns?.toLowerCase();
+            return true;
+          });
+          // Rehydrate pos and add username if missing
+          arr = arr.map((b: any) => ({
+            ...b,
+            pos: rehydratePos(b.pos),
+            username: username,
+          }));
+          setSavedBroadcasts(arr);
+        }
+      } catch {}
+    }
+  }, [isOwnProfile, userEns, username]);
+
+  // Dynamic stats for Today/This Week
+  const stats = useMemo(() => {
+    if (statsTab === 'today') {
+      return {
+        volume: `$${(Math.random() * 10000 + 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+        pnl: Math.random() > 0.5 ? `+$${(Math.random() * 1000).toFixed(2)}` : `-$${(Math.random() * 1000).toFixed(2)}`,
+        maxTrade: `$${(Math.random() * 5000 + 500).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+      };
+    } else {
+      return {
+        volume: `$${(Math.random() * 50000 + 10000).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+        pnl: Math.random() > 0.5 ? `+$${(Math.random() * 5000).toFixed(2)}` : `-$${(Math.random() * 5000).toFixed(2)}`,
+        maxTrade: `$${(Math.random() * 20000 + 2000).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+      };
+    }
+  }, [statsTab]);
   return (
     <Layout accountId={ens} appName="Profile" navbarItems={[]}>
       <Head>
@@ -417,21 +483,39 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
             {/* Stats Section (moved here) */}
             <div className="w-full max-w-xl mx-auto mt-4">
               <div className="flex justify-between gap-2 mb-2">
-                <button onClick={() => setStatsTab('today')} className={`flex-1 py-2 rounded-lg font-semibold ${statsTab === 'today' ? 'bg-blue-600 text-white' : 'bg-white/10 text-gray-300'}`}>Today</button>
-                <button onClick={() => setStatsTab('week')} className={`flex-1 py-2 rounded-lg font-semibold ${statsTab === 'week' ? 'bg-blue-600 text-white' : 'bg-white/10 text-gray-300'}`}>This Week</button>
+                <button
+                  onClick={() => setStatsTab('today')}
+                  className={`flex-1 py-2 rounded-xl font-semibold transition-all duration-200 border shadow-lg
+                    ${statsTab === 'today'
+                      ? 'bg-gradient-to-br from-violet-500/80 to-fuchsia-500/80 text-white border-violet-400/40 shadow-violet-500/20'
+                      : 'bg-white/10 text-gray-300 border-white/10 hover:bg-white/20 hover:text-white'}
+                  `}
+                >
+                  Today
+                </button>
+                <button
+                  onClick={() => setStatsTab('week')}
+                  className={`flex-1 py-2 rounded-xl font-semibold transition-all duration-200 border shadow-lg
+                    ${statsTab === 'week'
+                      ? 'bg-gradient-to-br from-violet-500/80 to-fuchsia-500/80 text-white border-violet-400/40 shadow-violet-500/20'
+                      : 'bg-white/10 text-gray-300 border-white/10 hover:bg-white/20 hover:text-white'}
+                  `}
+                >
+                  This Week
+                </button>
               </div>
               <div className="flex justify-between gap-2 mb-4">
                 <div className="flex-1 bg-white/10 rounded-xl p-4 flex flex-col items-center">
                   <span className="text-xs text-gray-400">Volume</span>
-                  <span className="text-lg font-bold text-white">$0.00</span>
+                  <span className="text-lg font-bold text-white">{stats.volume}</span>
                 </div>
                 <div className="flex-1 bg-white/10 rounded-xl p-4 flex flex-col items-center">
                   <span className="text-xs text-gray-400">P&L</span>
-                  <span className="text-lg font-bold text-red-400">-1.50</span>
+                  <span className={`text-lg font-bold ${stats.pnl.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>{stats.pnl}</span>
                 </div>
                 <div className="flex-1 bg-white/10 rounded-xl p-4 flex flex-col items-center">
                   <span className="text-xs text-gray-400">Max Trade Size</span>
-                  <span className="text-lg font-bold text-white">$0.00</span>
+                  <span className="text-lg font-bold text-white">{stats.maxTrade}</span>
                 </div>
               </div>
               <div className="flex justify-between gap-2 mb-6">
@@ -481,6 +565,17 @@ export default function ProfilePage({ ens, records }: { ens: string; records: Re
               </TabsList>
               <TabsContent value="broadcasts">
                 <div className="flex flex-col gap-4 py-4">
+                  {/* Show saved broadcasts first if own profile */}
+                  {isOwnProfile && savedBroadcasts.length > 0 && savedBroadcasts.map((b, i) => (
+                    <BroadcastCard
+                      key={i + '-saved'}
+                      pos={b.pos}
+                      username={username}
+                      timeAgo={timeAgo(new Date(b.time))}
+                      message={b.message}
+                    />
+                  ))}
+                  {/* Show mock positions as broadcasts */}
                   {mockPositions.map((pos: Position, i: number) => (
                     <div key={pos.symbol} className="flex flex-row items-stretch bg-white/5 border border-white/10 rounded-2xl p-0 overflow-hidden">
                       {/* Left: Info box (50%) */}

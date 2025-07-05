@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { TrendingUp, Users, Wallet, BarChart3, Trophy } from "lucide-react";
+import { TrendingUp, Users, Wallet, BarChart3, Trophy, Share2 } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { getENSorAddress } from "@/lib/ens";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 
 // Helper for time ago
 function timeAgo(date: Date): string {
@@ -286,6 +287,54 @@ export default function TradingData() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const tradeId = useRef(1);
 
+  // --- Broadcast Modal State (now inside component) ---
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const [broadcastPos, setBroadcastPos] = useState<Position | null>(null);
+  const [broadcastMsg, setBroadcastMsg] = useState('');
+  const [broadcastConfirmed, setBroadcastConfirmed] = useState(false);
+
+  function openBroadcast(pos: Position) {
+    setBroadcastPos(pos);
+    setBroadcastOpen(true);
+    setBroadcastMsg('');
+    setBroadcastConfirmed(false);
+  }
+  function closeBroadcast() {
+    setBroadcastOpen(false);
+    setBroadcastPos(null);
+    setBroadcastMsg('');
+    setBroadcastConfirmed(false);
+  }
+  function handleBroadcast() {
+    if (broadcastPos && broadcastMsg.trim()) {
+      const prev = JSON.parse(localStorage.getItem('fluxpool-broadcasts') || '[]');
+      prev.push({
+        pos: broadcastPos,
+        message: broadcastMsg,
+        time: new Date().toISOString(),
+      });
+      localStorage.setItem('fluxpool-broadcasts', JSON.stringify(prev));
+      setBroadcastConfirmed(true);
+      setTimeout(() => {
+        closeBroadcast();
+      }, 1500);
+    }
+  }
+
+  // Add Share column to spot and curve columns
+  const shareColumn = {
+    id: 'share',
+    header: () => '',
+    cell: ({ row }: any) => (
+      <Button size="icon" variant="ghost" className="text-white hover:bg-white/20" onClick={() => openBroadcast(row.original)}>
+        <Share2 className="h-4 w-4" />
+      </Button>
+    ),
+    enableSorting: false,
+  };
+  const spotColumnsWithShare = [...spotColumns, shareColumn];
+  const curveColumnsWithShare = [...curveColumns, shareColumn];
+
   // Helper to create a fake trade
   function createFakeTrade(id: number): Trade {
     const txHash = randomTxHash();
@@ -325,7 +374,7 @@ export default function TradingData() {
   }, []);
 
   return (
-    <div className="w-full min-h-screen flex flex-col flex-1">
+    <div className="w-full min-h-screen flex flex-col flex-1 px-6">
       <Tabs value={tab} onValueChange={setTab} className="w-full flex flex-col flex-1 min-h-0">
         <TabsList className="grid w-full grid-cols-5 gap-1 text-xs h-9 bg-violet-500/30 backdrop-blur-lg shadow-2xl rounded-2xl text-white">
           <TabsTrigger value="trades" className="px-2 py-1 h-8 text-white hover:bg-violet-500/40 focus:bg-violet-500/50 rounded-xl transition-colors"> <TrendingUp className="h-3 w-3 mr-1" /> Trades </TabsTrigger>
@@ -342,12 +391,12 @@ export default function TradingData() {
         </TabsContent>
         <TabsContent value="spot" className="mt-4 flex-1 min-h-0">
           <div className="flex flex-col flex-1 min-h-0">
-            <DataTable columns={spotColumns} data={mockSpotPositions} />
+            <DataTable columns={spotColumnsWithShare} data={mockSpotPositions} />
           </div>
         </TabsContent>
         <TabsContent value="curve" className="mt-4 flex-1 min-h-0">
           <div className="flex flex-col flex-1 min-h-0">
-            <DataTable columns={curveColumns} data={mockCurvePositions} />
+            <DataTable columns={curveColumnsWithShare} data={mockCurvePositions} />
           </div>
         </TabsContent>
         <TabsContent value="holders" className="mt-4 flex-1 min-h-0">
@@ -361,6 +410,42 @@ export default function TradingData() {
           </div>
         </TabsContent>
       </Tabs>
+      {/* Broadcast Modal */}
+      <Dialog open={broadcastOpen} onOpenChange={setBroadcastOpen}>
+        <DialogContent className="bg-white/10 backdrop-blur-lg border-0 rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2"><Share2 className="h-5 w-5" /> Share Position as Broadcast</DialogTitle>
+          </DialogHeader>
+          {broadcastConfirmed ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <div className="text-green-400 text-2xl mb-2">Broadcast shared!</div>
+              <div className="text-gray-300 text-sm">Your position has been shared as a broadcast.</div>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col gap-3 mt-2">
+                <textarea
+                  className="w-full rounded-lg bg-white/10 text-white p-3 border border-white/10 focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none min-h-[80px]"
+                  placeholder={`Share your thoughts about ${broadcastPos?.symbol || ''}...`}
+                  value={broadcastMsg}
+                  onChange={e => setBroadcastMsg(e.target.value)}
+                  maxLength={240}
+                  disabled={broadcastConfirmed}
+                />
+                <div className="flex justify-between items-center text-xs text-gray-400">
+                  <span>{broadcastMsg.length}/240</span>
+                  <DialogClose asChild>
+                    <Button variant="ghost" className="text-gray-400" disabled={broadcastConfirmed}>Cancel</Button>
+                  </DialogClose>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={handleBroadcast} disabled={!broadcastMsg.trim() || broadcastConfirmed} className="bg-gradient-to-br from-violet-500/60 to-fuchsia-500/60 text-white font-semibold shadow">Share Broadcast</Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 } 

@@ -258,6 +258,12 @@ export default function Navbar({ items, accountId, appName, onTokenSelect }: Nav
             <DropdownMenuContent align="end" className="w-48 bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl text-white">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-white/10 dark:bg-black/30" />
+              {user && user.wallet && user.wallet.address && (
+                <DropdownMenuItem onClick={() => router.push(`/profile/${toFluxpoolENS(user.wallet?.address)}`)}>
+                  <User className="mr-2 h-4 w-4" />
+                  My Profile
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={() => router.push('/account')}>
                 <User className="mr-2 h-4 w-4" />
                 Your account

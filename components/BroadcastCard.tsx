@@ -1,10 +1,11 @@
 import MiniChart from "@/components/MiniChart";
 import Link from "next/link";
 
-export default function BroadcastCard({ pos, username, timeAgo }: {
+export default function BroadcastCard({ pos, username, timeAgo, message }: {
   pos: any;
   username: string;
   timeAgo: string;
+  message?: string;
 }) {
   return (
     <div className="flex flex-row items-stretch bg-white/5 border border-white/10 rounded-2xl p-0 overflow-hidden shrink-0">
@@ -49,7 +50,9 @@ export default function BroadcastCard({ pos, username, timeAgo }: {
                 <span className={`text-xs font-bold ${pos.pnl().startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>({pos.pnlPercent()})</span>
               </div>
             </div>
-            <div className="text-gray-200 text-sm mt-2 break-words">{pos.side === 'Long' ? `Longed ${pos.symbol} for a breakout. 🚀` : `Shorted ${pos.symbol} for a quick scalp. 🔻`}</div>
+            <div className="text-gray-200 text-sm mt-2 break-words">
+              {message ? message : (pos.side === 'Long' ? `Longed ${pos.symbol} for a breakout. 🚀` : `Shorted ${pos.symbol} for a quick scalp. 🔻`)}
+            </div>
           </div>
         </div>
       </div>

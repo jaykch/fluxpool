@@ -1,300 +1,420 @@
-import { usePrivy } from "@privy-io/react-auth";
-import Layout from "@/components/layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  DollarSign, 
-  BarChart3,
-  ArrowUpRight,
-  ArrowDownLeft,
-  Plus,
-  Minus,
-  Eye,
-  Download,
-  RefreshCw
-} from "lucide-react";
+import Layout from '@/components/layout';
+import { Card, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { PieChart, ArrowDownLeft, ArrowUpRight, DollarSign, TrendingUp, TrendingDown, Banknote, Gift, CreditCard, CheckCircle, Star, Plus, Share2 } from 'lucide-react';
+import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { useState } from 'react';
+import DepositModal from '@/components/DepositModal';
+
+// --- SVG LOGOS AND TOKENLOGOS (copied from profile page) ---
+function EthereumLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#23292F" />
+      <g>
+        <polygon points="16,5 16,22.5 25,16.5" fill="#8C8C8C" />
+        <polygon points="16,5 7,16.5 16,22.5" fill="#343434" />
+        <polygon points="16,24 16,27 25,18" fill="#8C8C8C" />
+        <polygon points="16,27 16,24 7,18" fill="#343434" />
+        <polygon points="16,22.5 25,16.5 16,19.5" fill="#3C3C3B" />
+        <polygon points="16,19.5 7,16.5 16,22.5" fill="#8C8C8C" />
+      </g>
+    </svg>
+  );
+}
+function SolanaLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="16" fill="#131313" />
+      <linearGradient id="solana-gradient-1" x1="6" y1="8" x2="26" y2="24" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <linearGradient id="solana-gradient-2" x1="6" y1="14" x2="26" y2="30" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <linearGradient id="solana-gradient-3" x1="6" y1="20" x2="26" y2="36" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <g>
+        <rect x="8" y="9" width="16" height="3" rx="1.5" fill="url(#solana-gradient-1)" />
+        <rect x="8" y="15" width="16" height="3" rx="1.5" fill="url(#solana-gradient-2)" />
+        <rect x="8" y="21" width="16" height="3" rx="1.5" fill="url(#solana-gradient-3)" />
+      </g>
+    </svg>
+  );
+}
+function BitcoinLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#F7931A" />
+      <g>
+        <path d="M16 7v18" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+        <path d="M12 11h7a3 3 0 0 1 0 6h-7m0 0h7a3 3 0 0 1 0 6h-7" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+      </g>
+    </svg>
+  );
+}
+function UniswapLogoSVG({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#FF007A" />
+      <g>
+        <path d="M10 22c2-2 10-2 12-8" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+        <ellipse cx="20" cy="13" rx="1.5" ry="2.5" fill="#fff" />
+        <ellipse cx="12" cy="19" rx="1.5" ry="2.5" fill="#fff" />
+      </g>
+    </svg>
+  );
+}
+const tokenLogos: Record<string, () => JSX.Element> = {
+  ETH: () => <EthereumLogoSVG className="w-6 h-6" />, // Use SVG for ETH
+  SOL: () => <SolanaLogoSVG className="w-6 h-6" />, // Use SVG for SOL
+  BTC: () => <BitcoinLogoSVG className="w-6 h-6" />, // Use SVG for BTC
+  UNI: () => <UniswapLogoSVG className="w-6 h-6" />, // Use SVG for UNI
+};
+
+// Holdings mock data using the same tokens as profile page
+const holdings = [
+  {
+    symbol: 'SOL',
+    name: 'Solana',
+    avatar: tokenLogos.SOL,
+    percent: 50.58,
+    amountHeld: 120,
+    amountBought: 200,
+    amountSoldProfit: 50,
+    amountSoldLoss: 30,
+    pnl: '+$1,250.00',
+    pnlPercent: '+12.5%',
+    timeHeld: 1000 * 60 * 60 * 24 * 7 + 1000 * 60 * 60 * 5, // 7d 5h
+  },
+  {
+    symbol: 'ETH',
+    name: 'Ethereum',
+    avatar: tokenLogos.ETH,
+    percent: 30.12,
+    amountHeld: 10,
+    amountBought: 15,
+    amountSoldProfit: 2,
+    amountSoldLoss: 3,
+    pnl: '-$320.00',
+    pnlPercent: '-2.1%',
+    timeHeld: 1000 * 60 * 60 * 24 * 2 + 1000 * 60 * 60 * 8, // 2d 8h
+  },
+  {
+    symbol: 'BTC',
+    name: 'Bitcoin',
+    avatar: tokenLogos.BTC,
+    percent: 15.30,
+    amountHeld: 0.5,
+    amountBought: 1.2,
+    amountSoldProfit: 0.4,
+    amountSoldLoss: 0.3,
+    pnl: '+$2,100.00',
+    pnlPercent: '+5.8%',
+    timeHeld: 1000 * 60 * 60 * 24 * 14 + 1000 * 60 * 60 * 2, // 14d 2h
+  },
+  {
+    symbol: 'UNI',
+    name: 'Uniswap',
+    avatar: tokenLogos.UNI,
+    percent: 4.00,
+    amountHeld: 300,
+    amountBought: 500,
+    amountSoldProfit: 120,
+    amountSoldLoss: 80,
+    pnl: '+$80.00',
+    pnlPercent: '+1.2%',
+    timeHeld: 1000 * 60 * 60 * 24 * 1 + 1000 * 60 * 60 * 12, // 1d 12h
+  },
+];
+
+function formatTimeHeld(ms: number) {
+  const d = Math.floor(ms / (1000 * 60 * 60 * 24));
+  const h = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  return `${d ? `${d}d ` : ''}${h}h`;
+}
 
 export default function PortfolioPage() {
-  const { user, ready, authenticated } = usePrivy();
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const [broadcastToken, setBroadcastToken] = useState<string | null>(null);
+  const [broadcastMsg, setBroadcastMsg] = useState('');
+  const [broadcastConfirmed, setBroadcastConfirmed] = useState(false);
 
-  // Mock portfolio data
-  const portfolioStats = {
-    totalValue: 12450.67,
-    change24h: 234.56,
-    changePercent: 1.92,
-    totalPnL: 3456.78,
-    totalPnLPercent: 38.45
+  const openBroadcast = (symbol: string) => {
+    setBroadcastToken(symbol);
+    setBroadcastOpen(true);
+    setBroadcastMsg('');
+    setBroadcastConfirmed(false);
+  };
+  const closeBroadcast = () => {
+    setBroadcastOpen(false);
+    setBroadcastToken(null);
+    setBroadcastMsg('');
+    setBroadcastConfirmed(false);
+  };
+  const handleBroadcast = () => {
+    // Save to localStorage for parity with TradingData
+    if (broadcastToken && broadcastMsg.trim()) {
+      const prev = JSON.parse(localStorage.getItem('fluxpool-broadcasts') || '[]');
+      prev.push({
+        token: broadcastToken,
+        message: broadcastMsg,
+        time: new Date().toISOString(),
+      });
+      localStorage.setItem('fluxpool-broadcasts', JSON.stringify(prev));
+      setBroadcastConfirmed(true);
+      setTimeout(() => {
+        closeBroadcast();
+      }, 1500);
+    }
   };
 
-  // Mock holdings
-  const holdings = [
-    {
-      id: 1,
-      symbol: "ETH",
-      name: "Ethereum",
-      amount: 2.45,
-      avgPrice: 2200.00,
-      currentPrice: 2450.50,
-      currentValue: 6003.73,
-      pnl: 613.23,
-      pnlPercent: 11.37,
-      allocation: 48.2
-    },
-    {
-      id: 3,
-      symbol: "UNI",
-      name: "Uniswap",
-      amount: 150.0,
-      avgPrice: 6.50,
-      currentPrice: 7.85,
-      currentValue: 1177.50,
-      pnl: 202.50,
-      pnlPercent: 20.77,
-      allocation: 9.5
-    },
-    {
-      id: 4,
-      symbol: "LINK",
-      name: "Chainlink",
-      amount: 85.0,
-      avgPrice: 12.00,
-      currentPrice: 14.20,
-      currentValue: 1207.00,
-      pnl: 187.00,
-      pnlPercent: 18.33,
-      allocation: 9.7
-    }
-  ];
+  const [depositOpen, setDepositOpen] = useState(false);
+  const [depositAmount, setDepositAmount] = useState('');
+  const [depositMethod, setDepositMethod] = useState('Card');
+  const [depositConfirmed, setDepositConfirmed] = useState(false);
 
-  // Mock transactions
-  const transactions = [
-    {
-      id: 1,
-      type: "buy",
-      symbol: "ETH",
-      amount: 0.5,
-      price: 2400.00,
-      total: 1200.00,
-      date: "2024-01-15 14:30",
-      status: "completed"
-    },
-    {
-      id: 2,
-      type: "sell",
-      symbol: "SOL",
-      amount: 5.0,
-      price: 105.00,
-      total: 525.00,
-      date: "2024-01-14 09:15",
-      status: "completed"
-    },
-    {
-      id: 3,
-      type: "buy",
-      symbol: "UNI",
-      amount: 25.0,
-      price: 7.20,
-      total: 180.00,
-      date: "2024-01-13 16:45",
-      status: "completed"
-    }
-  ];
+  const openDeposit = () => {
+    setDepositOpen(true);
+    setDepositAmount('');
+    setDepositMethod('Card');
+    setDepositConfirmed(false);
+  };
+  const closeDeposit = () => {
+    setDepositOpen(false);
+    setDepositAmount('');
+    setDepositMethod('Card');
+    setDepositConfirmed(false);
+  };
+  const handleDeposit = () => {
+    setDepositConfirmed(true);
+    setTimeout(() => {
+      closeDeposit();
+    }, 1500);
+  };
 
   return (
-    <Layout 
-      accountId={user?.id ?? ""} 
-      appName="Portfolio" 
-      navbarItems={[]}
-    >
-      <main className="flex-1 p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-white">Portfolio</h1>
-            <p className="text-gray-400 mt-2">Track your investments and performance</p>
-          </div>
-          <div className="flex space-x-2">
-            <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-            <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
-          </div>
-        </div>
-
+    <Layout accountId="" appName="Portfolio" navbarItems={[]}> 
+      <main className="flex flex-col gap-8 px-4 py-8 w-full">
         {/* Portfolio Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Total Value</p>
-                  <p className="text-white text-2xl font-bold">${portfolioStats.totalValue.toLocaleString()}</p>
+        <Card className="bg-white/10 backdrop-blur-lg shadow-2xl border-0 rounded-2xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div>
+            <CardTitle className="text-white text-2xl mb-2">Portfolio Overview</CardTitle>
+            <div className="flex items-center gap-8">
+              <div>
+                <div className="text-gray-400 text-sm">Total Balance</div>
+                <div className="text-white text-3xl font-bold">$12,345.67</div>
+              </div>
+              <div>
+                <div className="text-gray-400 text-sm">Lifetime PnL</div>
+                <div className="text-green-400 text-xl font-bold flex items-center gap-1">
+                  <TrendingUp className="h-5 w-5" /> +$2,345.67 (18.2%)
                 </div>
-                <DollarSign className="h-8 w-8 text-blue-400" />
               </div>
-              <div className={`flex items-center mt-2 ${portfolioStats.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {portfolioStats.changePercent >= 0 ? (
-                  <ArrowUpRight className="h-4 w-4 mr-1" />
-                ) : (
-                  <ArrowDownLeft className="h-4 w-4 mr-1" />
-                )}
-                <span className="text-sm font-medium">
-                  ${Math.abs(portfolioStats.change24h).toFixed(2)} ({Math.abs(portfolioStats.changePercent)}%)
-                </span>
+              <div>
+                <div className="text-gray-400 text-sm">24h PnL</div>
+                <div className="text-red-400 text-xl font-bold flex items-center gap-1">
+                  <TrendingDown className="h-5 w-5" /> -$123.45 (-0.9%)
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3 min-w-[220px]">
+            <Button onClick={() => setDepositOpen(true)} className="w-full bg-gradient-to-br from-violet-500/60 to-fuchsia-500/60 text-white font-semibold shadow flex items-center gap-2"><ArrowDownLeft className="h-4 w-4" /> Deposit</Button>
+            <Button className="w-full bg-gradient-to-br from-fuchsia-500/60 to-violet-500/60 text-white font-semibold shadow flex items-center gap-2"><ArrowUpRight className="h-4 w-4" /> Withdraw</Button>
+          </div>
+        </Card>
 
-          <Card className="border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Total P&L</p>
-                  <p className="text-white text-2xl font-bold">${portfolioStats.totalPnL.toLocaleString()}</p>
-                </div>
-                <BarChart3 className="h-8 w-8 text-green-400" />
-              </div>
-              <div className="flex items-center mt-2 text-green-400">
-                <ArrowUpRight className="h-4 w-4 mr-1" />
-                <span className="text-sm font-medium">{portfolioStats.totalPnLPercent}%</span>
-              </div>
-            </CardContent>
+        {/* Holdings Section - Profile Style */}
+        <div className="flex flex-col md:flex-row gap-6 w-full">
+          <Card className="flex-1 bg-white/10 backdrop-blur-lg shadow-2xl border-0 rounded-2xl p-6">
+            <CardTitle className="text-white text-xl mb-4">Holdings</CardTitle>
+            <div className="divide-y divide-white/10">
+              {holdings.map((h, i) => {
+                const heldPercent = h.amountBought > 0 ? (h.amountHeld / h.amountBought) * 100 : 0;
+                const soldProfitPercent = h.amountBought > 0 ? (h.amountSoldProfit / h.amountBought) * 100 : 0;
+                const soldLossPercent = h.amountBought > 0 ? (h.amountSoldLoss / h.amountBought) * 100 : 0;
+                return (
+                  <div key={h.symbol} className="flex flex-col gap-1 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 border border-white/10">
+                        {typeof h.avatar === 'function' ? h.avatar() : null}
+                      </div>
+                      <span className="text-white font-medium text-base w-16">{h.symbol}</span>
+                      <span className="text-gray-300 font-mono text-xs">{h.percent.toFixed(2)}%</span>
+                      <span className={`font-mono text-xs ${h.pnl.startsWith('+') ? 'text-green-400' : h.pnl.startsWith('-') ? 'text-red-400' : 'text-gray-300'}`}>{h.pnl} {h.pnlPercent !== '-' && `(${h.pnlPercent})`}</span>
+                      <span className="text-xs text-gray-400">Held: <span className="text-white font-mono">{h.amountHeld}</span></span>
+                      <span className="text-xs text-gray-400">Bought: <span className="text-white font-mono">{h.amountBought}</span></span>
+                      <span className="text-xs text-green-400">Sold (Profit): <span className="text-white font-mono">{h.amountSoldProfit}</span></span>
+                      <span className="text-xs text-red-400">Sold (Loss): <span className="text-white font-mono">{h.amountSoldLoss}</span></span>
+                      <span className="text-xs text-gray-400">Time: <span className="text-white font-mono">{formatTimeHeld(h.timeHeld)}</span></span>
+                      <Button size="sm" className="bg-violet-500/20 text-white ml-auto">Trade</Button>
+                      <Button size="icon" variant="ghost" className="ml-2 text-white hover:bg-white/20" onClick={() => openBroadcast(h.symbol)}><Share2 className="h-4 w-4" /></Button>
+                    </div>
+                    {/* Bar visualization for held vs sold at profit/loss */}
+                    <div className="w-full flex items-center gap-2 mt-1">
+                      <div className="flex-1 h-3 bg-white/20 rounded-full overflow-hidden relative">
+                        <div className="absolute left-0 top-0 h-full bg-violet-500/80" style={{ width: `${heldPercent}%` }} />
+                        <div className="absolute left-0 top-0 h-full bg-green-500/80" style={{ left: `${heldPercent}%`, width: `${soldProfitPercent}%` }} />
+                        <div className="absolute left-0 top-0 h-full bg-red-500/70" style={{ left: `${heldPercent + soldProfitPercent}%`, width: `${soldLossPercent}%` }} />
+                      </div>
+                      <span className="text-xs text-violet-400">{heldPercent.toFixed(0)}% held</span>
+                      <span className="text-xs text-green-400">{soldProfitPercent.toFixed(0)}% sold (profit)</span>
+                      <span className="text-xs text-red-400">{soldLossPercent.toFixed(0)}% sold (loss)</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </Card>
-
-          <Card className="border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Holdings</p>
-                  <p className="text-white text-2xl font-bold">{holdings.length}</p>
-                </div>
-                <Eye className="h-8 w-8 text-purple-400" />
-              </div>
-              <p className="text-gray-400 text-sm mt-2">Active positions</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Best Performer</p>
-                  <p className="text-white text-2xl font-bold">UNI</p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-green-400" />
-              </div>
-              <p className="text-green-400 text-sm mt-2">+20.77%</p>
-            </CardContent>
+          {/* Pie/Bar Chart Placeholder */}
+          <Card className="w-full md:w-[340px] bg-white/10 backdrop-blur-lg shadow-2xl border-0 rounded-2xl p-6 flex flex-col items-center justify-center">
+            <CardTitle className="text-white text-xl mb-4 flex items-center gap-2"><PieChart className="h-6 w-6 text-violet-400" /> Allocation</CardTitle>
+            <div className="w-full h-40 flex flex-col items-center justify-center text-gray-400">
+              <Progress value={48} className="w-40 mb-2" />
+              <div className="text-white text-sm">ETH 48% • USDC 25% • UNI 10% • Other 17%</div>
+            </div>
           </Card>
         </div>
 
-        {/* Holdings and Transactions */}
-        <Tabs defaultValue="holdings" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="holdings">Holdings</TabsTrigger>
-            <TabsTrigger value="transactions">Transactions</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="holdings" className="space-y-4">
-            <Card className="border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">Your Holdings</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {holdings.map((holding) => (
-                    <div key={holding.id} className="flex items-center justify-between p-4 border border-gray-700 rounded-lg">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                          <span className="text-white font-bold">{holding.symbol[0]}</span>
-                        </div>
-                        <div>
-                          <h3 className="text-white font-medium">{holding.symbol}</h3>
-                          <p className="text-gray-400 text-sm">{holding.name}</p>
-                          <p className="text-gray-400 text-sm">{holding.amount} tokens</p>
-                        </div>
-                      </div>
-                      
-                      <div className="text-right">
-                        <p className="text-white font-medium">${holding.currentValue.toLocaleString()}</p>
-                        <div className={`flex items-center ${holding.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {holding.pnl >= 0 ? (
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
-                          ) : (
-                            <ArrowDownLeft className="h-3 w-3 mr-1" />
-                          )}
-                          <span className="text-sm font-medium">
-                            ${Math.abs(holding.pnl).toFixed(2)} ({Math.abs(holding.pnlPercent)}%)
-                          </span>
-                        </div>
-                        <p className="text-gray-400 text-sm">{holding.allocation}% of portfolio</p>
-                      </div>
-                      
-                      <div className="flex space-x-2">
-                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                          <Plus className="h-3 w-3 mr-1" />
-                          Buy
-                        </Button>
-                        <Button size="sm" variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                          <Minus className="h-3 w-3 mr-1" />
-                          Sell
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+        {/* Recent Activity Section */}
+        <Card className="bg-white/10 backdrop-blur-lg shadow-2xl border-0 rounded-2xl p-6">
+          <CardTitle className="text-white text-xl mb-4">Recent Activity</CardTitle>
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList className="mb-4">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="deposits">Deposits</TabsTrigger>
+              <TabsTrigger value="trades">Trades</TabsTrigger>
+              <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
+            </TabsList>
+            <TabsContent value="all">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <DollarSign className="h-5 w-5 text-green-400" />
+                  <span className="text-white">Deposited $2,000 via Privy Fiat</span>
+                  <span className="text-xs text-gray-400 ml-auto">2d ago</span>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="transactions" className="space-y-4">
-            <Card className="border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">Recent Transactions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {transactions.map((tx) => (
-                    <div key={tx.id} className="flex items-center justify-between p-3 border border-gray-700 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          tx.type === 'buy' ? 'bg-green-500' : 'bg-red-500'
-                        }`}>
-                          {tx.type === 'buy' ? (
-                            <Plus className="h-4 w-4 text-white" />
-                          ) : (
-                            <Minus className="h-4 w-4 text-white" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-white font-medium capitalize">{tx.type} {tx.symbol}</p>
-                          <p className="text-gray-400 text-sm">{tx.date}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="text-right">
-                        <p className="text-white font-medium">${tx.total.toFixed(2)}</p>
-                        <p className="text-gray-400 text-sm">{tx.amount} @ ${tx.price}</p>
-                      </div>
-                      
-                      <Badge variant="outline" className="text-xs">
-                        {tx.status}
-                      </Badge>
-                    </div>
-                  ))}
+                <div className="flex items-center gap-3">
+                  <ArrowUpRight className="h-5 w-5 text-violet-400" />
+                  <span className="text-white">Bought 1.2 ETH</span>
+                  <span className="text-xs text-gray-400 ml-auto">1d ago</span>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                <div className="flex items-center gap-3">
+                  <ArrowDownLeft className="h-5 w-5 text-fuchsia-400" />
+                  <span className="text-white">Withdrew $500</span>
+                  <span className="text-xs text-gray-400 ml-auto">12h ago</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Gift className="h-5 w-5 text-yellow-400" />
+                  <span className="text-white">Received UNI rewards</span>
+                  <span className="text-xs text-gray-400 ml-auto">2h ago</span>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="deposits">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <DollarSign className="h-5 w-5 text-green-400" />
+                  <span className="text-white">Deposited $2,000 via Privy Fiat</span>
+                  <span className="text-xs text-gray-400 ml-auto">2d ago</span>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="trades">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <ArrowUpRight className="h-5 w-5 text-violet-400" />
+                  <span className="text-white">Bought 1.2 ETH</span>
+                  <span className="text-xs text-gray-400 ml-auto">1d ago</span>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="withdrawals">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <ArrowDownLeft className="h-5 w-5 text-fuchsia-400" />
+                  <span className="text-white">Withdrew $500</span>
+                  <span className="text-xs text-gray-400 ml-auto">12h ago</span>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </Card>
+
+        {/* Fiat Onramp/Rewards Section */}
+        <div className="flex flex-col md:flex-row gap-6 w-full">
+          {/* Fiat Onramp */}
+          <Card className="flex-1 bg-white/10 backdrop-blur-lg shadow-2xl border-0 rounded-2xl p-6 flex flex-col items-center justify-center">
+            <CardTitle className="text-white text-xl mb-4 flex items-center gap-2"><Banknote className="h-6 w-6 text-green-400" /> Fiat Onramp</CardTitle>
+            <div className="w-full flex flex-col items-center gap-4">
+              <div className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-2">
+                <CreditCard className="h-5 w-5 text-blue-400" />
+                <span className="text-white">Buy crypto with card</span>
+              </div>
+              <Button onClick={() => setDepositOpen(true)} className="w-full bg-gradient-to-br from-green-400/60 to-blue-400/60 text-white font-semibold shadow flex items-center gap-2"><Plus className="h-4 w-4" /> Add Funds</Button>
+              <div className="text-xs text-gray-400 text-center">Powered by Privy Fiat Onramp. Your funds are securely processed.</div>
+            </div>
+          </Card>
+          {/* Rewards */}
+          <Card className="flex-1 bg-white/10 backdrop-blur-lg shadow-2xl border-0 rounded-2xl p-6 flex flex-col items-center justify-center">
+            <CardTitle className="text-white text-xl mb-4 flex items-center gap-2"><Gift className="h-6 w-6 text-yellow-400" /> Rewards</CardTitle>
+            <div className="w-full flex flex-col items-center gap-4">
+              <div className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-2">
+                <Star className="h-5 w-5 text-yellow-400" />
+                <span className="text-white">UNI Trading Rewards</span>
+                <Badge className="ml-2 bg-green-500/80 text-white">Claimable</Badge>
+              </div>
+              <Button className="w-full bg-gradient-to-br from-yellow-400/60 to-fuchsia-400/60 text-white font-semibold shadow flex items-center gap-2"><CheckCircle className="h-4 w-4" /> Claim Rewards</Button>
+              <div className="text-xs text-gray-400 text-center">Earn rewards by trading and holding tokens. More coming soon!</div>
+            </div>
+          </Card>
+        </div>
+        {/* Broadcast Modal */}
+        <Dialog open={broadcastOpen} onOpenChange={setBroadcastOpen}>
+          <DialogContent className="bg-white/10 backdrop-blur-lg border-0 rounded-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-white flex items-center gap-2"><Share2 className="h-5 w-5" /> Share {broadcastToken} as Broadcast</DialogTitle>
+            </DialogHeader>
+            {broadcastConfirmed ? (
+              <div className="flex flex-col items-center justify-center py-8">
+                <div className="text-green-400 text-2xl mb-2">Broadcast shared!</div>
+                <div className="text-gray-300 text-sm">Your holding has been shared as a broadcast.</div>
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-col gap-3 mt-2">
+                  <textarea
+                    className="w-full rounded-lg bg-white/10 text-white p-3 border border-white/10 focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none min-h-[80px]"
+                    placeholder={`Share your thoughts about ${broadcastToken}...`}
+                    value={broadcastMsg}
+                    onChange={e => setBroadcastMsg(e.target.value)}
+                    maxLength={240}
+                    disabled={broadcastConfirmed}
+                  />
+                  <div className="flex justify-between items-center text-xs text-gray-400">
+                    <span>{broadcastMsg.length}/240</span>
+                    <DialogClose asChild>
+                      <Button variant="ghost" className="text-gray-400" disabled={broadcastConfirmed}>Cancel</Button>
+                    </DialogClose>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button onClick={handleBroadcast} disabled={!broadcastMsg.trim() || broadcastConfirmed} className="bg-gradient-to-br from-violet-500/60 to-fuchsia-500/60 text-white font-semibold shadow">Share Broadcast</Button>
+                </DialogFooter>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+        {/* Shared Deposit Modal */}
+        <DepositModal isOpen={depositOpen} onClose={() => setDepositOpen(false)} />
       </main>
     </Layout>
   );
