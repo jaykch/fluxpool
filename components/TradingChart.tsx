@@ -94,12 +94,12 @@ export default function TradingChart({
   }, [data]);
 
   return (
-    <div className="rounded-lg p-4">
+    <div className="p-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white">{symbol}</h3>
         {isLoading && <div className="text-gray-400">Loading chart...</div>}
       </div>
-      <div ref={chartContainerRef} className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0 rounded-2xl" />
+      <div ref={chartContainerRef} className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-lg shadow-2xl border-0" />
     </div>
   );
 } 

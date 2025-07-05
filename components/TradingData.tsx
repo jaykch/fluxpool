@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { getENSorAddress } from "@/lib/ens";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 // Helper for time ago
 function timeAgo(date: Date): string {
@@ -139,6 +140,21 @@ const spotColumns: ColumnDef<Position>[] = [
   { accessorKey: "current", header: () => "Current" },
   { accessorKey: "pnl", header: () => "PnL", cell: ({ row }) => <span className={row.original.pnl.startsWith("+") ? "text-green-400" : "text-red-400"}>{row.original.pnl}</span> },
   { accessorKey: "pnlPercent", header: () => "%" },
+  // Add Close column
+  {
+    id: "close",
+    header: () => "",
+    cell: ({ row }) => (
+      <Button
+        size="sm"
+        className="bg-purple-500/20 text-white border border-purple-400/20 shadow rounded-lg px-3 py-1 hover:bg-purple-500/40 transition-all"
+        onClick={() => alert(`Close position: ${row.original.symbol} (id: ${row.original.id})`)}
+      >
+        Close
+      </Button>
+    ),
+    enableSorting: false,
+  },
 ];
 // Curve columns: add curve name as first column
 const curveColumns: ColumnDef<Position>[] = [
@@ -198,6 +214,7 @@ interface TopTrader {
   bought: string;
   sold: string;
   pnl: string;
+  pnlPercent: string;
   remaining: string;
 }
 const topTradersColumns: ColumnDef<TopTrader>[] = [
@@ -211,6 +228,7 @@ const topTradersColumns: ColumnDef<TopTrader>[] = [
   { accessorKey: "bought", header: () => "Bought (Avg Buy)" },
   { accessorKey: "sold", header: () => "Sold (Avg Sell)" },
   { accessorKey: "pnl", header: () => "PnL", cell: ({ row }) => <span className={row.original.pnl.startsWith("+") ? "text-green-400" : "text-red-400"}>{row.original.pnl}</span> },
+  { accessorKey: "pnlPercent", header: () => "%", cell: ({ row }) => <span className={row.original.pnlPercent.startsWith("+") ? "text-green-400" : "text-red-400"}>{row.original.pnlPercent}</span> },
 ];
 
 // --- Mock Data ---
@@ -248,9 +266,18 @@ const mockTopTraders: TopTrader[] = Array.from({ length: 20 }, (_, i) => {
   const balance = (Math.random() * 500).toFixed(2);
   const bought = `$${(Math.random() * 10000).toFixed(2)}K (${(Math.random() * 1000).toFixed(1)}M / ${Math.floor(Math.random() * 10) + 1})`;
   const sold = `$${(Math.random() * 20000).toFixed(2)}K (${(Math.random() * 1000).toFixed(1)}M / ${Math.floor(Math.random() * 100) + 1})`;
-  const pnl = (Math.random() > 0.2 ? '+' : '-') + `$${(Math.random() * 10000).toFixed(2)}`;
+  let pnl, pnlPercent;
+  if (i < 5) {
+    // Top 5 always positive
+    pnl = "+$" + (Math.random() * 10000 + 1000).toFixed(2);
+    pnlPercent = "+" + (Math.random() * 30 + 10).toFixed(2) + "%";
+  } else {
+    const isPositive = Math.random() > 0.2;
+    pnl = (isPositive ? "+" : "-") + "$" + (Math.random() * 10000).toFixed(2);
+    pnlPercent = (isPositive ? "+" : "-") + (Math.random() * 30).toFixed(2) + "%";
+  }
   const remaining = `$${(Math.random() * 5000).toFixed(1)} (${Math.floor(Math.random() * 100)}%)`;
-  return { rank, wallet, balance, bought, sold, pnl, remaining };
+  return { rank, wallet, balance, bought, sold, pnl, pnlPercent, remaining };
 });
 
 export { topTradersColumns, mockTopTraders };
